@@ -1,0 +1,99 @@
+{
+  "files": [
+    {
+      "destination": "characters/models/mira/Modelfile",
+      "source_sha256": "e5df2b0a5e0d97761136cb45a810c8100eb126759e23454a7cad53b949bf0fb5",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/models/evelyn/Modelfile",
+      "source_sha256": "5067405d32a7409ef1427b23287a4d044b2dd0e3d6626a23220cdc1e252c0dac",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/models/daisy/Modelfile",
+      "source_sha256": "3d25915a1d7c58c8687ffd30a895dcf4c4f3d4525b74613fe430856208da34b2",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/models/evelyn-lite/Modelfile",
+      "source_sha256": "80bc353b3a27a49ad19acbb62e4fd6386e48951d05fa4827cd4529b95f459c64",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/models/evelyn-lite-candidate/Modelfile",
+      "source_sha256": "ca6fbb6a86c3a0df5fe1917eae2a0b3f999d5e9e4aa6a09ce671c0a40fa63af9",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/lore/edgeloop_universe.md",
+      "source_sha256": "5fbebe43abc93e191c0f0f28b636c156aa819339d5b912a4872cab8da13b304a",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/lore/world_factions.md",
+      "source_sha256": "6b5fe5e290a71c6d10ddbc3bb0fdc661860b39470fedb7760a1ce1e42690385a",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/lore/core_canon.md",
+      "source_sha256": "aba08b536ae945d9662779e75b7dd3464a0a464eb585affaf83151dc839244f9",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/lore/runtime/session_template.json",
+      "source_sha256": "1dd4e19c6ea7582c70247f8ca21d2ea0e604c34c6569da47b36f4fd9df964582",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/evelyn/Modelfile",
+      "source_sha256": "e6609346774d1909733a04dfcb9eb25b7457d0d0009edfd33f5554d8c2c56c39",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/daisy/Modelfile",
+      "source_sha256": "8edc47654479ecd5d3577a7c5b5d392b960d285d1bf20a75d41b962f4ca605b6",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/evelyn-v11/Modelfile",
+      "source_sha256": "3e145d5384099392d5014fcde1e1a87dad749554ed70641f721f40bca299a521",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/daisy-v11/Modelfile",
+      "source_sha256": "7c8fbf43de15958fb1e6b8671623f911d37d7e8414aa7765d4d7b23d5663d744",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/evelyn-v12/Modelfile",
+      "source_sha256": "c2156fa6e5f33f7693798e6dcbdc79b0422d0caa2831353b4a4a4d0fbd9aef52",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/evelyn-v12r1/Modelfile",
+      "source_sha256": "7ef30ddfcf27bf697ed5e5877f6036000dc6f8896a03baeedb2988c92c167ef4",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/evelyn-reptest/Modelfile",
+      "source_sha256": "0ad5acc711177b1f01c8c615fd7deb5c42297f5a3629cc1a3c6f54a1ff2f75a1",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/evelyn-qwen35/Modelfile",
+      "source_sha256": "7a7ffee378bf45de56278660ac66269d95f5c64146d73f518e314ecccf105848",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/build/generated/daisy-qwen35/Modelfile",
+      "source_sha256": "f6d57a08db8903ffe52c16fd05235faba411e96ed10f7caccc8231b6632b3efc",
+      "reason": "byte-for-byte source migration"
+    },
+    {
+      "destination": "characters/archive/evelyn-lite-v1.Modelfile",
+      "source_sha256": "80bc353b3a27a49ad19acbb62e4fd6386e48951d05fa4827cd4529b95f459c64",
+      "reason": "byte-for-byte source migration"
+    }
+  ]
+}

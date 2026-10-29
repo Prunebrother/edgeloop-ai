@@ -1,0 +1,57 @@
+{
+  "legacy_commit": "9e89fa1",
+  "preserved_assertion_groups": {
+    "test_providers_profiles.py": [
+      "fake_runtime",
+      "test_normalized_tool_call_and_result_round_trip",
+      "test_cancel_closes_provider_stream",
+      "test_total_inference_deadline",
+      "test_missing_model_does_not_unload_or_cancel_current",
+      "test_context_adaptation_is_explicit_and_retains_stored_history",
+      "test_runtime_is_never_silently_truncated",
+      "test_atomic_settings_failure_retains_previous_file",
+      "test_model_histories_and_opt_in_persistent_memory",
+      "test_switch_isolates_and_restores_full_user_context",
+      "test_provider_registry_accepts_non_ollama_implementation"
+    ],
+    "test_response_recovery.py": [
+      "runtime_fixture",
+      "test_text_only_reasoning_exhaustion_retries_once_without_disabling_thinking",
+      "test_reasoning_retry_is_bounded_and_reports_actual_failed_budget",
+      "test_reasoning_retry_shares_one_total_deadline"
+    ],
+    "test_model_identity.py": [
+      "test_long_embedded_identity_is_rejected_without_truncation",
+      "test_context_error_delivery_explains_budget_without_ollama_restart_advice"
+    ],
+    "test_director.py": [
+      "Clock",
+      "directed",
+      "test_book_reading_does_not_request_measurements",
+      "test_repetition_normalizes_phrases_and_questions",
+      "test_equivalent_events_deduplicated_and_aggregated",
+      "test_current_topic_protected_and_category_cooldown",
+      "test_event_response_retained_as_assistant_not_user_and_shared_with_next_turn",
+      "test_event_turn_receives_completed_user_history_and_no_numerical_prompt",
+      "test_one_bounded_regeneration_and_no_loop",
+      "test_repetitive_unsolicited_candidate_suppressed_before_streaming",
+      "test_user_requested_silence_needs_no_inference",
+      "test_model_chosen_silence_not_saved_or_spoken",
+      "test_thinking_is_counted_but_never_exposed_as_dialogue",
+      "test_thinking_budget_exhaustion_records_diagnostics_without_leak",
+      "test_prompt_provenance_and_neutral_runtime",
+      "test_followup_remark_keeps_topic_and_explicit_new_subject_changes_it",
+      "test_repetition_comparison_is_bounded_for_adversarial_text",
+      "test_stale_command_ack_is_context_only_when_relevant",
+      "test_unsolicited_assistant_memory_persists_without_a_following_user_turn",
+      "test_regeneration_deadline_retains_original_and_discards_partial_revision"
+    ],
+    "test_conversation.py": [
+      "settle",
+      "test_busy_drop_interrupt_and_safety_cancel",
+      "test_ollama_restricted_to_loopback",
+      "test_model_failure_does_not_change_device"
+    ]
+  },
+  "fixture_change": "BrowserObservation data-only fixture replaces legacy SessionService; unsupported control/app/voice suites deliberately excluded; all legacy tests also run read-only in their original checkout"
+}

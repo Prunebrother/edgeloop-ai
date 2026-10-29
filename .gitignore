@@ -1,0 +1,42 @@
+# Private runtime and credentials
+.ai-data/
+.env
+.env.*
+!.env.example
+*pairing*.json
+*.db
+*.sqlite*
+*.jsonl
+*.funscript
+*.v0.funscript
+# Local dependencies / caches / reports
+.venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.egg-info/
+.cache/
+coverage/
+htmlcov/
+playwright-report/
+test-results/
+*.log
+*.xml
+*.core
+core
+*.dump
+*.tmp
+*.bak
+*.swp
+.DS_Store
+# Unlicensed optional assets / weights
+Character_Art/
+*.gguf
+*.safetensors
+*.pt
+*.pth
+*.bin
+# Release audit materials are always private
+*private-audit*
+tools/smoke-out/

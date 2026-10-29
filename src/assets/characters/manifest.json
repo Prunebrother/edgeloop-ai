@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "provenance": "References to user-provided local originals, preserved byte-for-byte. Existing Git backup is not evidence of redistribution rights; no new image assets are added by F2.4.",
+  "expressions": [
+    "neutral",
+    "happy",
+    "playful",
+    "flirty",
+    "mischievous",
+    "focused",
+    "excited",
+    "surprised",
+    "disappointed",
+    "concerned",
+    "proud",
+    "comforting"
+  ],
+  "activities": [
+    "idle",
+    "generating",
+    "listening",
+    "speaking",
+    "disconnected"
+  ],
+  "characters": {
+    "evelyn": {
+      "name": "Evelyn",
+      "fit": "contain",
+      "position": "50% 50%",
+      "expressions": {
+        "neutral": "/Character_Art/Evelyn/Expressions/evelyn_neutral.png",
+        "happy": "/Character_Art/Evelyn/Expressions/evelyn_happy.png",
+        "playful": "/Character_Art/Evelyn/Expressions/evelyn_playful.png",
+        "flirty": "/Character_Art/Evelyn/Expressions/evelyn_flirty.png",
+        "mischievous": "/Character_Art/Evelyn/Expressions/evelyn_mischievous.png",
+        "focused": "/Character_Art/Evelyn/Expressions/evelyn_focused.png",
+        "excited": "/Character_Art/Evelyn/Expressions/evelyn_excited.png",
+        "surprised": "/Character_Art/Evelyn/Expressions/evelyn_surprised.png",
+        "disappointed": "/Character_Art/Evelyn/Expressions/evelyn_dissapointed.png",
+        "concerned": "/Character_Art/Evelyn/Expressions/evelyn_concerned.png",
+        "proud": "/Character_Art/Evelyn/Expressions/evelyn_proud.png",
+        "comforting": "/Character_Art/Evelyn/Expressions/evelyn_comforting.png"
+      }
+    },
+    "daisy": {
+      "name": "Daisy",
+      "fit": "contain",
+      "position": "50% 50%",
+      "expressions": {
+        "neutral": "/Character_Art/Daisy/expressions/daisy_neutral.png",
+        "happy": "/Character_Art/Daisy/expressions/daisy_happy.png",
+        "playful": "/Character_Art/Daisy/expressions/daisy_playful.png",
+        "flirty": "/Character_Art/Daisy/expressions/daisy_flirty.png",
+        "mischievous": "/Character_Art/Daisy/expressions/daisy_mischievous.png",
+        "focused": "/Character_Art/Daisy/expressions/daisy_focused.png",
+        "excited": "/Character_Art/Daisy/expressions/daisy_excited.png",
+        "surprised": "/Character_Art/Daisy/expressions/daisy_surprised.png",
+        "disappointed": "/Character_Art/Daisy/expressions/daisy_disappointed.png",
+        "concerned": "/Character_Art/Daisy/expressions/daisy_concerned.png",
+        "proud": "/Character_Art/Daisy/expressions/daisy_proud.png",
+        "comforting": "/Character_Art/Daisy/expressions/daisy_comforting.png"
+      }
+    },
+    "celeste": {
+      "name": "Celeste",
+      "fit": "contain",
+      "position": "50% 50%",
+      "expressions": {
+        "neutral": "/Character_Art/Celeste/expressions/celeste_neutral.png",
+        "happy": "/Character_Art/Celeste/expressions/celeste_happy.png",
+        "playful": "/Character_Art/Celeste/expressions/celeste_playful.png",
+        "flirty": "/Character_Art/Celeste/expressions/celeste_flirty.png",
+        "mischievous": "/Character_Art/Celeste/expressions/celeste_mischievous.png",
+        "focused": "/Character_Art/Celeste/expressions/celeste_focused.png",
+        "excited": "/Character_Art/Celeste/expressions/celeste_excited.png",
+        "surprised": "/Character_Art/Celeste/expressions/celeste_surprised.png",
+        "disappointed": "/Character_Art/Celeste/expressions/celeste_dissapointed.png",
+        "concerned": "/Character_Art/Celeste/expressions/celeste_concerned.png",
+        "proud": "/Character_Art/Celeste/expressions/celeste_proud.png",
+        "comforting": "/Character_Art/Celeste/expressions/celeste_comforting.png"
+      }
+    },
+    "nova": {
+      "name": "Nova",
+      "fit": "contain",
+      "position": "50% 50%",
+      "expressions": {
+        "neutral": "/Character_Art/Nova/expressions/nova_neutral.png",
+        "happy": "/Character_Art/Nova/expressions/nova_happy.png",
+        "playful": "/Character_Art/Nova/expressions/nova_playful.png",
+        "flirty": "/Character_Art/Nova/expressions/nova_flirty.png",
+        "mischievous": "/Character_Art/Nova/expressions/nova_mischievous.png",
+        "focused": "/Character_Art/Nova/expressions/nova_focused.png",
+        "excited": "/Character_Art/Nova/expressions/nova_excited.png",
+        "surprised": "/Character_Art/Nova/expressions/nova_surprised.png",
+        "disappointed": "/Character_Art/Nova/expressions/nova_dissapointed.png",
+        "concerned": "/Character_Art/Nova/expressions/nova_concerned.png",
+        "proud": "/Character_Art/Nova/expressions/nova_proud.png",
+        "comforting": "/Character_Art/Nova/expressions/nova_comforting.png"
+      }
+    }
+  },
+  "models": {
+    "evelyn:latest": "evelyn",
+    "evelyn-world:latest": "evelyn",
+    "evelyn-v11:latest": "evelyn",
+    "evelyn-v12:latest": "evelyn",
+    "evelyn-v12r1:latest": "evelyn",
+    "evelyn-reptest:latest": "evelyn",
+    "evelyn-lite:latest": "evelyn",
+    "evelyn-lite-v1:latest": "evelyn",
+    "evelyn-lite-candidate:latest": "evelyn",
+    "evelyn-qwen35-stable:latest": "evelyn",
+    "evelyn-qwen35:latest": "evelyn",
+    "daisy:latest": "daisy",
+    "daisy-world:latest": "daisy",
+    "daisy-v11:latest": "daisy",
+    "daisy-qwen35:latest": "daisy",
+    "daisy-lite-v1:latest": "daisy",
+    "evelyn-narrative-v1:latest": "evelyn",
+    "daisy-narrative-v1:latest": "daisy",
+    "celeste-narrative-v1:latest": "celeste",
+    "celeste-narrative-v2:latest": "celeste",
+    "nova-narrative-v1:latest": "nova"
+  },
+  "presentation": {
+    "session_reactions": {},
+    "cooldown_ms": 6000,
+    "chat_hold_ms": 8000
+  }
+}

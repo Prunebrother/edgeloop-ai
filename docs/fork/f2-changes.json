@@ -1,0 +1,52 @@
+{
+  "src/js/app.js": {
+    "base_sha256": "8338a6cfe0bfb29a966a7ffcc69ea1507cd92cfea43e7e515c64bd26a716d88d",
+    "sha256": "e6db9f083a18685331d6b51671a3a88f94c0ee0f83279e7b72017722c68cfb9f",
+    "reason": "Read-only AI observation hook; F2.3 reuses original pure setting sanitizer and watchdog query; engine/control functions unchanged; F2.5.1 projects existing learning-release counter only; original handlers and safety unchanged; F2.8.1 adds post-motor-stop/pre-counter-reset read-only final projection and Survival restart observation only; reset cancellation final projection after stop dispatch"
+  },
+  "sw.js": {
+    "base_sha256": "56b2e11356124f2baa4b926e32251c938670dac9b79e8947d4b6e123d4af0abb",
+    "sha256": "ceeb271a1f62eab7d806a7ad954618da4e4ded386d4e3d4485fd1226253f362c",
+    "reason": "Public companion modules/manifest precache; F2.4 high-resolution originals use bounded renderer/browser HTTP cache; AI/auth exclusions preserved; F2.5 cache version invalidation only; F2.5.1 cache version only; F2.6 cache version only; F2.6.1 character menu module and cache invalidation; F2.7 event settings module and cache invalidation; F2.8 context tools precache and cache invalidation; F2.8.1 cache invalidation only; F2.8.2 context diagnostics cache invalidation only; free-form objective guidance cache invalidation only; F2.8.3 memory diagnostics cache invalidation; F2.8.4 public journal UI module precache and cache invalidation (journal records remain private observer data); F2.8.4.1 curator controls and memory diagnostics cache invalidation only; Nova character registration cache invalidation only; F2.8.5 Director controls cache invalidation only"
+  },
+  ".gitignore": {
+    "base_sha256": "f5dace1690dab0464685a792bf7005b1e43b16c580cd5dfd8f552f362704c81a",
+    "sha256": "4724782b7e56eb63c0d5efe8a7b2664687cb4cf01ff307e7fb97ac14e277a34b",
+    "reason": "Exclude fork-owned Python environment/metadata and private AI data"
+  },
+  "index.html": {
+    "base_sha256": "7da05d6d914484f64aa897de686fa19eb636ddc9a79d873a75f23471eddf54b1",
+    "sha256": "40a5ad9788e5388a2fcc277ac0c2b3f74c0696c162eca74933a5e214000ffc82",
+    "reason": "F2.1 stylesheet link and accessible viewport zoom; original controls preserved"
+  },
+  "CHANGELOG.md": {
+    "base_sha256": "01ded0a9996f53dd216b3a8fccbe02af945028b9eeed20ddedbbbc5c581d3951",
+    "sha256": "36644b17d7f710e51002524213817ef9cfd5768974f44256f8484db08e24b845",
+    "reason": "F2.10 public release documentation/dependency configuration"
+  },
+  "README.md": {
+    "base_sha256": "c3a01b9fc070e0cc35521fa6b61672703a33c73dcc871c758c577fb7eb9444e5",
+    "sha256": "61c99b2f94dd4a0f7067fafc445991ff53ad3d82d5978b566a6319055ab51872",
+    "reason": "F2.10 public release documentation/dependency configuration; approved Prunebrother source-publication location and status"
+  },
+  "package.json": {
+    "base_sha256": "072273ec933492188804c5b3ebb3d9e071984beb731ca65e5903be0899280336",
+    "sha256": "4599aea51c5e04cd4805062cbbf29361025aa8cd22d3fb85f49bffe2fec622e3",
+    "reason": "F2.10 remove deployment command; lock optional browser test dependency; npm start uses existing loopback allowlist server to avoid serving private runtime data"
+  },
+  "src/js/version.test.js": {
+    "base_sha256": "63fcf3abde686c137a3c4cf7aac9cc16638ec3316b45a2c6fb32de721c96f198",
+    "sha256": "3d3d31a8eabc4f81f31ca52fc7a619f39fc0855fceb134b52194d065d003a821",
+    "reason": "Verify preserved upstream changelog from its new documentation location"
+  },
+  "src/js/backup.test.js": {
+    "base_sha256": "1db725797ba3792abe91d18da49950904c5dd395a51089175ad8ce45f645ea56",
+    "sha256": "dbb2ed87005421ea4408321aecb9dbcba853600ffb515d39ebb0a17cc418e069",
+    "reason": "Documentation assertion follows preserved upstream README at its release location; implementation assertions unchanged"
+  },
+  "src/js/engine.test.js": {
+    "base_sha256": "52c060186f19f8c7f00a2ff072a509b1ae36eb78d02cfeda31ebd0fc3939682b",
+    "sha256": "f71ec4cb8ccefa8b73eab5396ac34c08ae09d3caac438a783e2b1942f5f2aee1",
+    "reason": "Documentation assertion follows preserved upstream README at its release location; implementation assertions unchanged"
+  }
+}

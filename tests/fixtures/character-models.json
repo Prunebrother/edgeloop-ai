@@ -1,0 +1,22 @@
+[
+  "huihui_ai/qwen3.5-abliterated:9b",
+  "daisy:latest",
+  "daisy-qwen35:latest",
+  "daisy-v11:latest",
+  "daisy-world:latest",
+  "evelyn:latest",
+  "evelyn-lite:latest",
+  "evelyn-lite-candidate:latest",
+  "evelyn-lite-v1:latest",
+  "evelyn-qwen35:latest",
+  "evelyn-qwen35-stable:latest",
+  "evelyn-reptest:latest",
+  "evelyn-v11:latest",
+  "evelyn-v12:latest",
+  "evelyn-v12r1:latest",
+  "evelyn-world:latest",
+  "qwen3:8b",
+  "celeste-narrative-v1:latest",
+  "celeste-narrative-v2:latest",
+  "nova-narrative-v1:latest"
+]

@@ -1,0 +1,10 @@
+# Public runtime configuration. Pairing credentials never belong in this file.
+[ollama]
+# Existing character-development server. No Ollama process is started by EdgeLoop.
+url = "http://127.0.0.1:11435"
+
+[inference]
+# Centrally enforced. F2.5 rejects true; legacy model settings cannot enable it.
+thinking = false
+# false restores conservative dialogue-based presentation, with no extra inference.
+explicit_expressions = true
