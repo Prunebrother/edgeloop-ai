@@ -25,28 +25,32 @@ def validate():
     }
     for p in ROOT.rglob('*'):
         parts=p.relative_to(ROOT).parts
-        if any(x in IGNORED or x.endswith('.egg-info') for x in parts):continue
+        if parts[0] in {'runtime','models','wheelhouse','dist'} or any(x in IGNORED or x.endswith('.egg-info') for x in parts):continue
         n=str(p.relative_to(ROOT))
         if p.is_symlink():errors.append((n,'symlink not allowed'));continue
-        if not p.is_file() or n=='MANIFEST.json':continue
+        if not p.is_file() or n in {'MANIFEST.json','BUNDLE.json'}:continue
         found.add(n);b=p.read_bytes()
         expected=included.get(n)
         if expected is None or sha256(b).hexdigest()!=expected['sha256']:errors.append((n,'missing or changed manifest entry'))
-        if p.suffix in {'.db','.sqlite','.sqlite3','.jsonl','.gguf','.safetensors','.pyc','.log','.dump'} or any(x in {'.ai-data','Character_Art'} for x in parts):errors.append((n,'private/generated/unlicensed file category'))
+        if p.suffix in {'.db','.sqlite','.sqlite3','.jsonl','.gguf','.safetensors','.pyc','.log','.dump'} or '.ai-data' in parts:errors.append((n,'private/generated file category'))
         if n.startswith('.env') and n!='.env.example':errors.append((n,'environment file'))
         for category,pattern in patterns.items():
             if re.search(pattern,b):errors.append((n,category))
     for n in set(included)-found:errors.append((n,'missing packaged file'))
     if (ROOT/'.git').is_dir():
         def git(*a):return subprocess.run(['git','--no-optional-locks','-C',str(ROOT),*a],capture_output=True,text=True,check=True).stdout
-        if git('remote'):errors.append(('.git','remote configured; review publication approval'))
+        if git('remote','get-url','origin').strip()!='https://github.com/Prunebrother/edgeloop-ai.git':errors.append(('.git','unexpected publication remote'))
         refs=git('for-each-ref','--format=%(objectname)').splitlines()
         if refs:
             metadata=git('log','--all','--format=%an <%ae>%n%cn <%ce>%n%B')
             for category,pattern in patterns.items():
                 if re.search(pattern,metadata.encode()):errors.append(('.git',category))
-            # Current release has no commits. Future commits require explicit identity review.
-            errors.append(('.git','history now exists: manually review author/committer identities and every historical blob'))
+            identities=git('log','--all','--format=%an <%ae>%n%cn <%ce>').splitlines()
+            if set(identities)!={'Prunebrother <224366760+Prunebrother@users.noreply.github.com>'}:errors.append(('.git','unreviewed commit identity'))
+    catalog=json.loads((ROOT/'src/assets/characters/manifest.json').read_text())
+    portraits={p.lstrip('/') for c in catalog['characters'].values() for p in c['expressions'].values()}
+    if len(portraits)!=48 or any(not (ROOT/p).is_file() for p in portraits):errors.append(('Character_Art','incomplete expression portraits'))
+    if {n for n in found if n.startswith('Character_Art/')}!=portraits:errors.append(('Character_Art','unexpected unreferenced art'))
     return {'passed':not errors,'packaged_files':len(included),'errors':[{'path':n,'category':c} for n,c in errors],
             'limits':'Pattern and hash checks only. Does not certify licensing, arbitrary secrets, human identities, or physical safety.'}
 

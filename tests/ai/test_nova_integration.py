@@ -15,7 +15,6 @@ ROOT=Path(__file__).resolve().parents[2]
 MODEL='nova-narrative-v1:latest'
 
 def test_nova_assets_public_only_when_referenced_and_all_expressions_supplied():
- if not (ROOT/'Character_Art').exists():pytest.skip('Optional character artwork excluded pending redistribution permission')
  manifest=json.loads((ROOT/'src/assets/characters/manifest.json').read_text());nova=manifest['characters']['nova']
  assert manifest['models'][MODEL]=='nova' and nova['name']=='Nova'
  assert nova['expressions']['excited']=='/Character_Art/Nova/expressions/nova_excited.png'

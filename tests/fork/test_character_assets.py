@@ -14,8 +14,6 @@ spec=importlib.util.spec_from_file_location('f24_static',ROOT/'tools/serve_local
 static=importlib.util.module_from_spec(spec);spec.loader.exec_module(static)
 
 def test_curated_artwork_references_are_public_but_archive_and_private_files_are_not():
-    if not (ROOT/'Character_Art').exists():
-        pytest.skip('Optional character artwork excluded pending redistribution permission')
     catalog=json.loads((ROOT/'src/assets/characters/manifest.json').read_text())
     assert static.public_file('/src/assets/characters/manifest.json')
     for character in catalog['characters'].values():

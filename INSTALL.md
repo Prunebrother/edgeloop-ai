@@ -1,36 +1,55 @@
-# Linux installation
+# Install EdgeLoop AI
 
-Use a separate checkout and a fresh browser profile. Python 3.12+ with venv/pip and Node 22+ are required. Install those using your distribution's package manager. Install Ollama using its [official Linux instructions](https://docs.ollama.com/linux); review commands before running them. No model weights are bundled.
+## Complete Linux bundle
 
-From this source directory:
-
-```bash
-./tools/setup-ai.sh
-./tools/serve-local.sh
-```
-
-The UI is at http://127.0.0.1:8770/. In this release package, `npm start` also invokes the existing protected loopback launcher. This explicitly replaces the upstream general-purpose HTTP-server alias, which could serve private files from the checkout. The normal launcher, hardware defaults and runtime configuration are unchanged. The setup script installs pinned Python requirements and this package in a local `.venv`; network access to package repositories is required on a fresh system. Fresh installation into a new virtual environment succeeded during candidate validation. Dependencies remain separately downloaded; this is not an offline package. No JavaScript build is required. The UI currently loads Tailwind and PeerJS from CDNs; offline UI rendering is not guaranteed.
-
-Use an existing Ollama instance if available. The unchanged project default is port 11435. Standard Ollama installations commonly use 11434; explicitly select the intended endpoint:
+Supported target: Linux x86_64, a working systemd user session, glibc Linux (not Alpine/musl), and an installed current Chromium browser. The browser and hardware drivers remain system requirements. Plan for approximately 40 GB free during download/extraction. Model inference needs enough RAM/VRAM for an 8B/9B model plus context; CPU execution may be slow. No sudo or system-wide Ollama service is required.
 
 ```bash
-EDGELOOP_OLLAMA_URL=http://127.0.0.1:11434 ./tools/serve-ai.sh --check
-EDGELOOP_OLLAMA_URL=http://127.0.0.1:11434 ./tools/serve-ai.sh
+curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.3.0/install.sh
+bash install.sh
 ```
 
-If running a new dedicated Ollama manually on an unused port:
+The installer downloads all release parts with resume support, checks SHA-256 sums, extracts and verifies the bundle, creates a Python environment from offline wheels, installs user services and application shortcuts, starts the dedicated stack and opens http://127.0.0.1:8770/. Accept the adult-use gate and finish or skip the existing hardware setup wizard. Desktop pairing and saved model selection happen automatically; Nova is selected on a new installation. Choosing another installed character uses the Chat model menu.
+
+The bundle includes both base-model weights, ten character model definitions already registered with Ollama, 48 expression portraits, portable Python, Ollama, Python wheels and browser libraries. No package manager, Git, Node, model pull or manual token is required. The small downloader needs standard `bash`, `curl`, `tar`, `gzip`, `sha256sum` and `flock` tools.
+
+Installation location: `~/.local/share/edgeloop-ai/releases/v0.3.0`. Model weights live inside that version's `models/`; this avoids changing a separate Ollama installation. User settings/history live at `~/.local/share/edgeloop-ai/data`. Downloads are cached under `${XDG_CACHE_HOME:-~/.cache}/edgeloop-ai/v0.3.0`; remove that cache after successful installation to reclaim disk space. Rerunning installation preserves user settings. It does not enable login startup.
+
+Use **EdgeLoop AI** to start and **Stop EdgeLoop AI** to stop. The command `~/.local/bin/edgeloop-ai status` reports service status. End hardware sessions in the browser before stopping services. Services use loopback ports 11435 (Ollama), 8768 (observer) and 8770 (web). An occupied port produces an error; unrelated processes are never killed. Stop an existing EdgeLoop installation before replacing its user service definitions.
+
+`bash install.sh --no-start` installs without launching. `--no-desktop` prepares the environment without installing services; it is intended for validation/custom integration, not the normal desktop experience.
+
+## Offline transfer
+
+On another machine, download `SHA256SUMS` and **all** `edgeloop-ai-linux-x86_64.tar.gz.partNN` assets from the same release. Copy them together to the target machine, then:
 
 ```bash
-OLLAMA_HOST=127.0.0.1:11435 ollama serve
+sha256sum --ignore-missing -c SHA256SUMS
+mkdir edgeloop-ai
+cat edgeloop-ai-linux-x86_64.tar.gz.part* | tar -xz -C edgeloop-ai
+cd edgeloop-ai
+bash tools/install-bundle.sh
 ```
 
-Do not start another instance on an occupied port or stop an unrelated instance. Run `./tools/ollama-status.sh --url http://127.0.0.1:11435` to diagnose connections. Pair through Chat with the observer's printed token, select an installed model and press Switch model. Tokens are sensitive and should never be copied into issues. `.env.example` documents environment variables; launchers do not automatically load `.env` files. Shell exports or explicit command prefixes work.
-
-Model installation commands and alias mapping are in [MODELS_AND_ASSETS.md](MODELS_AND_ASSETS.md). No private local model files are required by the source definitions. Registry tags may change, so record model digests and Ollama version when reproducing results.
+Every listed part must be present. The extracted bundle verifies its file hashes again before installing. This path needs no internet for installation or local AI/UI. Optional peer/device cloud features still need their respective network services. The extraction directory is the permanent application location; do not move or delete it after installing shortcuts.
 
 ## Simulation first
 
-Leave every physical device disconnected. Open the heart-rate card, choose Manual Simulator, set a fictional value such as 98 and engage it. The original readiness gate still requires a toy for a running session; simulated HR alone does not bypass it. Explore idle AI dialogue without a toy. For a fully running simulation, use the existing mocked browser fixture, which denies hardware permissions and mocks Handy and Ollama:
+Leave physical devices disconnected. Use the heart-rate card's Manual Simulator with a fictional value such as 98 BPM. Idle AI dialogue works without a toy. Simulated heart rate alone does not bypass the original toy readiness gate for a running session. For a fully running mocked simulation, use the developer fixture below; it denies hardware permissions and mocks Handy/Ollama.
+
+## Developer source installation
+
+The Git source includes art and character definitions, but the multi-gigabyte runtime/weight files are Release assets. For manual development with Python 3.12+ and an existing Ollama:
+
+```bash
+./tools/setup-ai.sh
+EDGELOOP_OLLAMA_URL=http://127.0.0.1:11434 ./tools/serve-ai.sh
+./tools/serve-local.sh
+```
+
+The unchanged configuration default is 11435; explicitly select 11434 if using standard Ollama. Install the intended models with the commands in MODELS_AND_ASSETS.md. Pair manually using the observer token, select the installed model and press Switch model. Launchers do not automatically load `.env` files. Never share pairing tokens.
+
+For browser regression tests only:
 
 ```bash
 npm ci
@@ -39,19 +58,8 @@ FORK_BROWSER_PORT=18770 FORK_OBSERVER_PORT=18768 \
   FORK_BROWSER_REPORT=/tmp/edgeloop-demo node tests/fork/browser.mjs
 ```
 
-Use unused ports. Screenshots and fixture reports must be reviewed before sharing. The fixture uses fictional data and an isolated browser context. A local real-model idle smoke is optional, explicit, and writes to a new output path:
+## Troubleshooting and uninstall
 
-```bash
-./tools/smoke-ai.sh --url http://127.0.0.1:11435 \
-  --models nova-narrative-v1:latest --thinking off --output /tmp/edgeloop-model-smoke.json
-```
+Run `~/.local/bin/edgeloop-ai status` and inspect `journalctl --user -u edgeloop-ai-ollama -u edgeloop-ai-observer -u edgeloop-ai-web`. A failed checksum causes installation to stop; rerun to retry/resume. `systemctl --user` requires a desktop user session. Browser Bluetooth/serial permissions and device setup remain explicit user actions. Never expose Ollama or the observer on a public interface.
 
-## Existing desktop launcher
-
-After setup, `./tools/install-desktop.sh` installs user systemd units, desktop entries and `edgeloop-ai`. This changes user configuration and reloads systemd, but does not start services or enable login startup. Inspect existing units before installation to avoid replacing another checkout's launcher. `edgeloop-ai start`, `status` and `stop` manage the dedicated stack on 11435 / 8768 / 8770 using the user's Ollama model store. End hardware sessions with EdgeLoop first. These commands were not run during release preparation.
-
-## Troubleshooting
-
-Check `ss -ltnp` for occupied ports. Never kill an unknown process to free a port. `EDGELOOP_OBSERVER_PORT` changes the observer port; the UI observer URL must match. `./tools/serve-local.sh PORT` changes the web port; observer origin validation may require code-reviewed configuration for a nonstandard web origin. An arbitrary port change is not sufficient to establish pairing. Keep normal use at 8770 unless using the fixtures.
-
-A missing model requires an explicit pull/create on the same Ollama endpoint used by the observer. A token rejection can mean expiration, an incorrect origin, or a restarted observer; pair again. Never expose the observer or Ollama on a public interface. Missing character images are expected in this package. If dependencies cannot resolve, retain the pip error locally and redact paths/tokens before filing an installation issue.
+To uninstall, end hardware sessions, stop EdgeLoop AI, remove its three user service files and `edgeloop-ai.target` from `~/.config/systemd/user`, remove the two EdgeLoop desktop files from `~/.local/share/applications` and the `~/.local/bin/edgeloop-ai` link, then run `systemctl --user daemon-reload`. Remove the version directory and download cache. User history is retained in the separate data directory; delete it and browser site data only if you intend to erase them. See PRIVACY.md.

@@ -1,59 +1,42 @@
-# F2.10 release-candidate validation
+# Complete release validation
 
-Assessment: **Authorized for source publication** to https://github.com/Prunebrother/edgeloop-ai. On 2026-10-29, Prunebrother confirmed authorship of the migrated AI source and character prompts/lore and authorized AGPL-3.0-only publication, public repository creation, the initial release commit and push. Character artwork and model weights remain excluded. Hosting the running application is not authorized.
-
-## Executed checks
+Release v0.3.0 replaces the initial source-only installation experience with a complete Linux x86_64 bundle. The maintainer authorized artwork, open-weight model and Ollama inclusion on 2026-10-29. Original development history, private model aliases and user data remain outside the release. The exact application source is included in the bundle and published at the matching release tag.
 
 | Check | Result |
 | --- | --- |
-| Fresh Linux Python installation | Passed in a new candidate virtual environment using tools/setup-ai.sh; pip check found no broken requirements. Initial restricted-network attempt failed DNS; retry with network access succeeded. |
-| Python suite | 706 passed, 2 explicitly skipped artwork-dependent checks; one FastAPI/Starlette dependency deprecation warning. Tests use isolated temporary data and mocked inference. |
-| Fork JavaScript suite | 63 passed, no failures. |
-| Upstream JavaScript suite | 1057 passed, no failures or skips in the final complete npm test run. |
-| Documentation portability regressions | Backup, engine documentation, version and documentation guards passed individually after following preserved upstream documents. |
-| Simulated AI companion session | Existing browser acceptance passed on separate localhost ports, with hardware permissions denied and Handy/Ollama mocked. Session start, pause/resume/stop, read-only observations, model failure, grounding retry, streaming and mobile fallback were exercised. |
-| Static-server privacy | Temporary release-only server returned UI 200 and 404 for Git config, private journal, runtime config and Python source URLs. |
-| Upstream integrity/provenance | Passed original hash pin plus explicitly reviewed changes and deployment/CI exclusions. LICENSE, original notices and upstream documentation retained. |
-| Source preservation | AI Python runtime, hardware drivers, browser engine/watchdog/session rules, read-only bridge, character Modelfiles/lore/manifest and runtime config match the working source snapshot. |
-| Private repository preservation | Original HEAD and full working-tree status match the starting state; no source-file changes found. Services and model stores were not managed by this task. |
-| Source imports/syntax | Python runtime syntax parsed; no missing relative browser-module imports found. |
-| Release privacy audit | No private session storage, model weights, private Git history, private remotes, developer home paths/name/hostname, known private identity strings, recognized provider-token/private-key patterns or actual MAC addresses found in packaged content. Public upstream attribution and clearly synthetic malformed-URL/secret fixtures remain. |
-| Public Git identity | Repository-local author and committer: Prunebrother <224366760+Prunebrother@users.noreply.github.com>; useConfigOnly enabled, signing disabled and hooks disabled. Initial commit must be a single root with no private history. |
+| Python regression suite | 712 passed, no skipped tests. Includes installer integrity, clean-user defaults, preservation of saved selection, bundled desktop paths, credential boundaries, character assets and AI regressions. One existing Starlette/httpx deprecation warning. |
+| Upstream browser-engine JavaScript | 1,057 passed, no failures or skips. Hardware behavior exercised with existing mocks; no physical devices. |
+| Companion JavaScript | 63 passed, no failures or skips, including the corrected Daisy Lite portrait mapping. |
+| Character browser acceptance | Passed all 48 original expression portraits, character/model switching, expression reactions, cancellation, fallback, mobile/desktop layouts and mocked emergency stop. Physical-device access denied. |
+| Offline environment installation | Passed with bundled Python and local wheels using pip --no-index. Package installation, editable application imports and clean-user setup succeeded without a package index or system Ollama/Python installation. Desktop writes/start were skipped in this isolated validation. |
+| Real bundled-model browser acceptance | Passed with the included Ollama binary and isolated copied weight store: ten character aliases discovered and native prompts matched public Modelfiles; automatic desktop pairing and Nova selection; a real Nova reply; reload/reconnection; 48 portraits served; private runtime/model paths returned 404. External browser requests were blocked and none were attempted. Bluetooth, serial and microphone access were denied. |
+| Dependency consistency | pip check passed. Python dependencies remain pinned in requirements.lock; build wheels and runtime archive hashes are pinned in release-inputs.json. |
+| Public source integrity | Upstream baseline retained with explicit reviewed file changes. Public source/art MANIFEST.json and complete per-file BUNDLE.json provide SHA-256 inventories. Official Ollama and portable Python archive hashes verified before extraction; both base-weight hashes and every imported blob verified. |
+| Redistribution notices | Model license layers, readable model licenses, Python linked-library inventory, Ollama notices, browser-library licenses, CUDA terms and exact matching OpenMP source RPM retained. OpenMP binary was matched byte-for-byte to the official AlmaLinux package. |
+| Source and image metadata scan | Gitleaks found the same six reviewed false positives: two upstream integrity hashes and four synthetic protocol-test tokens. PNG ancillary/provenance chunks across all 48 originals contained no matches for developer home paths, private keys or provider-token patterns. Pattern checks do not prove absence of all sensitive information. |
 
-Private development history was inspected read-only: reachable and reflog-referenced commits and unique blobs, plus tracked/untracked/ignored working files. The private audit and exact exclusion manifest are stored outside this source directory. Pattern scanning is conservative and cannot prove absence of every conceivable secret or identifying phrase; review the staged candidate before approval.
+The real-model test used an NVIDIA RTX 3080. This is evidence for a local smoke test, not a performance guarantee, sustained conversational-quality result or physical-safety assessment. Long sessions, semantic memory quality, Director initiative quality and physical hardware behavior require separate evaluation. No physical device was connected by release validation. Session/hardware protections and the read-only AI boundary are preserved.
 
-## Release-specific test adaptations
+Generated systemd service files are covered by isolated installer tests and passed systemd-analyze --user verify, including an installation path containing spaces. The real bundle test launched the same programs and environment directly on unused loopback ports; it did not replace or start the developer's installed systemd units. Full desktop login-session behavior across Linux distributions remains a portability limit. Windows, macOS, ARM, musl Linux and ROCm acceleration are outside this bundle's supported scope.
 
-Private Git checkpoints were replaced with standalone AGPL source fixtures for historical bug comparisons. No private history was imported. A checkout-name assertion now checks the actual installation location. Migration checks include only shipped source, excluding development notes. Upstream README/changelog assertions follow their preserved location under docs/upstream. Artwork-dependent checks are skipped with an explicit reason, rather than silently replaced with unlicensed assets. Runtime and character implementation were not changed.
-
-The first unrestricted Python run exposed export portability errors; those were corrected and the complete suite rerun. An initial combined Node run with isolation disabled across all upstream files caused shared-state interference and is not accepted as a suite result. Subsequent full-suite documentation failures were corrected by following the preserved upstream documents. Final results must be interpreted using the final run, not the earlier logs.
-
-## Remaining limits and local follow-up
-
-- Source/character rights, public identity and publication approval were resolved by the maintainer on 2026-10-29. This records the maintainer’s confirmation, not independent verification of authorship. Artwork and model-weight rights remain separate; neither is included.
-- Publication uses the maintainer’s existing GitHub account and its existing public associations; anonymity is not guaranteed.
-- Real Ollama model pull/create, real-model inference latency/quality, memory semantic quality, sustained Director initiative and physical hardware behavior were not tested. Existing local models were neither loaded for this task nor rebuilt. No physical-safety claim is made.
-- Browser UI rendering still depends on external CDNs; model tags and the unversioned Tailwind CDN are mutable. Python and optional Playwright package versions are recorded, but this is not an offline or fully content-addressed distribution.
-- Two portrait-source checks remain skipped because art is absent. The existing portrait fallback was exercised in the mocked browser acceptance.
-- A dependency warns about FastAPI/Starlette's use of httpx TestClient. Dependencies were not upgraded during release preparation.
-- Gitleaks 8.30.1 was downloaded from its official release and its archive SHA-256 verified. The source scan found six generic-api-key matches: two upstream source-integrity hashes and four synthetic tokens in upstream protocol tests. All six were reviewed as false positives; no real credential was found. Custom token/key/MAC/home-path patterns, known-private-identity matching, hostname checks, image-chunk inspection and file allowlist/hash review supplement the scanner. No scanner proves absence of every secret.
-- Publication reruns integrity and JavaScript checks and reviews the exact staged tree and initial commit metadata. Earlier Python installation/suite and mocked browser results above are retained preparation evidence; real-model/hardware validation remains unperformed.
-- The conservative release validator intentionally rejects any Git history or configured remote. Run it before the initial commit; after publication, separately review the approved remote, single-root history and manifest hashes rather than treating those expected Git warnings as a content failure.
-
-To repeat checks from a clean copy:
+## Repeat developer checks
 
 ```bash
 ./tools/setup-ai.sh
 npm ci
-npx playwright install chromium
 .venv/bin/python -m pip check
 .venv/bin/python -m pytest -q
 npm test
 node --test --test-isolation=none tests/fork/*.test.mjs
 python3 tools/fork_validate.py
 python3 tools/validate-release.py
-FORK_BROWSER_PORT=18770 FORK_OBSERVER_PORT=18768 \
-  FORK_BROWSER_REPORT=/tmp/edgeloop-simulation node tests/fork/browser.mjs
+CHARACTER_BROWSER_REPORT=/tmp/edgeloop-character-check node tests/fork/character-browser.mjs
 ```
 
-For an explicit real-model idle smoke on an already running local Ollama, use the command in INSTALL.md with a newly chosen output file. That check is synthetic and does not validate physical safety. Do not run launcher installation/start/stop commands on an existing active development setup merely to repeat release validation.
+Browser acceptance requires a separately installed Playwright Chromium (`npx playwright install chromium`) for development only. With a complete bundle installed into a disposable directory, explicitly opt into real inference:
+
+```bash
+EDGELOOP_BUNDLE_ROOT=/path/to/installed-bundle node tests/fork/bundle-browser.mjs
+```
+
+That test requires free loopback ports 11435, 8768 and 8770, rejects occupied ports, creates private temporary user data, starts only its own child processes and stops them afterward. It blocks physical-device requests and external browser requests. Reports/screenshots stay outside the public source. Complete build and packaging instructions are in RELEASING.md.

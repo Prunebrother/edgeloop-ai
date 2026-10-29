@@ -1,0 +1,5 @@
+# Preserve third-party license texts and minified libraries byte-for-byte.
+licenses/** -whitespace
+src/js/vendor/** -whitespace
+# reStructuredText section underlines are not merge-conflict separators.
+licenses/python/python-licenses.rst conflict-marker-size=32

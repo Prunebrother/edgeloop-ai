@@ -6,18 +6,18 @@
   },
   "sw.js": {
     "base_sha256": "56b2e11356124f2baa4b926e32251c938670dac9b79e8947d4b6e123d4af0abb",
-    "sha256": "ceeb271a1f62eab7d806a7ad954618da4e4ded386d4e3d4485fd1226253f362c",
-    "reason": "Public companion modules/manifest precache; F2.4 high-resolution originals use bounded renderer/browser HTTP cache; AI/auth exclusions preserved; F2.5 cache version invalidation only; F2.5.1 cache version only; F2.6 cache version only; F2.6.1 character menu module and cache invalidation; F2.7 event settings module and cache invalidation; F2.8 context tools precache and cache invalidation; F2.8.1 cache invalidation only; F2.8.2 context diagnostics cache invalidation only; free-form objective guidance cache invalidation only; F2.8.3 memory diagnostics cache invalidation; F2.8.4 public journal UI module precache and cache invalidation (journal records remain private observer data); F2.8.4.1 curator controls and memory diagnostics cache invalidation only; Nova character registration cache invalidation only; F2.8.5 Director controls cache invalidation only"
+    "sha256": "48b1ee13c9136aaad277162f9ee6645a2af72e7ea5d8fe779567464af1335ad4",
+    "reason": "Public companion modules/manifest precache; F2.4 high-resolution originals use bounded renderer/browser HTTP cache; AI/auth exclusions preserved; F2.5 cache version invalidation only; F2.5.1 cache version only; F2.6 cache version only; F2.6.1 character menu module and cache invalidation; F2.7 event settings module and cache invalidation; F2.8 context tools precache and cache invalidation; F2.8.1 cache invalidation only; F2.8.2 context diagnostics cache invalidation only; free-form objective guidance cache invalidation only; F2.8.3 memory diagnostics cache invalidation; F2.8.4 public journal UI module precache and cache invalidation (journal records remain private observer data); F2.8.4.1 curator controls and memory diagnostics cache invalidation only; Nova character registration cache invalidation only; F2.8.5 Director controls cache invalidation only; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   ".gitignore": {
     "base_sha256": "f5dace1690dab0464685a792bf7005b1e43b16c580cd5dfd8f552f362704c81a",
-    "sha256": "4724782b7e56eb63c0d5efe8a7b2664687cb4cf01ff307e7fb97ac14e277a34b",
-    "reason": "Exclude fork-owned Python environment/metadata and private AI data"
+    "sha256": "ca68d506ec5735e64fcc36d7cbb080c273ded410dd7c20f5d4a9a3e1c5e8778c",
+    "reason": "Exclude fork-owned Python environment/metadata and private AI data; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   "index.html": {
     "base_sha256": "7da05d6d914484f64aa897de686fa19eb636ddc9a79d873a75f23471eddf54b1",
-    "sha256": "40a5ad9788e5388a2fcc277ac0c2b3f74c0696c162eca74933a5e214000ffc82",
-    "reason": "F2.1 stylesheet link and accessible viewport zoom; original controls preserved"
+    "sha256": "953d5e7936e56d0fd3149eedf52117c276a77c3c9c3fe7139ae75129c301921c",
+    "reason": "F2.1 stylesheet link and accessible viewport zoom; original controls preserved; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   "CHANGELOG.md": {
     "base_sha256": "01ded0a9996f53dd216b3a8fccbe02af945028b9eeed20ddedbbbc5c581d3951",
@@ -26,13 +26,13 @@
   },
   "README.md": {
     "base_sha256": "c3a01b9fc070e0cc35521fa6b61672703a33c73dcc871c758c577fb7eb9444e5",
-    "sha256": "61c99b2f94dd4a0f7067fafc445991ff53ad3d82d5978b566a6319055ab51872",
-    "reason": "F2.10 public release documentation/dependency configuration; approved Prunebrother source-publication location and status"
+    "sha256": "a1399f803b5945d394dc8a687db0eb03145f8cd0eeddd1a7e34334c627d8a872",
+    "reason": "F2.10 public release documentation/dependency configuration; approved Prunebrother source-publication location and status; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   "package.json": {
     "base_sha256": "072273ec933492188804c5b3ebb3d9e071984beb731ca65e5903be0899280336",
     "sha256": "4599aea51c5e04cd4805062cbbf29361025aa8cd22d3fb85f49bffe2fec622e3",
-    "reason": "F2.10 remove deployment command; lock optional browser test dependency; npm start uses existing loopback allowlist server to avoid serving private runtime data"
+    "reason": "F2.10 remove deployment command; lock optional browser test dependency; npm start uses existing loopback allowlist server to avoid serving private runtime data; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   "src/js/version.test.js": {
     "base_sha256": "63fcf3abde686c137a3c4cf7aac9cc16638ec3316b45a2c6fb32de721c96f198",

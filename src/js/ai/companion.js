@@ -82,6 +82,7 @@ export function mountCompanion({refreshObservation=()=>{}}={}) {
             if(m.ollama_url)el('endpoint').textContent='Ollama: '+m.ollama_url;el('model').value=names.includes(selected)?selected:names.includes(m.selected)?m.selected:(names[0]||'');
             el('ollama').textContent=names.length?'Ollama connected · '+names.length+' models':'Ollama connected · no installed models';
             controls();
+            if(desktopPairing&&!selected&&!changing&&names.includes(m.selected))queueMicrotask(()=>selectModel(m.selected));
         } else if(m.type==='model_selected'){
             const sameModel=selected===m.model;changing=false;finish();selected=m.model;thinking=typeof m.thinking==='boolean'?m.thinking:null;supportsThinking=m.supports_thinking===true;canDisableThinking=m.can_disable_thinking!==false;el('selected').textContent='Active: '+m.model;el('name').textContent=resolveArtwork(m.model).name==='Your companion'?m.model:resolveArtwork(m.model).name;el('name').title=m.model;el('model').value=m.model;
             queueMicrotask(()=>menus.refresh());

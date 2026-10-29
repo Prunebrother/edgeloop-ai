@@ -30,8 +30,13 @@ core
 *.bak
 *.swp
 .DS_Store
-# Unlicensed optional assets / weights
-Character_Art/
+!licenses/**
+# Bundled runtime/weights are published as release assets, not Git blobs
+/runtime/
+/models/
+/wheelhouse/
+/BUNDLE.json
+/dist/
 *.gguf
 *.safetensors
 *.pt

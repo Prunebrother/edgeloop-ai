@@ -1,0 +1,54 @@
+{
+  "version": "v0.3.0",
+  "platform": "linux-x86_64",
+  "ollama": {
+    "version": "0.40.13",
+    "url": "https://github.com/ollama/ollama/releases/download/v0.40.13/ollama-linux-amd64.tar.zst",
+    "sha256": "c9490e0f520be21271d969e6703f012268b1d39f8b70dd58854e5bfef7a75bb6"
+  },
+  "python": {
+    "version": "3.12.16+20261026",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.12.16%2B20261026-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "sha256": "ce4f6d0a6cfdb3bed6e44c2f9affd85943c76a42e25ad3a259002f31d6fb8a20"
+  },
+  "build_requirements": [
+    "setuptools==84.2.1",
+    "wheel==0.48.0"
+  ],
+  "models": [
+    {
+      "name": "qwen3:8b",
+      "manifest": "registry.ollama.ai/library/qwen3/8b",
+      "weights_sha256": "a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/Qwen/Qwen3-8B"
+    },
+    {
+      "name": "huihui_ai/qwen3.5-abliterated:9b",
+      "manifest": "registry.ollama.ai/huihui_ai/qwen3.5-abliterated/9b",
+      "weights_sha256": "afb54ad43a39f947407f5cabc59856348d70e072baa5c62d436332157c151bcd",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/huihui-ai/Huihui-Qwen3.5-9B-abliterated"
+    }
+  ],
+  "characters": [
+    "evelyn",
+    "daisy",
+    "evelyn-lite",
+    "daisy-lite",
+    "evelyn-lite-candidate",
+    "evelyn-narrative-v1",
+    "daisy-narrative-v1",
+    "celeste-narrative-v1",
+    "celeste-narrative-v2",
+    "nova-narrative-v1"
+  ],
+  "default_model": "nova-narrative-v1:latest",
+  "third_party_sources": [
+    {
+      "name": "gcc-8.5.0-28.el8_10.alma.1.src.rpm",
+      "url": "https://vault.almalinux.org/8.10/BaseOS/Source/Packages/gcc-8.5.0-28.el8_10.alma.1.src.rpm",
+      "sha256": "c94dbbd2cd6d5d01a5a6822ea18f8ce34942c25a80e17b4682d547d5e652dbd0"
+    }
+  ]
+}

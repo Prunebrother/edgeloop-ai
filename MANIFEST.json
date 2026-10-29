@@ -1,9 +1,14 @@
 {
-  "scope": "Public source snapshot; excludes this self-describing manifest and separate public-release Git administrative files. No private development Git metadata is included.",
+  "scope": "Public application source and 48 authorized original portraits. Complete runtime and model weights are separate GitHub Release assets described by BUNDLE.json.",
   "included": {
     ".env.example": {
       "sha256": "270ce067022108c89a30ac375b9c5d37a68d6295876a406f06eba1e25ae9a8c1",
       "bytes": 362,
+      "executable": false
+    },
+    ".gitattributes": {
+      "sha256": "c7dcc2b7c381b6175d7b80a7153b57172ba5347139a42baac382d38608c97112",
+      "bytes": 261,
       "executable": false
     },
     ".github/ISSUE_TEMPLATE/bug.md": {
@@ -47,8 +52,8 @@
       "executable": false
     },
     ".gitignore": {
-      "sha256": "4724782b7e56eb63c0d5efe8a7b2664687cb4cf01ff307e7fb97ac14e277a34b",
-      "bytes": 535,
+      "sha256": "ca68d506ec5735e64fcc36d7cbb080c273ded410dd7c20f5d4a9a3e1c5e8778c",
+      "bytes": 619,
       "executable": false
     },
     "CHANGELOG.md": {
@@ -59,6 +64,246 @@
     "CONTRIBUTING.md": {
       "sha256": "deb711370cd8600c276cd262f38ecf2f691761ff0002aad1be826b6fa73ab416",
       "bytes": 1940,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_comforting.png": {
+      "sha256": "a071b748bad3d110c709b8b568a57bdf15d78e0b260e03ae85561ba35ebcb0b3",
+      "bytes": 2020012,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_concerned.png": {
+      "sha256": "bf4efc99a5395fc3dde326b346f04e42efde444d6adad6522623117282e0f438",
+      "bytes": 2042691,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_dissapointed.png": {
+      "sha256": "62e86b588da0f6cd88392ef7aad8062b59615e3c6ce97468a6e8893679d6376b",
+      "bytes": 1998474,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_excited.png": {
+      "sha256": "bc14461a25042e7a02b0cb4ecf7c34c0d85a49a7745bf03fcd1f04d5d1ebf350",
+      "bytes": 2044062,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_flirty.png": {
+      "sha256": "8a57a48b6dd773f056c058272e9d2560e8b6273a808b5720f21d446362686220",
+      "bytes": 2028612,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_focused.png": {
+      "sha256": "96a71d77e7fbb3454b3a9c31ca043e5be42ee219846386cfb64a830433b407ca",
+      "bytes": 2042832,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_happy.png": {
+      "sha256": "485811b40c1c08c6864d17202b2d34ed8949ae07a4225b4b14c7e6d6fe9be565",
+      "bytes": 2034628,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_mischievous.png": {
+      "sha256": "392d32ec7ddd620857e9b9a4c0785aafa71d5b15a8708ce9fc7808db8daf4b92",
+      "bytes": 2042949,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_neutral.png": {
+      "sha256": "63c74b4c83a9ad4c01cb4affc372afdcfccad02adc505d9ccae8812916a6d0ca",
+      "bytes": 2078571,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_playful.png": {
+      "sha256": "f3d3660083a707b003923d70c156b656eb39d4590a4c8d03ca34b96dc6028eee",
+      "bytes": 2039453,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_proud.png": {
+      "sha256": "3f60caa06b993eddd99a56aea4b57655799ed032eb1a3ab7ae814148bda5de8c",
+      "bytes": 2035412,
+      "executable": false
+    },
+    "Character_Art/Celeste/expressions/celeste_surprised.png": {
+      "sha256": "34862a5fd2444375074f89bc1682da32b76012b9de22786e5e5ec4142299fd58",
+      "bytes": 2025233,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_comforting.png": {
+      "sha256": "c3ba7ff8ccd2f44bbadff070a5677b39bf72b5254075aef041172a9e21d8c55e",
+      "bytes": 2860284,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_concerned.png": {
+      "sha256": "99881ff6d35e94722bf26677ac41f30eb4d730ffb9357ec1c1532863b8915ce4",
+      "bytes": 2546354,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_disappointed.png": {
+      "sha256": "1d8abe2fa45a1ad27689a3c8faf447b9b7219290eac5793110763108f1a674dc",
+      "bytes": 2886198,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_excited.png": {
+      "sha256": "9a386f5881617ed6e0a73b399899fb0d4447bb5d24f06a9d7f9f726b2a97949e",
+      "bytes": 2683366,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_flirty.png": {
+      "sha256": "a658a065abf8c4c9707af79d141ef5316a8de9458c0809e4d22b088add29d0d2",
+      "bytes": 2980665,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_focused.png": {
+      "sha256": "f511c519b560b0f2c1474d02c4fd28ab8930f572681f4197eba0ec7ed0a403ce",
+      "bytes": 2717876,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_happy.png": {
+      "sha256": "0af39f949a4e913b517ebcc7d6c7f892e3c661e0e5a14255e5dee63986ab1e7b",
+      "bytes": 2859374,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_mischievous.png": {
+      "sha256": "64e9c49987bec8cfecb67c65e1ec07dd2629b9c3868710652e4bf7f2fc9b79b0",
+      "bytes": 2639757,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_neutral.png": {
+      "sha256": "0ff09a5e265623af1f56a0002f29f79c4d5835e754d9747fbd177701ddfafa2a",
+      "bytes": 3042089,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_playful.png": {
+      "sha256": "0317b3618f899c9c5d87c7f78e52b80c70b554da97e1af23f21b5b71e90c6aec",
+      "bytes": 2770062,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_proud.png": {
+      "sha256": "c7adfdd374f3a565091326b21efda8ea70921490ec84594344538b36c97ce8e2",
+      "bytes": 2705836,
+      "executable": false
+    },
+    "Character_Art/Daisy/expressions/daisy_surprised.png": {
+      "sha256": "7ac80b5f02093abd54e6cc9f882f2584309ff2e63521177d12c89fca2fc92e5d",
+      "bytes": 2827265,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_comforting.png": {
+      "sha256": "28f9997eb8003ab4ad63ad9ad618acdb2f7b4fec4e1699ea6f4f7c7df8b2dd1a",
+      "bytes": 2032570,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_concerned.png": {
+      "sha256": "8690cf8e0e8b4b81c417a5707117eeca53ab3bdf8c04502992c6246a3c97a71e",
+      "bytes": 2047315,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_dissapointed.png": {
+      "sha256": "7f72c5d639bfa1ef2105fd8f4b9f5e76cd2134ea89f2f8b315edb28017a49113",
+      "bytes": 1918600,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_excited.png": {
+      "sha256": "5f1760040ea61849571698af7135ab34066ef68dcf937f96c7f81dc8723bb46f",
+      "bytes": 1933792,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_flirty.png": {
+      "sha256": "65849ccff808943d74a449c9f499698d49311d43e4ea38b1a4052dcd2b91d6b9",
+      "bytes": 1932543,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_focused.png": {
+      "sha256": "a5d8f5bf7e07f8d713c5521cca9528755f4460dfbf3cd757a38b474ec8d4d790",
+      "bytes": 1934713,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_happy.png": {
+      "sha256": "6ddab6c276efdd39230280990b8e3e3b5edf9744be7184ae1c2ceed34a224fc7",
+      "bytes": 2059872,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_mischievous.png": {
+      "sha256": "f838b4dcc81cfcef621275e4929781fae9f45f462c25499246a896e883ed8810",
+      "bytes": 1941318,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_neutral.png": {
+      "sha256": "cd8c0c693a903a2fb4cd7145271a0e228551c1404824e76b8931f546aeddf29a",
+      "bytes": 2087828,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_playful.png": {
+      "sha256": "99ab408a6548fe3466a50f174fc9de14292d59091ed47fe2a30afdbaf6de818a",
+      "bytes": 1977750,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_proud.png": {
+      "sha256": "ac615176ba4ea88e0a5af32ef9de8641227565ad9186fd0f1fd9efd77331fe3e",
+      "bytes": 2060603,
+      "executable": false
+    },
+    "Character_Art/Evelyn/Expressions/evelyn_surprised.png": {
+      "sha256": "cb4608f5e310cae41a11604fde44087ca55d1370199698b9f952667a8cd37961",
+      "bytes": 1923048,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_comforting.png": {
+      "sha256": "e08b278b7112d130cb5258a8eb855e79eb68ab55218fa053065683bad9462b40",
+      "bytes": 2507564,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_concerned.png": {
+      "sha256": "cb41250ad7f59c59570ed07ba54a6dd8f748b9d5848efa61ae44d47104f0076c",
+      "bytes": 2394468,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_dissapointed.png": {
+      "sha256": "d00727d14ec703f530afdf744c13bead024eb79d488a63f26a196b64c608ba01",
+      "bytes": 2490854,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_excited.png": {
+      "sha256": "40a73dbddc332f05b75ca80ac337cc91e93ca99967d889062e310c0090026416",
+      "bytes": 2798290,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_flirty.png": {
+      "sha256": "2b842ab4fd584d4eeda646c5a067e433cd3836c94fd09aea6dd2d0a711641cc6",
+      "bytes": 2497950,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_focused.png": {
+      "sha256": "ea43a1cb600a27eec2abac2de76970f309b29fb59ca89a23a95ef9acacde9106",
+      "bytes": 2485824,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_happy.png": {
+      "sha256": "459246e7961327cb62a87c7975389f6020ac27dd6fb2b338fe0e7283944615b3",
+      "bytes": 2511562,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_mischievous.png": {
+      "sha256": "22782bac5ee229203fd286f37b2a3dcae5768e9632487aad4b9bc9dc86972aa5",
+      "bytes": 2480110,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_neutral.png": {
+      "sha256": "aaa04aa1d0295ad6b9703eaf08c03fe2b7d5cd7295505892f9c1b1a0bc24b584",
+      "bytes": 2652473,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_playful.png": {
+      "sha256": "e6ee24ca92c2c7db95fab9d2a90227eac4350c5b08fec6d7ae5742b6f219e38d",
+      "bytes": 2595348,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_proud.png": {
+      "sha256": "fb990c923bfd2dbb8344d926e359f479f95c3319fdea3128da9264f23d4dae67",
+      "bytes": 2483428,
+      "executable": false
+    },
+    "Character_Art/Nova/expressions/nova_surprised.png": {
+      "sha256": "90064271d65da5488a8717acc07247c7eb48f97e5ffa26f3f063dcfe2e305e56",
+      "bytes": 2729653,
       "executable": false
     },
     "DEPENDENCY_LICENSES.md": {
@@ -72,13 +317,13 @@
       "executable": false
     },
     "INSTALL.md": {
-      "sha256": "4008254c0eda50eadc90e35ba2172713a3d0ecaee9600a644692a02e54cf74bf",
-      "bytes": 4857,
+      "sha256": "7a5ebe181b6e77686d05e68a6408abdb6316857dd54f9f4ae0437f5e5ac91e99",
+      "bytes": 5548,
       "executable": false
     },
     "KNOWN_ISSUES.md": {
-      "sha256": "d189c6595f5204c0f8c82c7520dedcd4d4cb652952f681d69110d620126b0036",
-      "bytes": 2050,
+      "sha256": "5d022e046b09915e528f9ce154e7e76a6b0a306c238372750add666ae27a0b02",
+      "bytes": 2176,
       "executable": false
     },
     "LICENSE": {
@@ -87,28 +332,33 @@
       "executable": false
     },
     "MODELS_AND_ASSETS.md": {
-      "sha256": "c78e6e594987e71fd00c2f2f886f1e41e2ce671f2b505d7985906bdd2cb66756",
-      "bytes": 3040,
+      "sha256": "af8dc01367f4d53b4b9709d4e7652597b375bafd241d3d247d6db7a300fdd3c2",
+      "bytes": 3354,
       "executable": false
     },
     "NOTICE_FORK.md": {
-      "sha256": "53eca01259295e6ed18f4c0fe802eb9120823ad86977570ce20285e1b02d7691",
-      "bytes": 1720,
+      "sha256": "1c3b93a08299062a446ec0bb0f46b7fc4d253727ff45f59f6fc94592066fe14f",
+      "bytes": 1986,
       "executable": false
     },
     "PRIVACY.md": {
-      "sha256": "20ea46bc88dda668941e94270cc7a684e8255d9a72575bdc999329ee6f9cca66",
-      "bytes": 2978,
+      "sha256": "40f588d42b485cd6cab3d461d812841d7a064812c458850cc6a20f339d3f0e1f",
+      "bytes": 3255,
       "executable": false
     },
     "PUBLICATION_CHECKLIST.md": {
-      "sha256": "7d828f35da099d72f67e5401a165455e1422785a2895f093d8db05b0d20dadab",
-      "bytes": 3265,
+      "sha256": "bd9a4a8b791e61599c3215e83d64e4ccfc9687bfae2ebfd35fec156983a58d31",
+      "bytes": 1866,
       "executable": false
     },
     "README.md": {
-      "sha256": "61c99b2f94dd4a0f7067fafc445991ff53ad3d82d5978b566a6319055ab51872",
-      "bytes": 2798,
+      "sha256": "a1399f803b5945d394dc8a687db0eb03145f8cd0eeddd1a7e34334c627d8a872",
+      "bytes": 3512,
+      "executable": false
+    },
+    "RELEASING.md": {
+      "sha256": "f0a714f92da346a652fb9b48d5fc334c5ac0784c3ea17c517b874e128d76b6bd",
+      "bytes": 2288,
       "executable": false
     },
     "SAFETY.md": {
@@ -117,13 +367,13 @@
       "executable": false
     },
     "THIRD_PARTY_NOTICES.md": {
-      "sha256": "5d6ebb3f19d3b667ec948e3ebb69a72af622a15bbcce663469ab04015d157313",
-      "bytes": 3083,
+      "sha256": "54569dec7ad09edbe5545152f86efda5f24d5e3b32bc6baba996320827575646",
+      "bytes": 3558,
       "executable": false
     },
     "VALIDATION.md": {
-      "sha256": "97e5e105d742e129ed5a5758099d1c4dce7f130c4154bb7d53e764abb1e75c75",
-      "bytes": 7542,
+      "sha256": "591fb24a6d2942695d3d191a94147b44532245b41a390e176bad6cb0e95b72cd",
+      "bytes": 5167,
       "executable": false
     },
     "ai_observer/__init__.py": {
@@ -166,11 +416,6 @@
       "bytes": 2104,
       "executable": false
     },
-    "characters/build/generated/daisy/Modelfile": {
-      "sha256": "8edc47654479ecd5d3577a7c5b5d392b960d285d1bf20a75d41b962f4ca605b6",
-      "bytes": 15843,
-      "executable": false
-    },
     "characters/build/generated/daisy-qwen35/Modelfile": {
       "sha256": "f6d57a08db8903ffe52c16fd05235faba411e96ed10f7caccc8231b6632b3efc",
       "bytes": 8034,
@@ -181,9 +426,9 @@
       "bytes": 8011,
       "executable": false
     },
-    "characters/build/generated/evelyn/Modelfile": {
-      "sha256": "e6609346774d1909733a04dfcb9eb25b7457d0d0009edfd33f5554d8c2c56c39",
-      "bytes": 15178,
+    "characters/build/generated/daisy/Modelfile": {
+      "sha256": "8edc47654479ecd5d3577a7c5b5d392b960d285d1bf20a75d41b962f4ca605b6",
+      "bytes": 15843,
       "executable": false
     },
     "characters/build/generated/evelyn-qwen35/Modelfile": {
@@ -209,6 +454,11 @@
     "characters/build/generated/evelyn-v12r1/Modelfile": {
       "sha256": "7ef30ddfcf27bf697ed5e5877f6036000dc6f8896a03baeedb2988c92c167ef4",
       "bytes": 8222,
+      "executable": false
+    },
+    "characters/build/generated/evelyn/Modelfile": {
+      "sha256": "e6609346774d1909733a04dfcb9eb25b7457d0d0009edfd33f5554d8c2c56c39",
+      "bytes": 15178,
       "executable": false
     },
     "characters/lore/core_canon.md": {
@@ -241,11 +491,6 @@
       "bytes": 7002,
       "executable": false
     },
-    "characters/models/daisy/Modelfile": {
-      "sha256": "3d25915a1d7c58c8687ffd30a895dcf4c4f3d4525b74613fe430856208da34b2",
-      "bytes": 6063,
-      "executable": false
-    },
     "characters/models/daisy-lite/Modelfile": {
       "sha256": "bd979497e89b9a608a57db760d6a43f018f71633d51ac6e3cdd86bc63212346e",
       "bytes": 1861,
@@ -256,14 +501,9 @@
       "bytes": 3753,
       "executable": false
     },
-    "characters/models/evelyn/Modelfile": {
-      "sha256": "5067405d32a7409ef1427b23287a4d044b2dd0e3d6626a23220cdc1e252c0dac",
-      "bytes": 5398,
-      "executable": false
-    },
-    "characters/models/evelyn-lite/Modelfile": {
-      "sha256": "80bc353b3a27a49ad19acbb62e4fd6386e48951d05fa4827cd4529b95f459c64",
-      "bytes": 2104,
+    "characters/models/daisy/Modelfile": {
+      "sha256": "3d25915a1d7c58c8687ffd30a895dcf4c4f3d4525b74613fe430856208da34b2",
+      "bytes": 6063,
       "executable": false
     },
     "characters/models/evelyn-lite-candidate/Modelfile": {
@@ -271,9 +511,19 @@
       "bytes": 2810,
       "executable": false
     },
+    "characters/models/evelyn-lite/Modelfile": {
+      "sha256": "80bc353b3a27a49ad19acbb62e4fd6386e48951d05fa4827cd4529b95f459c64",
+      "bytes": 2104,
+      "executable": false
+    },
     "characters/models/evelyn-narrative-v1/Modelfile": {
       "sha256": "6a494892f7b1447bb2e25de81c2e83f53ee2e4cec91eeac79e8c131145417cc2",
       "bytes": 3642,
+      "executable": false
+    },
+    "characters/models/evelyn/Modelfile": {
+      "sha256": "5067405d32a7409ef1427b23287a4d044b2dd0e3d6626a23220cdc1e252c0dac",
+      "bytes": 5398,
       "executable": false
     },
     "characters/models/mira/Modelfile": {
@@ -387,8 +637,8 @@
       "executable": false
     },
     "docs/fork/f2-changes.json": {
-      "sha256": "8e61f063775f0a9caecb1f49e10ec9fd36d02389c500a90432f4ea217d70beaf",
-      "bytes": 4175,
+      "sha256": "a6fb702746f5fbea6897ae68673b6e6c9f291df589c516a4a39ed575c036907d",
+      "bytes": 4560,
       "executable": false
     },
     "docs/fork/f22/migration-sources.json": {
@@ -447,8 +697,183 @@
       "executable": false
     },
     "index.html": {
-      "sha256": "40a5ad9788e5388a2fcc277ac0c2b3f74c0696c162eca74933a5e214000ffc82",
-      "bytes": 112026,
+      "sha256": "953d5e7936e56d0fd3149eedf52117c276a77c3c9c3fe7139ae75129c301921c",
+      "bytes": 112009,
+      "executable": false
+    },
+    "install.sh": {
+      "sha256": "0bc4c2dea37864dda1678b52c5ab1f684c6e8514b56372d598728f1e7c065279",
+      "bytes": 2695,
+      "executable": true
+    },
+    "licenses/ARTWORK.md": {
+      "sha256": "fa2891702199f89858f665659611742bd12056a2b9ebb27c4898553d387b220f",
+      "bytes": 453,
+      "executable": false
+    },
+    "licenses/GCC-RUNTIME-LIBRARY-EXCEPTION.txt": {
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+      "bytes": 3324,
+      "executable": false
+    },
+    "licenses/GPL-3.0.txt": {
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "bytes": 35147,
+      "executable": false
+    },
+    "licenses/NVIDIA-CUDA-12.8-EULA.html": {
+      "sha256": "6722d4c310a2ec9ad869ede3371a648fe2cfc2baaf8e1ece2c35e1dccc05752c",
+      "bytes": 103460,
+      "executable": false
+    },
+    "licenses/NVIDIA-CUDA-13.0-EULA.html": {
+      "sha256": "f8babe932f92aa7a25dd560b22d13c0d30c48b280b918eccc62ddb836142cabe",
+      "bytes": 104490,
+      "executable": false
+    },
+    "licenses/OLLAMA-LICENSE": {
+      "sha256": "5934ed2ce0d15154bcdb9c85203210abac0da4314af34081e36df4599f90b226",
+      "bytes": 1058,
+      "executable": false
+    },
+    "licenses/OPENMP.md": {
+      "sha256": "40f6a148013f187d9ba1442a765465b10bf50e16e628e3d394d8c266b02877d4",
+      "bytes": 829,
+      "executable": false
+    },
+    "licenses/PEERJS-LICENSE": {
+      "sha256": "9407807dba7f47a79bfb3ac55759d63d77c9371ebd0616d5a093e97d3e810397",
+      "bytes": 1108,
+      "executable": false
+    },
+    "licenses/TAILWIND-LICENSE": {
+      "sha256": "60e0b68c0f35c078eef3a5d29419d0b03ff84ec1df9c3f9d6e39a519a5ae7985",
+      "bytes": 1071,
+      "executable": false
+    },
+    "licenses/models/huihui_ai_qwen3.5-abliterated_9b.txt": {
+      "sha256": "7339fa418c9ad3e8e12e74ad0fd26a9cc4be8703f9c110728a992b193be85cb2",
+      "bytes": 11355,
+      "executable": false
+    },
+    "licenses/models/qwen3_8b.txt": {
+      "sha256": "d18a5cc71b84bc4af394a31116bd3932b42241de70c77d2b76d69a314ec8aa12",
+      "bytes": 11338,
+      "executable": false
+    },
+    "licenses/python/LICENSE": {
+      "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5",
+      "bytes": 16725,
+      "executable": false
+    },
+    "licenses/python/LICENSE.bdb.txt": {
+      "sha256": "3bdff06e69991c94664f2ef5c5f8096f60b7dbec071756ea6cc26b445e06ec5b",
+      "bytes": 7293,
+      "executable": false
+    },
+    "licenses/python/LICENSE.bzip2.txt": {
+      "sha256": "1f38bbc7caacafd65169276d759c0d88c991b753b643ce35d0e45ea1971dd441",
+      "bytes": 1743,
+      "executable": false
+    },
+    "licenses/python/LICENSE.cpython.txt": {
+      "sha256": "86e61415828a8b5b06ec8d024e6f086ce155a8b85fd0c419c0ba4dc004e74fdd",
+      "bytes": 36164,
+      "executable": false
+    },
+    "licenses/python/LICENSE.expat.txt": {
+      "sha256": "122f2c27000472a201d337b9b31f7eb2b52d091b02857061a8880371612d9534",
+      "bytes": 1144,
+      "executable": false
+    },
+    "licenses/python/LICENSE.libX11.txt": {
+      "sha256": "2daec087a88e7c9b8082557cdeebad5bbb8155a4137472f0b22e269cd99d0c1e",
+      "bytes": 47018,
+      "executable": false
+    },
+    "licenses/python/LICENSE.libXau.txt": {
+      "sha256": "56abe29bb1d9806a9e04fa9f80fed2c0f18027594df3f098148d814aef6bddfa",
+      "bytes": 1148,
+      "executable": false
+    },
+    "licenses/python/LICENSE.libedit.txt": {
+      "sha256": "29cea33c32bbc9785142386377915612a2fa786482c46843383384aded2e09b1",
+      "bytes": 1614,
+      "executable": false
+    },
+    "licenses/python/LICENSE.libffi.txt": {
+      "sha256": "deaf3a42effb551a5b140fa9afefed183a27f1341c6d1bf430d106a5e6931fc0",
+      "bytes": 1132,
+      "executable": false
+    },
+    "licenses/python/LICENSE.liblzma.txt": {
+      "sha256": "9a4062de0a2c388a98cf35a35d348b62fa97c838a71c3c28ee1a2d7d0a565b02",
+      "bytes": 660,
+      "executable": false
+    },
+    "licenses/python/LICENSE.libuuid.txt": {
+      "sha256": "122ee1f7e258f2c3c0e538a75c037684f420454bf3850ddc74ce750bbf5fe86b",
+      "bytes": 1432,
+      "executable": false
+    },
+    "licenses/python/LICENSE.libxcb.txt": {
+      "sha256": "c5ffbfeaa501071ceeb97b7de2c0d703fdaa35de01c0fb6cbac1c28453a3e9fd",
+      "bytes": 1337,
+      "executable": false
+    },
+    "licenses/python/LICENSE.mpdecimal.txt": {
+      "sha256": "669512af7219f58be03a398766d7c9da11a3b3df9d3f05cb74c5ceca25c8da3b",
+      "bytes": 1284,
+      "executable": false
+    },
+    "licenses/python/LICENSE.ncurses.txt": {
+      "sha256": "87a4c4442337b8968ef956031c406b74f9cb7149b7ba87311bdaba534816201c",
+      "bytes": 1447,
+      "executable": false
+    },
+    "licenses/python/LICENSE.openssl-3.txt": {
+      "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+      "bytes": 10175,
+      "executable": false
+    },
+    "licenses/python/LICENSE.sqlite.txt": {
+      "sha256": "38bef3d28b24f145ea293bd3b6eb4b20396982abc8303128fb493986ea5bc719",
+      "bytes": 1481,
+      "executable": false
+    },
+    "licenses/python/LICENSE.tcl.txt": {
+      "sha256": "c0a69a2bfd757361ec7e6143973b103c90409316b49e9c88db26ad6388e79f16",
+      "bytes": 2255,
+      "executable": false
+    },
+    "licenses/python/LICENSE.tix.txt": {
+      "sha256": "3ac5cdd0bef6c43ce34c6a7ced452081d9e5a0bf94082b9f9147d23ec9e214f5",
+      "bytes": 2826,
+      "executable": false
+    },
+    "licenses/python/LICENSE.zlib-ng.txt": {
+      "sha256": "6c9f0d975b41afaa34d22f55bb8986ce69e5cb7ad327cb2b28820cd425edf5ee",
+      "bytes": 867,
+      "executable": false
+    },
+    "licenses/python/LICENSE.zlib.txt": {
+      "sha256": "818922b2620f12801a12bf78e399644a30990e66824abd8ca8ec24d451d6f92c",
+      "bytes": 995,
+      "executable": false
+    },
+    "licenses/python/LICENSE.zstd.txt": {
+      "sha256": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8",
+      "bytes": 1549,
+      "executable": false
+    },
+    "licenses/python/SOURCE.txt": {
+      "sha256": "fbe94f4acbd5aaa5dd0da103db22019b0e32992eba33752ef19e9dd7822f35ee",
+      "bytes": 232,
+      "executable": false
+    },
+    "licenses/python/python-licenses.rst": {
+      "sha256": "e43fb936c6655d7996dba480d7ebdea492d6040ec388eb8ed9d1000f72de8cab",
+      "bytes": 105875,
       "executable": false
     },
     "manifest.json": {
@@ -467,7 +892,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "b3f64a5ab71e9753e4bca0239f6a0cdcc22d4d9b241f51b7d43ac2ada07e5f9b",
+      "sha256": "a2b122ad1b448d5c06f09710ecf84313d7dd32d724196b5f5f0572a81ac7336b",
       "bytes": 561,
       "executable": false
     },
@@ -476,14 +901,19 @@
       "bytes": 61,
       "executable": false
     },
+    "release-inputs.json": {
+      "sha256": "9b3b32d231a7cdb8ffa05298a1d1d18c48a1f357833b16dc3a62e6133fa041de",
+      "bytes": 1884,
+      "executable": false
+    },
     "requirements.lock": {
       "sha256": "4a9ccce4ce2c8f658558e322bc199603eaf0d903d35760ef2a509a2dd27ee500",
       "bytes": 444,
       "executable": false
     },
     "src/assets/characters/manifest.json": {
-      "sha256": "164098c6b47b201a9da6325344bbfe50c763beedc9c794ac52005b416854b7dc",
-      "bytes": 5634,
+      "sha256": "78ff252f417595e2a31fd9758c283df92487284b6e3d58bb958b43683cba3236",
+      "bytes": 5656,
       "executable": false
     },
     "src/css/companion.css": {
@@ -507,8 +937,8 @@
       "executable": false
     },
     "src/js/ai/companion.js": {
-      "sha256": "ed291697519829f5571dfe2e5cfd5820ed2c4bed5d313db24a70529a6946a247",
-      "bytes": 20044,
+      "sha256": "b5de214e9616864606ee198647aa7decb253a945e2b674304de8f446f3d4cba4",
+      "bytes": 20169,
       "executable": false
     },
     "src/js/ai/connection.js": {
@@ -826,6 +1256,16 @@
       "bytes": 5287,
       "executable": false
     },
+    "src/js/vendor/peerjs.min.js": {
+      "sha256": "ad5d8870d1e389914f9cba8d35be313c4327c69ee0a221e482e9bf7621136fe5",
+      "bytes": 92865,
+      "executable": false
+    },
+    "src/js/vendor/tailwind.js": {
+      "sha256": "176e894661aa9cdc9a5cba6c720044cbbf7b8bd80d1c9a142a7c24b1b6c50d15",
+      "bytes": 407279,
+      "executable": false
+    },
     "src/js/version.js": {
       "sha256": "f07e6575360f3f8b5d4fbce3e4fee2d00fafc30f12ee3d694b18e951002dadfe",
       "bytes": 1446,
@@ -887,8 +1327,8 @@
       "executable": false
     },
     "sw.js": {
-      "sha256": "ceeb271a1f62eab7d806a7ad954618da4e4ded386d4e3d4485fd1226253f362c",
-      "bytes": 4681,
+      "sha256": "48b1ee13c9136aaad277162f9ee6645a2af72e7ea5d8fe779567464af1335ad4",
+      "bytes": 4748,
       "executable": false
     },
     "tests/__init__.py": {
@@ -1032,8 +1472,8 @@
       "executable": false
     },
     "tests/ai/test_nova_integration.py": {
-      "sha256": "07d31639334f3e14f3f119db32ec5aa3590e49032196add6519c1f8703a70bea",
-      "bytes": 5250,
+      "sha256": "4c90759698f8624f32094f8cb4a9cfbb2a4bd320d8c29edda7b7291f0acc062e",
+      "bytes": 5125,
       "executable": false
     },
     "tests/ai/test_providers_profiles.py": {
@@ -1144,6 +1584,11 @@
     "tests/fork/browser_service.py": {
       "sha256": "325f56f4ca2f5bbbf71154a4791195b1682b9a502105bde0dac171cfa6811ad6",
       "bytes": 4942,
+      "executable": false
+    },
+    "tests/fork/bundle-browser.mjs": {
+      "sha256": "3dbeb2a51b6a65712a1f8bc050fe5582f971de9e2525211550fdb4eeaec002cd",
+      "bytes": 6921,
       "executable": false
     },
     "tests/fork/character-browser.mjs": {
@@ -1337,7 +1782,7 @@
       "executable": false
     },
     "tests/fork/presentation.test.mjs": {
-      "sha256": "f87d77af4f91694383af93703eaeb8a770f1fa770507cbef372676bb32bc1316",
+      "sha256": "4859938580ea2057ca36fd626b9653044db9318918aa489863e772998d5a42c6",
       "bytes": 12532,
       "executable": false
     },
@@ -1362,8 +1807,8 @@
       "executable": false
     },
     "tests/fork/test_character_assets.py": {
-      "sha256": "5752b6c80de6f4854bdc666de5ac5ff301bc33f54eff72b1fc36c8d4f665f1f4",
-      "bytes": 2954,
+      "sha256": "ee089997f674a3082bbbf3d58a7971645a22de39522be9e31b6a5e0dc01fc1c2",
+      "bytes": 2817,
       "executable": false
     },
     "tests/fork/test_desktop_launcher.py": {
@@ -1391,6 +1836,21 @@
       "bytes": 25521,
       "executable": false
     },
+    "tests/fork/test_release_bundle.py": {
+      "sha256": "12c45c0d038f5c3241ad44e1587d4e8e649afaf003cb0103eedd7440cc7ca2f8",
+      "bytes": 3652,
+      "executable": false
+    },
+    "tools/build-release.py": {
+      "sha256": "acd86022f3498e6e731f941f164be04c9df0158d7e6761e04c2a9f2759c00265",
+      "bytes": 8596,
+      "executable": true
+    },
+    "tools/bundle.py": {
+      "sha256": "7bb2a6e5a048dd6ac07584379d36bb209f308a029e2fde30f3203a21438746ab",
+      "bytes": 2529,
+      "executable": false
+    },
     "tools/characters/build_character.py": {
       "sha256": "cbbaaa42f6a1a0a89a5dfdf1e90387bd8b58a7554600085723220c7525c044e7",
       "bytes": 2294,
@@ -1416,20 +1876,35 @@
       "bytes": 3017,
       "executable": false
     },
+    "tools/install-bundle.sh": {
+      "sha256": "0901a75a0d2709ce20fb15e2d53101c163384bb3bcb54f80e97d726c9f7ae242",
+      "bytes": 1005,
+      "executable": true
+    },
     "tools/install-desktop.sh": {
       "sha256": "3e6776192cec16603bbb6857ab1584afeffcd9dc8d725b3c6208f57e84fe11da",
       "bytes": 229,
       "executable": true
     },
     "tools/install_desktop.py": {
-      "sha256": "400046af39fc2ca908ca3738128cb602956d51fd788f1a0e9f013e07f4b4c76f",
-      "bytes": 4017,
+      "sha256": "0714d2b2e7bdfd280462d7dd90972d1fedba0b769aceaa9263480dcaf8c1f203",
+      "bytes": 4300,
       "executable": false
+    },
+    "tools/launch-desktop.sh": {
+      "sha256": "b0187a37ba40032f48b4a3f1e41ff00905991c5ddd281fdde0a75290d39dc23f",
+      "bytes": 220,
+      "executable": true
     },
     "tools/ollama-status.sh": {
       "sha256": "e4daa4eff50c1fc804661a120b139df50dd5838c976543c386ea067a94f0f329",
       "bytes": 230,
       "executable": true
+    },
+    "tools/refresh-release-manifest.py": {
+      "sha256": "3b3a06a625697ce50798ef0d7be4f4cca722686247ae216da74514cc5cf41a6c",
+      "bytes": 1774,
+      "executable": false
     },
     "tools/serve-ai.sh": {
       "sha256": "c839ca540244606e967fd6e935d5be54e333e4afbd721dcfe56d883411f3161c",
@@ -1462,16 +1937,15 @@
       "executable": false
     },
     "tools/validate-release.py": {
-      "sha256": "edfdf2a3a6ceacdafebb8a03d0423fef4fffa91ac2fff0798c4306e183efba31",
-      "bytes": 3257,
+      "sha256": "b92546dd0c4f9c6754390da9ef8a9cc92ba7a96c2b91adf1a93b670d9f4d8bf7",
+      "bytes": 3826,
       "executable": true
     }
   },
   "excluded_categories": {
     ".git from private development": "Never copied; public history begins with an independent initial source-release commit",
     ".ai-data/**": "Private settings, conversations, Story Memory and Session Journal",
-    "Character_Art/**": "Unestablished redistribution rights; original artwork/manifest source not modified",
-    "local model weights and Ollama storage": "Not shipped or altered",
+    "local model weights and Ollama storage": "Only the two public pinned base-model manifests/blobs and public character aliases are distributed as separate release assets; private aliases/storage are excluded.",
     ".venv/** and node_modules/**": "Reinstall from declared requirements and package lock",
     "__pycache__, caches, logs, test reports, debug artifacts": "Generated/local paths and potential personal content",
     "historical docs/fork reports, screenshots and private development notes": "Excluded wholesale except curated technical hash manifests",

@@ -1,0 +1,1 @@
+Portable Python license inventory from astral-sh/python-build-standalone revision 4abc4b21cd5ffb145ba32b6d471e0b09eb6ad30b. The runtime retains its own CPython and pip licenses. Some inventory entries apply only to other platforms.

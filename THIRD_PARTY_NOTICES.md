@@ -1,21 +1,26 @@
-# Licensing and attribution findings
+# Licensing and attribution
 
-Reviewed for this candidate; this is a provenance inventory, not a legal clearance opinion.
+The complete release aggregates separately licensed components. The project's AGPL license does not replace third-party licenses.
 
-| Component | Evidence / boundary |
+| Component | License and provenance |
 | --- | --- |
-| Original EdgeLoop 1.1.3 | LICENSE contains GNU Affero General Public License v3; package.json declares AGPL-3.0-only. Upstream pin and source notices retained. Original README/changelog are preserved under docs/upstream, including acknowledgments. |
-| AI modifications / migrated source | pyproject.toml and inherited notices declare AGPL-3.0-only. Prunebrother confirmed authorship and explicitly authorized AGPL-3.0-only publication on 2026-10-29. |
-| Character Modelfiles and lore | Included byte-for-byte under the existing fork's declared source license; Prunebrother confirmed authorship and authorized AGPL-3.0-only publication of prompts/lore on 2026-10-29. No grant for art or weights is inferred. |
-| Character art | Excluded in full: no clear asset-specific redistribution grant located. Some files have embedded C2PA provenance. Source images were neither altered nor replaced. |
-| Upstream icons | Existing upstream assets retained under the upstream repository's declared license; no separate license found. PNG chunks reviewed for identifying metadata; SVG source retained. |
-| Model weights | Excluded. Download directly from the chosen registry and comply with its license/terms. |
-| qwen3:8b | Registry page lists Apache 2.0: https://ollama.com/library/qwen3:8b. |
-| huihui_ai/qwen3.5-abliterated:9b | Registry page lists Apache 2.0: https://ollama.com/huihui_ai/qwen3.5-abliterated:9b. Reduced filtering and experimental-use warnings apply. |
-| Python dependencies | Installed separately using requirements.lock; no vendored package copies. Obtain each distribution's license/notice with installation. See pyproject.toml for direct dependencies and DEPENDENCY_LICENSES.md for installed publisher license declarations. |
-| Tailwind CSS / PeerJS | Browser fetches Tailwind CDN and PeerJS 1.5.4 from unpkg. Upstream projects declare MIT licenses; copies are not vendored. External requests remain. See https://github.com/tailwindlabs/tailwindcss and https://github.com/peers/peerjs. |
-| Playwright | Optional browser-test dependency, Apache-2.0 upstream: https://github.com/microsoft/playwright. Browser binaries installed separately carry their own notices. |
+| Original EdgeLoop 1.1.3 | AGPL-3.0-only; LICENSE, upstream hash pin, attribution, original documentation and acknowledgments retained. https://github.com/marshallmims/edgeloop |
+| AI source, character prompts/lore | AGPL-3.0-only; maintainer confirmed authorship and authorized publication on 2026-10-29. |
+| 48 character portraits | Maintainer-generated artwork; maintainer authorized inclusion on 2026-10-29, distributed with the AGPL-3.0-only project. Original PNG bytes retained. See licenses/ARTWORK.md. |
+| Upstream icons | Retained under the upstream repository's declared license. |
+| Ollama 0.40.13 | MIT; licenses/OLLAMA-LICENSE. Official binary archive retained, including its third-party license/notice files under runtime/ollama/lib/ollama. https://github.com/ollama/ollama/tree/v0.40.13 |
+| CUDA libraries inside Ollama | NVIDIA CUDA redistribution terms; licenses/NVIDIA-CUDA-12.8-EULA.html and NVIDIA-CUDA-13.0-EULA.html. These libraries retain NVIDIA terms rather than Ollama's MIT license. |
+| OpenMP library inside Ollama | GPLv3 with GCC Runtime Library Exception; notices in licenses, exact corresponding source RPM included under third-party-sources. See licenses/OPENMP.md. |
+| Qwen3 8B weights | Apache-2.0; licenses/models/qwen3_8b.txt and original registry license layer. https://huggingface.co/Qwen/Qwen3-8B |
+| Huihui Qwen3.5 9B abliterated weights | Apache-2.0; licenses/models/huihui_ai_qwen3.5-abliterated_9b.txt and original license layer. https://huggingface.co/huihui-ai/Huihui-Qwen3.5-9B-abliterated |
+| Portable CPython 3.12.16 | Python Software Foundation and included dependency terms. CPython license under runtime/python/lib/python3.12/LICENSE.txt; build/dependency inventory under licenses/python. https://github.com/astral-sh/python-build-standalone/releases/tag/20261026 |
+| Python wheels | Exact versions in requirements.lock and release-inputs.json; each wheel retains its publisher's license/notice metadata, also installed into the environment. Publisher declarations recorded in DEPENDENCY_LICENSES.md. |
+| Tailwind browser runtime 3.4.17 | MIT; licenses/TAILWIND-LICENSE. Vendored from https://cdn.tailwindcss.com/3.4.17 to src/js/vendor/tailwind.js. |
+| PeerJS 1.5.4 | MIT; licenses/PEERJS-LICENSE. Vendored from https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js. |
+| Playwright | Apache-2.0; optional development/test dependency, not part of the installed app runtime. https://github.com/microsoft/playwright |
 
-Model registry tags are mutable. Registry license display was checked during preparation; this does not establish prompt/art ownership or certify every derivative's provenance. No automatic model download, weight packaging or new external telemetry is introduced. Include license/notice materials if dependencies or assets are later vendored. For actual legal conclusions about disputed rights, obtain appropriate review.
+`release-inputs.json` pins runtime archive and base-weight hashes; `MANIFEST.json` covers public source/art, and release `BUNDLE.json` covers the complete distribution. Only the two named public base manifests and their referenced blobs are imported; character models are rebuilt from the public source. No private prompts, developer model aliases, user keys or runtime data are imported.
 
-Before making the modified application available to remote users, configure a prominent offer of its exact corresponding source. Existing UI GitHub links identify upstream, not a future fork repository. No fork URL or public deployment is configured in this candidate; see PUBLICATION_CHECKLIST.md.
+The reduced-filtering model publisher describes the model as experimental. This release retains its source attribution and unchanged model license layers. The bundle changes neither base-weight tensors nor publisher license terms. Character parameters and system prompts are added by the public Modelfiles.
+
+The exact corresponding application source is available at https://github.com/Prunebrother/edgeloop-ai and included in each complete bundle. No public running application is hosted.
