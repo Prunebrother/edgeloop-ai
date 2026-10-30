@@ -1,5 +1,5 @@
 {
-  "version": "v0.3.0",
+  "version": "v0.3.1",
   "platform": "linux-x86_64",
   "ollama": {
     "version": "0.40.13",
@@ -46,9 +46,12 @@
   "default_model": "nova-narrative-v1:latest",
   "third_party_sources": [
     {
-      "name": "gcc-8.5.0-28.el8_10.alma.1.src.rpm",
+      "name": "gcc-8.5.0-28.el8_10.alma.1-openmp-source.tar.gz",
       "url": "https://vault.almalinux.org/8.10/BaseOS/Source/Packages/gcc-8.5.0-28.el8_10.alma.1.src.rpm",
-      "sha256": "c94dbbd2cd6d5d01a5a6822ea18f8ce34942c25a80e17b4682d547d5e652dbd0"
+      "sha256": "c94dbbd2cd6d5d01a5a6822ea18f8ce34942c25a80e17b4682d547d5e652dbd0",
+      "source_name": "gcc-8.5.0-28.el8_10.alma.1.src.rpm",
+      "recipe": "openmp-source-export-v1",
+      "output_sha256": "bb93537fd2898581ec11a0040ca3ffd36fe6f99f1d899cc0b37411728eb1b0eb"
     }
   ]
 }

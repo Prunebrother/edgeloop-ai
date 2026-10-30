@@ -10,7 +10,7 @@ The complete release aggregates separately licensed components. The project's AG
 | Upstream icons | Retained under the upstream repository's declared license. |
 | Ollama 0.40.13 | MIT; licenses/OLLAMA-LICENSE. Official binary archive retained, including its third-party license/notice files under runtime/ollama/lib/ollama. https://github.com/ollama/ollama/tree/v0.40.13 |
 | CUDA libraries inside Ollama | NVIDIA CUDA redistribution terms; licenses/NVIDIA-CUDA-12.8-EULA.html and NVIDIA-CUDA-13.0-EULA.html. These libraries retain NVIDIA terms rather than Ollama's MIT license. |
-| OpenMP library inside Ollama | GPLv3 with GCC Runtime Library Exception; notices in licenses, exact corresponding source RPM included under third-party-sources. See licenses/OPENMP.md. |
+| OpenMP library inside Ollama | GPLv3 with GCC Runtime Library Exception; notices in licenses, documented corresponding-source export included under third-party-sources; original pinned RPM provenance retained, with one unrelated Go binary core fixture omitted. See licenses/OPENMP.md. |
 | Qwen3 8B weights | Apache-2.0; licenses/models/qwen3_8b.txt and original registry license layer. https://huggingface.co/Qwen/Qwen3-8B |
 | Huihui Qwen3.5 9B abliterated weights | Apache-2.0; licenses/models/huihui_ai_qwen3.5-abliterated_9b.txt and original license layer. https://huggingface.co/huihui-ai/Huihui-Qwen3.5-9B-abliterated |
 | Portable CPython 3.12.16 | Python Software Foundation and included dependency terms. CPython license under runtime/python/lib/python3.12/LICENSE.txt; build/dependency inventory under licenses/python. https://github.com/astral-sh/python-build-standalone/releases/tag/20261026 |

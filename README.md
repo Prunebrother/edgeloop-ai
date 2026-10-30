@@ -7,7 +7,7 @@ EdgeLoop AI adds local AI companions to [EdgeLoop by marshallmims](https://githu
 On Linux x86_64 with a systemd user session and a current Chromium browser:
 
 ```bash
-curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.3.0/install.sh
+curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.3.1/install.sh
 bash install.sh
 ```
 

@@ -317,8 +317,8 @@
       "executable": false
     },
     "INSTALL.md": {
-      "sha256": "7032fc609621d592a515dfba412d98d7e767188e472203279916affef954b3b8",
-      "bytes": 6048,
+      "sha256": "667537746d7c7b7f09a45bb5b027adee31909b746a87c5657b6ca9c8f8230849",
+      "bytes": 6384,
       "executable": false
     },
     "KNOWN_ISSUES.md": {
@@ -352,7 +352,7 @@
       "executable": false
     },
     "README.md": {
-      "sha256": "a1399f803b5945d394dc8a687db0eb03145f8cd0eeddd1a7e34334c627d8a872",
+      "sha256": "7ec5344db190227963cf3a21725d72ccac3c7f716ad9ac1430d612932e4aa7b5",
       "bytes": 3512,
       "executable": false
     },
@@ -367,8 +367,8 @@
       "executable": false
     },
     "THIRD_PARTY_NOTICES.md": {
-      "sha256": "54569dec7ad09edbe5545152f86efda5f24d5e3b32bc6baba996320827575646",
-      "bytes": 3558,
+      "sha256": "32da04c887751a258e94e26f1b01a7b4be3b836ccb46231257733e869a01d9a3",
+      "bytes": 3658,
       "executable": false
     },
     "VALIDATION.md": {
@@ -637,8 +637,13 @@
       "executable": false
     },
     "docs/fork/f2-changes.json": {
-      "sha256": "a6fb702746f5fbea6897ae68673b6e6c9f291df589c516a4a39ed575c036907d",
+      "sha256": "c7fd50e4f66b9643562ad2e25e2429f2559e081ee34648b5e3804b042733b334",
       "bytes": 4560,
+      "executable": false
+    },
+    "docs/fork/f2101-release-privacy.md": {
+      "sha256": "67452a27b1a5bf81b799254529b5f1c6fe263bc97f7fbba140b5432e43699252",
+      "bytes": 1385,
       "executable": false
     },
     "docs/fork/f22/migration-sources.json": {
@@ -702,7 +707,7 @@
       "executable": false
     },
     "install.sh": {
-      "sha256": "257d3ad571fb6e1c8c7d8a0afbad4f7be6aff4d2b955142003adaae60ead6d0e",
+      "sha256": "d15e84ba5a81b0acc87fca4022ace7ac6d6a59f390b5eaa63678204708838686",
       "bytes": 2843,
       "executable": true
     },
@@ -737,8 +742,8 @@
       "executable": false
     },
     "licenses/OPENMP.md": {
-      "sha256": "40f6a148013f187d9ba1442a765465b10bf50e16e628e3d394d8c266b02877d4",
-      "bytes": 829,
+      "sha256": "b512edf3550853957bce264dbb3573b459246ca72131626c90d72bffcdc61751",
+      "bytes": 1442,
       "executable": false
     },
     "licenses/PEERJS-LICENSE": {
@@ -902,8 +907,8 @@
       "executable": false
     },
     "release-inputs.json": {
-      "sha256": "9b3b32d231a7cdb8ffa05298a1d1d18c48a1f357833b16dc3a62e6133fa041de",
-      "bytes": 1884,
+      "sha256": "1f844f0bc3a7c72288c6b1f1acd196343c58b350afaf0f95ed496a97e5cfadc6",
+      "bytes": 2090,
       "executable": false
     },
     "requirements.lock": {
@@ -1837,13 +1842,13 @@
       "executable": false
     },
     "tests/fork/test_release_bundle.py": {
-      "sha256": "3a2297b361b0978253f25265dc6a392cd90b9ccc42783d8159993576d4609aca",
-      "bytes": 8046,
+      "sha256": "09009ac46f908ecf173ed796534054399354328e1feb71a241abfc63d139eb22",
+      "bytes": 10414,
       "executable": false
     },
     "tools/build-release.py": {
-      "sha256": "6c0df1d841eb5b295b0cc63400d382188cf63c7c02d60c058d4b2a4350625751",
-      "bytes": 8661,
+      "sha256": "2b32c13117816840d9ff742b91659481e2954978317e7a69e581b8d939054c54",
+      "bytes": 10611,
       "executable": true
     },
     "tools/bundle.py": {
@@ -1870,6 +1875,11 @@
       "sha256": "827fce21ae35cb35dfcfa0cfd36d736b555dcd055e7caf8ae9b156455cfe2809",
       "bytes": 3569,
       "executable": true
+    },
+    "tools/export-openmp-source.py": {
+      "sha256": "90d86fe75a9cff7452ec253044b176980b2be903f963c4c7071e54524ca90a23",
+      "bytes": 5972,
+      "executable": false
     },
     "tools/fork_validate.py": {
       "sha256": "23e84df4a88600f82bbae1cf881e322fe2534a8a501de1b349cca887b9afd49b",
@@ -1902,8 +1912,13 @@
       "executable": true
     },
     "tools/refresh-release-manifest.py": {
-      "sha256": "3b3a06a625697ce50798ef0d7be4f4cca722686247ae216da74514cc5cf41a6c",
-      "bytes": 1774,
+      "sha256": "de1e7813de7bba4c7e0db4b203339586c45cbfdba3c633acdc2787ff17df8cac",
+      "bytes": 2403,
+      "executable": false
+    },
+    "tools/seal-python.py": {
+      "sha256": "dc087be3219000abf6e5b38ab86accc833dbd288e4d8aa4e89a5b6c462dfe415",
+      "bytes": 2453,
       "executable": false
     },
     "tools/serve-ai.sh": {
@@ -1937,8 +1952,8 @@
       "executable": false
     },
     "tools/validate-release.py": {
-      "sha256": "b92546dd0c4f9c6754390da9ef8a9cc92ba7a96c2b91adf1a93b670d9f4d8bf7",
-      "bytes": 3826,
+      "sha256": "a866011969e2a3ab3617608ad96994f4fe444c403d0d4a71d04c817b097fbd17",
+      "bytes": 4111,
       "executable": true
     }
   },

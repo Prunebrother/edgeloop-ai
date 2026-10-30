@@ -3,6 +3,7 @@
 Pattern scanning cannot prove absence of every secret or identity. Review is required.
 """
 from pathlib import Path
+import argparse
 from hashlib import sha256
 import json
 import re
@@ -12,7 +13,7 @@ import sys
 ROOT=Path(__file__).resolve().parents[1]
 IGNORED={'.git','.venv','node_modules','__pycache__','.pytest_cache'}
 
-def validate():
+def validate(approved_identities=()):
     manifest=json.loads((ROOT/'MANIFEST.json').read_text())
     errors=[]
     included=manifest['included']
@@ -46,7 +47,8 @@ def validate():
             for category,pattern in patterns.items():
                 if re.search(pattern,metadata.encode()):errors.append(('.git',category))
             identities=git('log','--all','--format=%an <%ae>%n%cn <%ce>').splitlines()
-            if set(identities)!={'Prunebrother <224366760+Prunebrother@users.noreply.github.com>'}:errors.append(('.git','unreviewed commit identity'))
+            # Approval belongs to the review invocation, not a published account-ID allowlist.
+            if not set(identities).issubset(set(approved_identities)):errors.append(('.git','unreviewed commit identity'))
     catalog=json.loads((ROOT/'src/assets/characters/manifest.json').read_text())
     portraits={p.lstrip('/') for c in catalog['characters'].values() for p in c['expressions'].values()}
     if len(portraits)!=48 or any(not (ROOT/p).is_file() for p in portraits):errors.append(('Character_Art','incomplete expression portraits'))
@@ -55,7 +57,10 @@ def validate():
             'limits':'Pattern and hash checks only. Does not certify licensing, arbitrary secrets, human identities, or physical safety.'}
 
 if __name__=='__main__':
-    try:result=validate()
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--approved-identity',action='append',default=[])
+    args=parser.parse_args()
+    try:result=validate(args.approved_identity)
     except (OSError,ValueError,subprocess.CalledProcessError) as exc:
         print(json.dumps({'passed':False,'error_type':type(exc).__name__}));sys.exit(1)
     print(json.dumps(result,indent=2));sys.exit(0 if result['passed'] else 1)

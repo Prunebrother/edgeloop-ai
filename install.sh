@@ -4,7 +4,7 @@
 set -euo pipefail
 # Verification must not rewrite sealed Python caches, including in older bundles.
 export PYTHONDONTWRITEBYTECODE=1
-version=v0.3.0
+version=v0.3.1
 base="https://github.com/Prunebrother/edgeloop-ai/releases/download/$version"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/edgeloop-ai/$version"
 destination="$HOME/.local/share/edgeloop-ai/releases/$version"

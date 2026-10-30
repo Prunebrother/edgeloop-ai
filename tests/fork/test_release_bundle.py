@@ -90,19 +90,65 @@ def test_release_art_and_model_inventory_is_complete():
             assert (ROOT / image.lstrip('/')).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
 
 
-def test_seal_removes_caches_on_repeated_pack_only_builds(tmp_path):
+def test_seal_regenerates_canonical_hash_caches_on_repeated_pack_only_builds(tmp_path):
     builder = load('build-release')
-    source = tmp_path / 'runtime/python/lib/probe.py'
+    source = tmp_path / f'runtime/python/lib/python{sys.version_info.major}.{sys.version_info.minor}/probe.py'
     source.parent.mkdir(parents=True)
-    source.write_text('value = 42\n')
+    source.write_text('def outer():\n    return lambda: 42\n')
+    python = tmp_path / 'runtime/python/bin/python3'
+    python.parent.mkdir()
+    python.write_text('#!/bin/bash\nexec ' + shlex.quote(sys.executable) + ' "$@"\n')
+    python.chmod(0o755)
     for _ in range(2):
         py_compile.compile(str(source), doraise=True)
         assert list(tmp_path.rglob('*.pyc'))
         builder.seal(tmp_path, {'version': 'test'})
         record = json.loads((tmp_path / 'BUNDLE.json').read_text())
-        assert not list(tmp_path.rglob('__pycache__'))
-        assert set(record['files']) == {'runtime/python/lib/probe.py'}
+        cache = next(tmp_path.rglob('*.pyc'))
+        data = cache.read_bytes()
+        assert int.from_bytes(data[4:8], 'little') == 3
+        import marshal
+        sealer = load('seal-python')
+        assert set(sealer.code_filenames(marshal.loads(data[16:]))) == {'edgeloop-ai/' + str(source.relative_to(tmp_path))}
+        assert str(cache.relative_to(tmp_path)) in record['files']
         load('bundle').verify(tmp_path)
+        # Checked-hash invalidation survives the tar timestamp rewrite without
+        # changing the sealed bytes, even if a caller omits -B.
+        os.utime(source, (1793232000, 1793232000))
+        subprocess.run([sys.executable, '-S', '-c',
+                        'import sys; sys.path.insert(0, sys.argv[1]); import probe; assert probe.outer()() == 42',
+                        str(source.parent)], check=True)
+        assert cache.read_bytes() == data
+
+
+def test_seal_rejects_an_external_symlink_before_compilation(tmp_path):
+    target = tmp_path / 'external'
+    target.write_text('private fixture')
+    stage = tmp_path / 'stage'
+    stage.mkdir()
+    (stage / 'outside').symlink_to(target)
+    with pytest.raises(ValueError, match='External symlink'):
+        load('build-release').seal(stage, {'version': 'test'})
+
+
+def test_corresponding_source_export_omits_only_the_unrelated_core_fixture(tmp_path):
+    import io
+    exporter = load('export-openmp-source')
+    original = tmp_path / 'original.tar.xz'
+    safe = {'gcc-8.5.0-20210514/COPYING3': b'original license fixture',
+            'gcc-8.5.0-20210514/libgomp/source.c': b'original OpenMP source fixture'}
+    with tarfile.open(original, 'w:xz') as archive:
+        for name, data in {**safe, exporter.EXCLUDED: b'captured environment fixture'}.items():
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            archive.addfile(info, io.BytesIO(data))
+    output = tmp_path / 'export.tar.xz'
+    result = exporter.rewrite_gcc(original, output)
+    assert [x['name'] for x in result['removed']] == [exporter.EXCLUDED]
+    with tarfile.open(output, 'r:xz') as archive:
+        assert set(archive.getnames()) == set(safe)
+        for name, data in safe.items():
+            assert archive.extractfile(name).read() == data
 
 
 @pytest.mark.parametrize('fixed', [False, True])

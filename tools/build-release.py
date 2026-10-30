@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """AGPL-3.0-only. Build complete Linux assets from reviewed source and pinned inputs.
 
-Requires Linux x86_64, Python 3.12+, curl, tar, zstd, gzip and split. Network is
+Requires Linux x86_64, Python 3.12+, curl, tar, bsdtar, zstd, gzip and split. Network is
 used only to acquire public runtime/dependency inputs. Only the two named base
 manifests and their content-addressed blobs are imported from --model-store;
 private character aliases, keys, prompts, logs and history are never copied.
@@ -14,6 +14,7 @@ from pathlib import Path
 import shutil
 import socket
 import subprocess
+import sys
 import time
 from urllib.request import build_opener, ProxyHandler
 
@@ -27,6 +28,8 @@ def digest(path):
 
 
 def run(*args, **kwargs):
+    # Build-time imports must not create machine-path bytecode in the stage.
+    kwargs.setdefault('env', dict(os.environ, PYTHONDONTWRITEBYTECODE='1'))
     subprocess.run([str(x) for x in args], check=True, **kwargs)
 
 
@@ -100,10 +103,14 @@ def create_characters(stage, inputs, log):
 def seal(stage, inputs):
     if any((stage / name).exists() for name in ['.venv', '.ai-data', '.git', 'node_modules']):
         raise ValueError('Build stage contains development or private runtime data')
-    # Also clean --pack-only builds: caches can reappear during validation, and
-    # archive timestamp normalization invalidates timestamp-based bytecode.
-    for directory in list(stage.rglob('__pycache__')):
-        shutil.rmtree(directory)
+    # Seal every build, including --pack-only, with the bundled Python version.
+    # Regenerate checked-hash bytecode with neutral, relative code filenames;
+    # never patch compiled binary strings or compile with the host interpreter.
+    for path in stage.rglob('*'):
+        if path.is_symlink() and not path.resolve().is_relative_to(stage.resolve()):
+            raise ValueError('External symlink: ' + str(path.relative_to(stage)))
+    run(stage / 'runtime/python/bin/python3', '-I', '-B',
+        ROOT / 'tools/seal-python.py', stage)
     files = {}
     for path in sorted(stage.rglob('*')):
         if path.name == 'BUNDLE.json':
@@ -130,9 +137,24 @@ def pack(stage, output):
         raise RuntimeError('Bundle compression failed: ' + str(codes))
     shutil.copyfile(ROOT / 'install.sh', output / 'install.sh')
     (output / 'install.sh').chmod(0o755)
-    paths = [output / 'install.sh', *sorted(output.glob(prefix.name + '*'))]
-    (output / 'SHA256SUMS').write_text(''.join(f'{digest(p)}  {p.name}\n' for p in paths))
     shutil.copyfile(stage / 'BUNDLE.json', output / 'BUNDLE.json')
+    # Export only the reviewed source allowlist, without Git or local metadata.
+    source = json.loads((ROOT / 'MANIFEST.json').read_text())['included']
+    version = json.loads((stage / 'BUNDLE.json').read_text())['version']
+    source_archive = output / f'edgeloop-ai-source-{version}.tar.gz'
+    with source_archive.open('wb') as stream:
+        source_tar = subprocess.Popen(['tar', '--sort=name', '--mtime=2026-10-29 00:00:00Z',
+            '--owner=0', '--group=0', '--null', '-c', '-C', str(ROOT), '-T', '-'],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        source_gzip = subprocess.Popen(['gzip', '-n'], stdin=source_tar.stdout, stdout=stream)
+        source_tar.stdout.close()
+        source_tar.stdin.write(('\0'.join(sorted([*source, 'MANIFEST.json']))+'\0').encode())
+        source_tar.stdin.close()
+        if any([source_gzip.wait(), source_tar.wait()]):
+            raise RuntimeError('Source archive compression failed')
+    paths = [output / 'install.sh', output / 'BUNDLE.json', source_archive,
+             *sorted(output.glob(prefix.name + '*'))]
+    (output / 'SHA256SUMS').write_text(''.join(f'{digest(p)}  {p.name}\n' for p in paths))
     print('Release assets:', [(p.name, p.stat().st_size) for p in paths], flush=True)
 
 
@@ -166,8 +188,16 @@ def main():
         run('tar', '--zstd', '-xf', cache / 'ollama-linux-amd64.tar.zst', '-C', stage / 'runtime/ollama')
         (stage / 'third-party-sources').mkdir(exist_ok=True)
         for record in inputs.get('third_party_sources', []):
-            acquire(record, cache / record['name'])
-            shutil.copyfile(cache / record['name'], stage / 'third-party-sources' / record['name'])
+            original = cache / record.get('source_name', record['name'])
+            acquire(record, original)
+            output = stage / 'third-party-sources' / record['name']
+            if record.get('recipe') == 'openmp-source-export-v1':
+                run(sys.executable, '-B', ROOT / 'tools/export-openmp-source.py', original,
+                    output, '--expected-sha256', record['sha256'])
+                if digest(output) != record['output_sha256']:
+                    raise ValueError('Corresponding-source export checksum mismatch')
+            else:
+                shutil.copyfile(original, output)
         python = stage / 'runtime/python/bin/python3'
         run(python, '-m', 'pip', 'download', '--only-binary=:all:', '--dest', stage / 'wheelhouse', '-r', ROOT / 'requirements.lock', *inputs['build_requirements'])
         import_models(args.model_store, stage, inputs)

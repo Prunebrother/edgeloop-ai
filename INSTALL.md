@@ -2,10 +2,12 @@
 
 ## Complete Linux bundle
 
+F2.10.1 regenerates runtime bytecode with neutral filenames and preserves the installer hotfix. Application behavior, character definitions and the model inventory are unchanged. The bundled OpenMP source export preserves build sources and notices while omitting one unrelated Go binary test core containing captured environment data.
+
 Supported target: Linux x86_64, a working systemd user session, glibc Linux (not Alpine/musl), and an installed current Chromium browser. The browser and hardware drivers remain system requirements. Plan for approximately 40 GB free during download/extraction. Model inference needs enough RAM/VRAM for an 8B/9B model plus context; CPU execution may be slow. No sudo or system-wide Ollama service is required.
 
 ```bash
-curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.3.0/install.sh
+curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.3.1/install.sh
 bash install.sh
 ```
 
@@ -13,7 +15,7 @@ The installer downloads all release parts with resume support, checks SHA-256 su
 
 The bundle includes both base-model weights, ten character model definitions already registered with Ollama, 48 expression portraits, portable Python, Ollama, Python wheels and browser libraries. No package manager, Git, Node, model pull or manual token is required. The small downloader needs standard `bash`, `curl`, `tar`, `gzip`, `sha256sum` and `flock` tools.
 
-Installation location: `~/.local/share/edgeloop-ai/releases/v0.3.0`. Model weights live inside that version's `models/`; this avoids changing a separate Ollama installation. User settings/history live at `~/.local/share/edgeloop-ai/data`. Downloads are cached under `${XDG_CACHE_HOME:-~/.cache}/edgeloop-ai/v0.3.0`; remove that cache after successful installation to reclaim disk space. Rerunning installation preserves user settings. It does not enable login startup.
+Installation location: `~/.local/share/edgeloop-ai/releases/v0.3.1`. Model weights live inside that version's `models/`; this avoids changing a separate Ollama installation. User settings/history live at `~/.local/share/edgeloop-ai/data`. Downloads are cached under `${XDG_CACHE_HOME:-~/.cache}/edgeloop-ai/v0.3.1`; remove that cache after successful installation to reclaim disk space. Rerunning installation preserves user settings. It does not enable login startup.
 
 Use **EdgeLoop AI** to start and **Stop EdgeLoop AI** to stop. The command `~/.local/bin/edgeloop-ai status` reports service status. End hardware sessions in the browser before stopping services. Services use loopback ports 11435 (Ollama), 8768 (observer) and 8770 (web). An occupied port produces an error; unrelated processes are never killed. Stop an existing EdgeLoop installation before replacing its user service definitions.
 
