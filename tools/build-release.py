@@ -100,6 +100,10 @@ def create_characters(stage, inputs, log):
 def seal(stage, inputs):
     if any((stage / name).exists() for name in ['.venv', '.ai-data', '.git', 'node_modules']):
         raise ValueError('Build stage contains development or private runtime data')
+    # Also clean --pack-only builds: caches can reappear during validation, and
+    # archive timestamp normalization invalidates timestamp-based bytecode.
+    for directory in list(stage.rglob('__pycache__')):
+        shutil.rmtree(directory)
     files = {}
     for path in sorted(stage.rglob('*')):
         if path.name == 'BUNDLE.json':
@@ -168,9 +172,6 @@ def main():
         run(python, '-m', 'pip', 'download', '--only-binary=:all:', '--dest', stage / 'wheelhouse', '-r', ROOT / 'requirements.lock', *inputs['build_requirements'])
         import_models(args.model_store, stage, inputs)
         create_characters(stage, inputs, work / 'ollama-build.log')
-        # The runtime may generate bytecode while building; omit generated caches.
-        for directory in list(stage.rglob('__pycache__')):
-            shutil.rmtree(directory)
     seal(stage, inputs)
     pack(stage, work / 'dist')
 

@@ -28,7 +28,7 @@ sha256sum --ignore-missing -c SHA256SUMS
 mkdir edgeloop-ai
 cat edgeloop-ai-linux-x86_64.tar.gz.part* | tar -xz -C edgeloop-ai
 cd edgeloop-ai
-bash tools/install-bundle.sh
+PYTHONDONTWRITEBYTECODE=1 bash tools/install-bundle.sh
 ```
 
 Every listed part must be present. The extracted bundle verifies its file hashes again before installing. This path needs no internet for installation or local AI/UI. Optional peer/device cloud features still need their respective network services. The extraction directory is the permanent application location; do not move or delete it after installing shortcuts.
@@ -59,6 +59,8 @@ FORK_BROWSER_PORT=18770 FORK_OBSERVER_PORT=18768 \
 ```
 
 ## Troubleshooting and uninstall
+
+If an older v0.3.0 installer reports `Bundled file failed integrity check` for a file under `__pycache__`, run `PYTHONDONTWRITEBYTECODE=1 bash install.sh`, or download the updated installer using the command above and rerun it. The installer reuses verified cached downloads. This prevents Python from rewriting bundled bytecode before verification; all integrity checks remain enabled. For an extracted offline bundle, extract it afresh and use the offline command above.
 
 Run `~/.local/bin/edgeloop-ai status` and inspect `journalctl --user -u edgeloop-ai-ollama -u edgeloop-ai-observer -u edgeloop-ai-web`. A failed checksum causes installation to stop; rerun to retry/resume. `systemctl --user` requires a desktop user session. Browser Bluetooth/serial permissions and device setup remain explicit user actions. Never expose Ollama or the observer on a public interface.
 

@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 # Download and install the complete, versioned Linux release. No sudo needed.
 set -euo pipefail
+# Verification must not rewrite sealed Python caches, including in older bundles.
+export PYTHONDONTWRITEBYTECODE=1
 version=v0.3.0
 base="https://github.com/Prunebrother/edgeloop-ai/releases/download/$version"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/edgeloop-ai/$version"
@@ -24,7 +26,7 @@ parts=()
 while read -r digest filename; do
   [[ $digest =~ ^[a-f0-9]{64}$ && $filename =~ ^edgeloop-ai-linux-x86_64\.tar\.gz\.part[0-9]{2}$ ]] || continue
   parts+=("$cache/$filename")
-  if ! (cd "$cache" && echo "$digest  $filename" | sha256sum -c --status); then
+  if [[ ! -f "$cache/$filename" ]] || ! (cd "$cache" && echo "$digest  $filename" | sha256sum -c --status); then
     if curl -fL --retry 3 -C - "$base/$filename" -o "$cache/$filename"; then
       :
     else

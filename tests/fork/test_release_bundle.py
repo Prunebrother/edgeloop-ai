@@ -2,7 +2,14 @@
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
+import py_compile
+import shlex
+import shutil
+import subprocess
+import sys
+import tarfile
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -81,3 +88,88 @@ def test_release_art_and_model_inventory_is_complete():
         assert len(character['expressions']) == 12
         for image in character['expressions'].values():
             assert (ROOT / image.lstrip('/')).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+
+
+def test_seal_removes_caches_on_repeated_pack_only_builds(tmp_path):
+    builder = load('build-release')
+    source = tmp_path / 'runtime/python/lib/probe.py'
+    source.parent.mkdir(parents=True)
+    source.write_text('value = 42\n')
+    for _ in range(2):
+        py_compile.compile(str(source), doraise=True)
+        assert list(tmp_path.rglob('*.pyc'))
+        builder.seal(tmp_path, {'version': 'test'})
+        record = json.loads((tmp_path / 'BUNDLE.json').read_text())
+        assert not list(tmp_path.rglob('__pycache__'))
+        assert set(record['files']) == {'runtime/python/lib/probe.py'}
+        load('bundle').verify(tmp_path)
+
+
+@pytest.mark.parametrize('fixed', [False, True])
+def test_download_installer_preserves_sealed_bytecode_and_cached_parts(tmp_path, fixed):
+    # A tiny offline release reproduces Python rewriting sealed bytecode after
+    # tar normalizes source timestamps. The inner installer stays unpatched,
+    # as it does in the existing v0.3.0 release.
+    stage = tmp_path / 'stage'
+    lib = stage / 'runtime/python/lib'
+    lib.mkdir(parents=True)
+    probe = lib / 'cache_probe.py'
+    probe.write_text('value = 42\n')
+    os.utime(probe, (1704067200, 1704067200))
+    py_compile.compile(str(probe), doraise=True)
+    python = stage / 'runtime/python/bin/python3'
+    python.parent.mkdir()
+    runner = 'import cache_probe, runpy, sys; sys.argv = sys.argv[1:]; runpy.run_path(sys.argv[0], run_name="__main__")'
+    python.write_text('#!/bin/bash\nexport PYTHONPATH="$(dirname "$0")/../lib"\nexec '
+                      + shlex.quote(sys.executable) + ' -c ' + shlex.quote(runner) + ' "$@"\n')
+    python.chmod(0o755)
+    (stage / 'tools').mkdir()
+    shutil.copyfile(ROOT / 'tools/bundle.py', stage / 'tools/bundle.py')
+    (stage / 'tools/install-bundle.sh').write_text(
+        '#!/bin/bash\nset -eu\ncd "$(dirname "$0")/.."\n'
+        'runtime/python/bin/python3 tools/bundle.py verify\n'
+        'touch "$HOME/installation-complete"\n')
+    files = {str(p.relative_to(stage)): {'bytes': p.stat().st_size,
+             'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
+             for p in stage.rglob('*') if p.is_file()}
+    (stage / 'BUNDLE.json').write_text(json.dumps({'files': files}))
+    assets = tmp_path / 'assets'
+    assets.mkdir()
+    part = assets / 'edgeloop-ai-linux-x86_64.tar.gz.part00'
+    def normalize(info):
+        info.mtime = 1793232000
+        return info
+    with tarfile.open(part, 'w:gz') as archive:
+        archive.add(stage, arcname='.', filter=normalize)
+    (assets / 'SHA256SUMS').write_text(hashlib.sha256(part.read_bytes()).hexdigest() + '  ' + part.name + '\n')
+    bin_dir = tmp_path / 'bin'
+    bin_dir.mkdir()
+    curl = bin_dir / 'curl'
+    curl.write_text('#!/bin/bash\nset -eu\nwhile (($#)); do\n'
+                    'case "$1" in https://*) name=${1##*/};; -o) shift; out=$1;; esac\nshift\ndone\n'
+                    'echo "$name" >> "$DOWNLOAD_LOG"\ncp "$RELEASE_ASSETS/$name" "$out"\n')
+    curl.chmod(0o755)
+    installer = tmp_path / 'install.sh'
+    text = (ROOT / 'install.sh').read_text()
+    if not fixed:
+        text = text.replace('export PYTHONDONTWRITEBYTECODE=1\n', '')
+    installer.write_text(text)
+    home = tmp_path / 'home'
+    home.mkdir()
+    env = dict(os.environ, HOME=str(home), XDG_CACHE_HOME=str(home / '.cache'),
+               PATH=str(bin_dir) + os.pathsep + os.environ['PATH'],
+               RELEASE_ASSETS=str(assets), DOWNLOAD_LOG=str(tmp_path / 'downloads'))
+    env.pop('PYTHONDONTWRITEBYTECODE', None)
+    for attempt in range(2):
+        result = subprocess.run(['bash', str(installer)], env=env, capture_output=True, text=True)
+        if fixed:
+            assert result.returncode == 0, result.stdout + result.stderr
+            assert (home / 'installation-complete').is_file()
+            assert 'No such file' not in result.stderr
+        else:
+            assert result.returncode != 0
+            assert 'Bundled file failed integrity check:' in result.stderr
+            assert 'cache_probe' in result.stderr
+    # Failed installs retry from verified cached parts; successful installs reuse
+    # the destination. Neither path should download the large archive twice.
+    assert (tmp_path / 'downloads').read_text().splitlines().count(part.name) == 1

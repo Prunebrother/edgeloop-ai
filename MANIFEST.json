@@ -317,8 +317,8 @@
       "executable": false
     },
     "INSTALL.md": {
-      "sha256": "7a5ebe181b6e77686d05e68a6408abdb6316857dd54f9f4ae0437f5e5ac91e99",
-      "bytes": 5548,
+      "sha256": "7032fc609621d592a515dfba412d98d7e767188e472203279916affef954b3b8",
+      "bytes": 6048,
       "executable": false
     },
     "KNOWN_ISSUES.md": {
@@ -702,8 +702,8 @@
       "executable": false
     },
     "install.sh": {
-      "sha256": "0bc4c2dea37864dda1678b52c5ab1f684c6e8514b56372d598728f1e7c065279",
-      "bytes": 2695,
+      "sha256": "257d3ad571fb6e1c8c7d8a0afbad4f7be6aff4d2b955142003adaae60ead6d0e",
+      "bytes": 2843,
       "executable": true
     },
     "licenses/ARTWORK.md": {
@@ -1837,13 +1837,13 @@
       "executable": false
     },
     "tests/fork/test_release_bundle.py": {
-      "sha256": "12c45c0d038f5c3241ad44e1587d4e8e649afaf003cb0103eedd7440cc7ca2f8",
-      "bytes": 3652,
+      "sha256": "3a2297b361b0978253f25265dc6a392cd90b9ccc42783d8159993576d4609aca",
+      "bytes": 8046,
       "executable": false
     },
     "tools/build-release.py": {
-      "sha256": "acd86022f3498e6e731f941f164be04c9df0158d7e6761e04c2a9f2759c00265",
-      "bytes": 8596,
+      "sha256": "6c0df1d841eb5b295b0cc63400d382188cf63c7c02d60c058d4b2a4350625751",
+      "bytes": 8661,
       "executable": true
     },
     "tools/bundle.py": {
@@ -1877,8 +1877,8 @@
       "executable": false
     },
     "tools/install-bundle.sh": {
-      "sha256": "0901a75a0d2709ce20fb15e2d53101c163384bb3bcb54f80e97d726c9f7ae242",
-      "bytes": 1005,
+      "sha256": "3864316fb59561702a48a9a34fc4120d16403e9a9bf2f93f5056ebe249d7d597",
+      "bytes": 1120,
       "executable": true
     },
     "tools/install-desktop.sh": {
