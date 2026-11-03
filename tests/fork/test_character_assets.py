@@ -3,7 +3,6 @@ import importlib.util
 import json
 from pathlib import Path
 import time
-import pytest
 from uuid import uuid4
 from fastapi.testclient import TestClient
 from ai_observer.server import create_app

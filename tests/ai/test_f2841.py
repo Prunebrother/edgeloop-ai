@@ -12,7 +12,7 @@ from tests.fork.context_retention_fixture import fixture
 
 
 def memory(model='evelyn',store=None):
-    n=NarrativeMemory(NarrativeConfig(persist_between_sessions=store is not None),store);n.activate(model,'synthetic')
+    n=NarrativeMemory(NarrativeConfig(assistant_facts=True,persist_between_sessions=store is not None),store);n.activate(model,'synthetic')
     n.accepted('Imagine a laboratory mystery. The blue laboratory door is marked ORCHID-17.','I enjoy tending an overgrown succulent.',True)
     return n
 
@@ -165,7 +165,7 @@ def test_legacy_identifier_and_hobby_migrate_without_losing_provenance(tmp_path)
     for r in n.state['facts']:
         r['slot']='detail:'+r['id'];r['exact']=False
     n.persist();before={r['id']:(r['text'],r['speaker'],r['epoch']) for r in n.state['facts']}
-    restored=NarrativeMemory(NarrativeConfig(persist_between_sessions=True),store);restored.activate('evelyn','synthetic')
+    restored=NarrativeMemory(NarrativeConfig(assistant_facts=True,persist_between_sessions=True),store);restored.activate('evelyn','synthetic')
     for r in restored.state['facts']:assert before[r['id']]==(r['text'],r['speaker'],r['epoch'])
     assert any(r['slot'].startswith('identifier:') for r in restored.state['facts'])
     assert any(r['slot'].startswith(('hobby:character','interest:character:')) for r in restored.state['facts'])

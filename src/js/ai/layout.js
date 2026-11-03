@@ -29,7 +29,7 @@ export function mountLayout(chat,character) {
     const banner=document.getElementById('disconnectBanner');banner.setAttribute('role','alert');
     shell.insertBefore(banner,columns);
     original.replaceWith(shell);document.body.classList.add('companion-app');
-    shell.querySelector('[data-emergency]').onclick=()=>document.getElementById('sessionStopBtn').click();
+    shell.querySelector('[data-emergency]').onclick=()=>{const stop=document.getElementById('sessionStopBtn');stop.dataset.safetyStop='true';stop.click();};
     const buttons=[...shell.querySelectorAll('[data-view]')];
     for(const button of buttons)button.onclick=()=>{const same=shell.dataset.view===button.dataset.view;
         shell.dataset.view=button.dataset.view==='character'&&same?'chat':button.dataset.view;

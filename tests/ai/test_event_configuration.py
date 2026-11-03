@@ -14,7 +14,8 @@ def test_config_persistence_presets_defaults_and_no_inference(tmp_path):
   with client.websocket_connect('/observe',headers={'Origin':ORIGIN}) as ws:
    auth(ws);ws.send_json({'version':1,'type':'configure_events','preset':'quiet'})
    info=until(ws,'character_state');assert info['events_saved'] and info['event_intelligence']['config']['preset']=='quiet'
-   assert app.state.director.config.spontaneous_interval_seconds==300 and not wire
+   # The preset's proactive interval no longer paces a retired legacy scheduler.
+   assert app.state.speech.event_intelligence.config.proactive_interval_seconds==300 and not wire
    c=EventConfig().model_dump();c['preset']='custom';c['detectors']['rapid_rise']['threshold_bpm']=18
    c['preferences']['evelyn']['physiology']=0
    ws.send_json({'version':1,'type':'configure_events','config':c});info=until(ws,'character_state')

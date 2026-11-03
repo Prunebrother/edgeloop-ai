@@ -122,7 +122,11 @@
     "daisy-narrative-v1:latest": "daisy",
     "celeste-narrative-v1:latest": "celeste",
     "celeste-narrative-v2:latest": "celeste",
-    "nova-narrative-v1:latest": "nova"
+    "nova-narrative-v1:latest": "nova",
+    "nova-narrative-f29-v011:latest": "nova",
+    "evelyn-narrative-f29-v013:latest": "evelyn",
+    "daisy-narrative-f29-v014:latest": "daisy",
+    "celeste-narrative-f29-v012:latest": "celeste"
   },
   "presentation": {
     "session_reactions": {},

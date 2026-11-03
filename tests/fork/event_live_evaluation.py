@@ -23,7 +23,7 @@ async def main(args):
  try:
   for name in MODELS:
    r=Replay();r.step(85,seconds=0);m=ModelManager(result['endpoint'],transport=audit);await m.select(AIConfig(model=name,max_tokens=320,temperature=.6,idle_unload_seconds=60,timeout_seconds=120.0));m.current_summary=r.observation.summary
-   d=ObserverDirector(DirectorConfig(narrative_initiative_enabled=False),clock=r.clock.mono);d.session_status='RUNNING';frames=[];s=ConversationService(r.observation,frames.append,m,clock=r.clock.mono,director=d);s.event_intelligence=r.detector
+   d=ObserverDirector(DirectorConfig(),clock=r.clock.mono);d.session_status='RUNNING';frames=[];s=ConversationService(r.observation,frames.append,m,clock=r.clock.mono,director=d);s.event_intelligence=r.detector
    model={'model':name,'responses':[]};result['models'].append(model)
    async def record(label,prompt=None):
     start=len(frames);requests=len(audit.wire);begin=time.monotonic()

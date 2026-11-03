@@ -7,13 +7,13 @@ EdgeLoop AI adds local AI companions to [EdgeLoop by marshallmims](https://githu
 On Linux x86_64 with a systemd user session and a current Chromium browser:
 
 ```bash
-curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.3.1/install.sh
+curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.4.0/install.sh
 bash install.sh
 ```
 
-The installer downloads and verifies the complete release, installs into your account without sudo, creates **EdgeLoop AI** and **Stop EdgeLoop AI** application shortcuts, and opens the app. Accept the adult-use gate, then chat with Nova or choose another companion. No Python, Node, Ollama or model commands are needed. Keep approximately 40 GB free during installation; the download contains both substantial base-model weight sets. Downloads resume when you rerun the installer. You can remove its download cache after installation.
+The installer downloads and verifies the complete release, installs into your account without sudo, creates **EdgeLoop AI** and **Stop EdgeLoop AI** application shortcuts, and opens the app. Accept the adult-use gate, then chat with Nova or choose another companion. No Python, Node, Ollama or model commands are needed. Keep approximately 25 GB free during installation; the download is about 9 GB, most of it base-model weights. Downloads resume when you rerun the installer. You can remove its download cache after installation.
 
-The complete bundle includes all 48 original character portraits, ten prepared character models for Evelyn, Daisy, Celeste and Nova, both base-model weight sets, Ollama 0.40.13, portable Python 3.12.16, pinned Python dependencies and local browser libraries. A source ZIP or Git clone includes the artwork and model definitions; use the **Release installer** for runtimes and weights.
+The complete bundle includes all 48 original character portraits, four prepared character models for Evelyn, Daisy, Celeste and Nova, the base-model weight set, Ollama 0.40.13, portable Python 3.12.16, pinned Python dependencies and local browser libraries. A source ZIP or Git clone includes the artwork and model definitions; use the **Release installer** for runtimes and weights.
 
 Inference runs locally. A CPU can run the models slowly; compatible NVIDIA hardware can accelerate the bundled runtime. Available RAM/VRAM must accommodate the model and its context. No universal minimum or latency guarantee has been established. AMD ROCm acceleration, Windows, macOS, ARM and non-systemd installation are outside this bundle's tested scope.
 

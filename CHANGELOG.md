@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.4.0 — companion conversation update
+
+- Four current companions: Nova, Evelyn, Daisy and Celeste, rebuilt with revised character prompts. Nova is the default for new installs; existing selections of older models need choosing again.
+- The Director card deck is on by default: companions occasionally bring in a short story or character moment. There is no settings switch yet; it can be turned off per companion in `deck-settings.json` in the data folder.
+- Story Memory now keeps what the participant said and no longer stores the companion's own lines, which reduces repeated phrasing. Only the participant's previous message is replayed, as background.
+- Reply cleanup: removes a restatement of your message at the start of a reply, unwraps quoted replies, drops stage narration between quoted speech and caps reply length.
+- Smaller download (about 9 GB): a single base model (qwen3.5 9B). The qwen3 8B weights are no longer included.
+
 ## F2.10 — public release preparation (unpublished)
 
 Separate source snapshot, privacy exclusions, public documentation and issue templates. No private Git history, model weights, private sessions or character artwork is included. Upstream licensing and acknowledgments are retained. Publication remains gated by validation and provenance findings.

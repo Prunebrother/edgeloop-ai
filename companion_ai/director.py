@@ -8,36 +8,38 @@ import logging
 import re
 import time
 from typing import Annotated, Literal
-from pydantic import Field
+from pydantic import Field, model_validator
 from .models import StrictModel
-from .fact_semantics import significance as memory_significance
-from .event_policy import REACTIVE_EVENTS, SELECTION_EVENTS, REACTION_EVENTS
+from .event_policy import SELECTION_EVENTS
 
 Origin = Literal['real_user', 'assistant_dialogue', 'edgeloop_telemetry', 'simulated_telemetry', 'tool_result', 'safety_event', 'system_event']
 Category = Literal['observation', 'significant_event', 'conversational_opportunity', 'safety_event']
 logger = logging.getLogger(__name__)
 
+# Pacing settings of the retired legacy idle, narrative-continuation and spontaneous schedulers.
+RETIRED_SETTINGS=frozenset({'narrative_initiative_enabled','experimental_idle_enabled','idle_interval_seconds','idle_response_cooldown_seconds',
+    'topic_cooldown_seconds','spontaneous_interval_seconds','topic_protection_seconds','category_cooldowns'})
+
 class DirectorConfig(StrictModel):
     enabled: bool = True
     spontaneous_enabled: bool = True
-    narrative_initiative_enabled: bool = True
-    experimental_idle_enabled: bool = False
-    idle_interval_seconds: float = Field(default=50., ge=15, le=1800)
-    idle_response_cooldown_seconds: float = Field(default=40., ge=0, le=1800)
-    topic_cooldown_seconds: float = Field(default=180., ge=0, le=3600)
-    max_consecutive_unsolicited: int = Field(default=2, ge=1, le=4)
+    unlimited_unsolicited: bool = True
+    max_consecutive_unsolicited: int = Field(default=50, ge=1, le=50)
     selection_debounce_seconds: float = Field(default=2.0, ge=.2, le=10)
     reaction_interval_seconds: float = Field(default=4.0, ge=0, le=60)
     reaction_user_grace_seconds: float = Field(default=2.0, ge=0, le=30)
-    spontaneous_interval_seconds: float = Field(default=120., ge=0, le=3600)
     user_idle_before_spontaneous_seconds: float = Field(default=30., ge=0, le=600)
-    topic_protection_seconds: float = Field(default=90., ge=0, le=600)
     dedup_seconds: float = Field(default=90., ge=0, le=600)
     aggregation_seconds: float = Field(default=30., ge=1, le=300)
-    category_cooldowns: dict[Literal['physiology','edge','device','session','tool'], Annotated[float, Field(ge=0, le=3600)]] = Field(default_factory=lambda: {'physiology':180.,'edge':120.,'device':90.,'session':120.,'tool':60.})
     repetition_threshold: float = Field(default=.82, ge=.5, le=1)
     regenerate_once: bool = True
     max_regeneration_seconds: float = Field(default=8., ge=.1, le=30)
+
+    @model_validator(mode='before')
+    @classmethod
+    def drop_retired(cls,values):
+        # Saved settings from before the legacy scheduler was retired still load; their fields are ignored.
+        return {k:v for k,v in values.items() if k not in RETIRED_SETTINGS} if isinstance(values,dict) else values
 
 
 def silent_response(text):
@@ -131,10 +133,8 @@ class ConversationDirector:
         self.aggregates={}
         self.seen={}
         self.occurrences=OrderedDict()
-        self.last_category={}
         self.last_spoken=float('-inf')
         self.last_reaction=float('-inf')
-        self.last_event_dispatch=float('-inf')
         self.typing_until=0
         self.last_reason='No speech requested'
         self.model_states={}
@@ -147,7 +147,7 @@ class ConversationDirector:
 
     def activate(self, scope):
         self.active_scope=scope
-        self.memory=self.model_states.setdefault(scope,{'topic':None,'topics':deque(maxlen=8),'questions':deque(maxlen=12),'responses':deque(maxlen=24),'event_responses':deque(maxlen=8),'last_user':float('-inf'),'consecutive_unsolicited':0,'quiet_requested':False,'initiative_topics':OrderedDict(),'initiative_intents':deque(maxlen=12),'last_idle_attempt':float('-inf'),'last_idle_finished':float('-inf'),'activated_at':self.clock(),'initiative_session':None})
+        self.memory=self.model_states.setdefault(scope,{'topic':None,'topics':deque(maxlen=8),'questions':deque(maxlen=12),'responses':deque(maxlen=24),'event_responses':deque(maxlen=8),'last_user':float('-inf'),'consecutive_unsolicited':0,'quiet_requested':False,'initiative_topics':OrderedDict(),'initiative_intents':deque(maxlen=12)})
 
         self.memory['quiet_requested']=self.quiet_all_models
 
@@ -244,85 +244,19 @@ class ConversationDirector:
         return True
 
     def opportunity(self, event):
-        now=self.clock();group=group_for(event['kind'])
+        """Only acknowledging the user's own experience or goal selection is scheduled here; the deck owns all other commentary."""
+        now=self.clock()
         if self.memory['quiet_requested']:return False,'user_requested_quiet'
-        if self.clock()<self.typing_until:return False,'user_typing'
+        if now<self.typing_until:return False,'user_typing'
         if not self.config.enabled:return True,'baseline_scheduler'
         if not self.config.spontaneous_enabled:return False,'spontaneous_disabled'
-        if event['kind'] in {'completion_accepted','came_early'}:return True,'verified_completion_action:'+event['kind']
-        if event['kind'] in REACTION_EVENTS:
-            if now<event.get('not_before',0):return False,'selection_settling'
-            if now-self.memory['last_user']<self.config.reaction_user_grace_seconds:return False,'user_turn_grace'
-            if now-self.last_reaction<self.config.reaction_interval_seconds:return False,'reaction_cooldown'
-            return True,('verified_lifecycle:' if event['kind'] not in SELECTION_EVENTS else 'verified_action:')+event['kind']
-        if self.memory['consecutive_unsolicited']>=self.config.max_consecutive_unsolicited and event.get('priority',0)<50 and event.get('category')!='derived':return False,'unsolicited_limit'
-        if group=='tool':return False,'acknowledgement_already_available'
-        if now-self.memory['last_user']<self.config.user_idle_before_spontaneous_seconds:return False,'active_conversation'
+        if now<event.get('not_before',0):return False,'selection_settling'
+        if now-self.memory['last_user']<self.config.reaction_user_grace_seconds:return False,'user_turn_grace'
         if now-self.last_reaction<self.config.reaction_interval_seconds:return False,'reaction_cooldown'
-        if now-self.last_event_dispatch<self.config.spontaneous_interval_seconds:return False,'spontaneous_frequency'
-        if now-self.last_category.get(group,float('-inf'))<self.config.category_cooldowns.get(group,90):return False,'category_cooldown'
-        if self.memory['topic'] not in {None,'session'} and now-self.memory['last_user']<self.config.topic_protection_seconds:return False,'continue_user_topic'
-        return True,'conversational_opportunity:'+group
-
-    def narrative_opportunity(self, engaged):
-        now=self.clock()
-        if not (self.config.enabled and self.config.spontaneous_enabled and self.config.narrative_initiative_enabled):return False,'narrative_disabled'
-        if self.memory['quiet_requested']:return False,'user_requested_quiet'
-        if self.clock()<self.typing_until:return False,'user_typing'
-        if not engaged:return False,'no_welcome_narrative_thread'
-        if self.session_status not in {'RUNNING','RAMPDOWN'}:return False,'narrative_session_inactive'
-        if self.memory['consecutive_unsolicited']>=self.config.max_consecutive_unsolicited:return False,'unsolicited_limit'
-        if now-self.memory['last_user']<self.config.user_idle_before_spontaneous_seconds:return False,'active_conversation'
-        if now-self.last_reaction<self.config.reaction_interval_seconds:return False,'reaction_cooldown'
-        if now-self.last_spoken<self.config.spontaneous_interval_seconds:return False,'spontaneous_frequency'
-        return True,'bounded_narrative_continuation'
-
-    def idle_candidate(self,narrative,history,session_id,session_status,fresh,memory_enabled=True):
-        now=self.clock();m=self.memory;c=self.config
-        if m['initiative_session']!=session_id:
-            m['last_idle_attempt']=max(m['last_idle_attempt'],m['activated_at'] if m['initiative_session'] is None else now)
-            m['initiative_session']=session_id
-        if session_status not in {'RUNNING','RAMPDOWN'}:m['last_idle_attempt']=now
-        reason=None
-        if not (c.enabled and c.spontaneous_enabled and c.experimental_idle_enabled):reason='experimental_idle_disabled'
-        elif m['quiet_requested']:reason='user_requested_quiet'
-        elif session_status not in {'RUNNING','RAMPDOWN'}:reason='stopped_or_paused_session'
-        elif not fresh:reason='unavailable_observation'
-        elif now<self.typing_until:reason='user_typing'
-        elif m['consecutive_unsolicited']>=c.max_consecutive_unsolicited:reason='unsolicited_limit'
-        elif now-m['last_user']<c.user_idle_before_spontaneous_seconds:reason='active_conversation'
-        elif now-max(m['last_idle_attempt'],m['last_user'],self.last_spoken)<c.idle_interval_seconds:reason='idle_interval'
-        elif now-m['last_idle_finished']<c.idle_response_cooldown_seconds:reason='idle_response_cooldown'
-        if reason:return None,reason
-        n=narrative or {};candidates=[]
-        fingerprint=lambda text:sha256(text.encode()).hexdigest()[:16]
-        if memory_enabled:
-            if c.narrative_initiative_enabled and n.get('initiative_allowed',False) and n.get('premise') and (n.get('objective') or n.get('choices') or n.get('commitments')):
-                refs=n.get('threads') or n.get('commitments') or [n['premise']]
-                for ref in refs[-2:]:candidates.append(('narrative_development','thread:'+fingerprint(ref),None))
-            users=[r for r in history if r.get('role')=='user' and r.get('narrative_epoch',n.get('epoch'))==n.get('epoch')]
-            if users and self.memory['topic']!='session':candidates.append(('dialogue_follow_up','dialogue:'+fingerprint(users[-1]['content']),None))
-            for fact in n.get('facts',[])[:16]:
-                if fact.get('status')=='active' and fact.get('category')!='hypothesis' and fact.get('speaker') in {'user','assistant'} and max(fact.get('importance',2),memory_significance(fact))>=3 and fact.get('epoch')==n.get('epoch') and fact.get('model_scope')==self.active_scope:
-                    candidates.append(('memory_recall','memory:'+fact['id'],fact['id']))
-            if n.get('premise'):candidates.append(('contextual_observation','context:'+fingerprint(n['premise']),None))
-        # Enabling this experimental setting explicitly permits a new conversational
-        # angle without inventing an event, a shared past, or a character biography.
-        candidates.append(('character_curiosity','curiosity',None))
-        eligible=[]
-        for intent,topic,reference in candidates:
-            remaining=c.topic_cooldown_seconds-(now-m['initiative_topics'].get(topic,float('-inf')))
-            if remaining>0:
-                self.counts['topic_candidates_suppressed']+=1
-                continue
-            used=list(m['initiative_intents']);recency=len(used)-1-used[::-1].index(intent) if intent in used else -1
-            eligible.append((recency,intent,topic,reference))
-        if not eligible:return None,'topic_cooldown'
-        _,intent,topic,reference=min(eligible,key=lambda row:row[0])
-        return {'intent':intent,'topic_key':topic,'reference_id':reference,'session_id':session_id,'reason':'fresh_idle_opportunity'},'fresh_idle_opportunity'
+        return True,'verified_action:'+event['kind']
 
     def idle_dispatched(self,opportunity):
-        m=self.memory;now=self.clock();m['last_idle_attempt']=now
+        m=self.memory;now=self.clock()
         m['initiative_topics'][opportunity['topic_key']]=now
         if len(m['initiative_topics'])>32:m['initiative_topics'].popitem(last=False)
         m['initiative_intents'].append(opportunity['intent'])
@@ -331,7 +265,7 @@ class ConversationDirector:
 
     def dispatched(self,event,reason):
         if not event.get('narrative'):
-            self.last_reaction=self.last_event_dispatch=self.clock();self.last_category[group_for(event['kind'])]=self.clock()
+            self.last_reaction=self.clock()
         self.mark_event(event,'dispatched')
         self.last_spoken=self.clock()
         self.last_reason=reason

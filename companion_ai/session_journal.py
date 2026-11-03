@@ -31,9 +31,12 @@ class SessionJournal:
                 raise ValueError('Unsupported journal format')
             if not isinstance(self.data.get('recording'), bool) or not isinstance(self.data.get('ai_access'), bool):
                 raise ValueError('Invalid privacy settings')
+            if type(self.data.get('nova_cross_companion', False)) is not bool:
+                raise ValueError('Invalid Nova history permission')
+            self.data.setdefault('nova_cross_companion', False)
             self.data['records'] = self.data['records'][-MAX_RECORDS:]
         except (ValueError, OSError):
-            self.data = {'schema_version': 1, 'recording': False, 'ai_access': False, 'records': []}
+            self.data = {'schema_version': 1, 'recording': False, 'ai_access': False, 'nova_cross_companion': False, 'records': []}
             self.error = 'Journal could not be read; recording and AI access are disabled. Existing file preserved.'
 
     def save(self, data):
@@ -45,8 +48,10 @@ class SessionJournal:
     def command(self, action, **fields):
         data = deepcopy(self.data)
         if action == 'configure':
-            for key in ('recording', 'ai_access'):
+            for key in ('recording', 'ai_access', 'nova_cross_companion'):
                 if fields.get(key) is not None: data[key] = fields[key]
+            if type(data.get('nova_cross_companion', False)) is not bool:
+                raise ValueError('Invalid Nova history permission')
         elif action == 'delete':
             data['records'] = [r for r in data['records'] if r['session_id'] != fields['session_id']]
         elif action == 'clear':
@@ -72,7 +77,7 @@ class SessionJournal:
         fields={'session_id','start_at','first_observed_at','active_running_seconds','edges','completion_status','heart_rate','experience','goal'}
         rows=[{k:deepcopy(v) for k,v in r.items() if k in fields}|{'companion':', '.join(dict.fromkeys(c['companion'] for c in r['companions']))} for r in records[offset:offset+10]]
         detail=next((deepcopy(r) for r in records if r['session_id']==session_id),None)
-        return {'recording':self.data['recording'],'ai_access':self.data['ai_access'],'records':rows,'detail':detail,'total':len(records),'offset':offset,'error':self.error,'limit':MAX_RECORDS}
+        return {'recording':self.data['recording'],'ai_access':self.data['ai_access'],'nova_cross_companion':self.data.get('nova_cross_companion',False),'records':rows,'detail':detail,'total':len(records),'offset':offset,'error':self.error,'limit':MAX_RECORDS}
 
     def observe(self, observer, previous, summaries):
         """Called only after canonical observer acceptance. Storage failure never blocks stopping."""
@@ -129,12 +134,23 @@ class SessionJournal:
             if e.get('session_id') == sid and e['event_id'] in observer.accepted_event_ids:
                 if not any(v['event_id'] == e['event_id'] for v in a['events']):
                     a['events'] = (a['events'] + [{k: e.get(k) for k in ('event_id', 'kind', 'at_ms')}])[-32:]
-                if e['kind'] == 'completion_accepted':
+                if e['kind'] == 'completion_accepted' and a['completion_status'] == 'unknown':
                     a['completion_status'] = 'accepted_application_event'; a['completion_source'] = 'validated original engine action; not physiological proof'
                 elif e['kind'] == 'came_early' and a['completion_status'] == 'unknown':
                     a['completion_status'] = 'user_reported'; a['completion_source'] = 'validated user early-release action; not sensor evidence'
-        if not summaries: return
-        final = summaries[-1]
+        reported = d.get('completion_reported') and a['completion_status'] != 'user_reported'
+        if reported:
+            a['completion_status'] = 'user_reported'
+            a['completion_source'] = 'explicit Finished me user report; not sensor evidence'
+        if not summaries and not reported: return
+        # Persist the report immediately, even while calibration is still open.
+        checkpoint = not summaries
+        final = summaries[-1] if summaries else {
+            'session_id': sid, 'active_running_seconds': r['seconds'], 'last_verified_running_ticks': r['seconds'],
+            'edges': r['edges'], 'experience': r['experience'], 'goal': r['goal'], 'termination': 'completion_reported',
+            'final_verified_at_ms': stamp, 'completeness': 'completion_report_captured', 'confidence': 'verified_engine_ticks',
+            'sensor_available': observer.hr_current(), 'measurement_source': observer.hr_source(), 'protection_observed': False}
+
         if final['session_id'] != sid: return
         record = {k: deepcopy(v) for k, v in a.items() if not k.startswith('_')}
         record.update({k: deepcopy(final.get(k)) for k in ('active_running_seconds', 'last_verified_running_ticks', 'edges', 'experience', 'goal', 'termination', 'final_verified_at_ms', 'completeness', 'confidence', 'sensor_available', 'measurement_source')})
@@ -143,14 +159,13 @@ class SessionJournal:
         record['settings_authority'] = 'selected/applied engine configuration only; physical device actions unverified'
         record['experiment'] = {'character_proposed': None, 'user_approved': None, 'engine_settings': deepcopy(a['settings']), 'observations_source': 'read_only_browser_observer'}
         data = deepcopy(self.data)
-        if not any(v['session_id'] == sid for v in data['records']):
-            data['records'] = (data['records'] + [record])[-MAX_RECORDS:]
-            data['closed_sessions'] = (data.get('closed_sessions',[]) + [sid])[-256:]
-            try: self.save(data)
-            except (ValueError, OSError):
-                self.error = 'Journal persistence failed; existing history preserved. Recording stopped; check local storage.'
-                self.data['recording'] = False
-        self.active = None
+        data['records'] = ([v for v in data['records'] if v['session_id'] != sid] + [record])[-MAX_RECORDS:]
+        if not checkpoint: data['closed_sessions'] = (data.get('closed_sessions',[]) + [sid])[-256:]
+        try: self.save(data)
+        except (ValueError, OSError):
+            self.error = 'Journal persistence failed; existing history preserved. Recording stopped; check local storage.'
+            self.data['recording'] = False
+        if not checkpoint: self.active = None
 
     @staticmethod
     def relevant(prompt):
@@ -159,10 +174,32 @@ class SessionJournal:
     def retrieve(self, prompt, scope):
         if not self.data['ai_access'] or self.error: return []
         if not self.relevant(prompt): return []
-        records = [r for r in self.data['records'] if any(c['model_scope'] == scope for c in r['companions'])]
+        records = [
+            r for r in self.data['records']
+            if isinstance(r, dict)
+            and isinstance(r.get('companions'), list)
+            and any(
+                isinstance(c, dict)
+                and c.get('model_scope') == scope
+                for c in r['companions']
+            )
+        ]
         # Factual history belongs to the user; another character is shared only when explicitly named.
         named = re.findall(r'\b(Evelyn|Daisy|Celeste|Nova)\b', prompt, re.I)
+        # Nova never receives RAW records belonging to other companions.
+        # Cross-character analysis uses a separate, opt-in, aggregate-only adapter.
+        if companion(scope) == 'nova' and any(n.casefold() != 'nova' for n in named):
+            return []
         if named: records = [r for r in self.data['records'] if any(c['companion'].casefold() in {n.casefold() for n in named} for c in r['companions'])]
+        if companion(scope) == 'nova':
+            # Explicit or implicit Nova-only requests must never expose raw
+            # multi-companion rows, including records with Nova and Daisy.
+            records = [r for r in records if isinstance(r.get('companions'), list)
+                       and r['companions'] and all(
+                           isinstance(c, dict)
+                           and str(c.get('companion', '')).casefold() == 'nova'
+                           and c.get('model_scope') == scope
+                           for c in r['companions'])]
         selected = records[-(2 if re.search(r'compar', prompt, re.I) else 1):]
         fields = {'session_id', 'start_at', 'first_observed_at', 'companions', 'historical', 'completion_status', 'stop_reason', 'quality', 'active_running_seconds', 'edges', 'experience', 'goal', 'completeness'}
         if re.search(r'\b(HR|heart|bpm|pulse)\b', prompt, re.I): fields.add('heart_rate')

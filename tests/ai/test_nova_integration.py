@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """Nova's real source/asset contract; inference uses isolated HTTP mocks only."""
 import json
-import pytest
 from pathlib import Path
 import httpx
 from companion_ai.event_intelligence import EventConfig

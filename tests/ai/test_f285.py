@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Director-only regression: synthetic observations, no hardware or live inference."""
+"""Director regression: synthetic observations, no hardware or live inference.
+The legacy idle and narrative-continuation schedulers are retired; Director 2.0 cards are the only proactive dialogue."""
 from pathlib import Path
 import asyncio,json
 from copy import deepcopy
@@ -27,7 +28,7 @@ class Adapter:
 
 def rig(adapter=None,**settings):
  r=Replay();r.step(85,seconds=0);frames=[];a=adapter or Adapter()
- d=ObserverDirector(DirectorConfig.model_validate({'experimental_idle_enabled':True,'regenerate_once':False}|settings),clock=r.clock.mono)
+ d=ObserverDirector(DirectorConfig.model_validate({'regenerate_once':False}|settings),clock=r.clock.mono)
  d.session_status=r.observation.status
  s=ConversationService(r.observation,frames.append,a,clock=r.clock.mono,director=d)
  return r,s,a,frames
@@ -46,11 +47,11 @@ def event(r,s,kind='edge',id='edge1',**extra):
  s.enqueue(kind,50,details);return details
 
 
-def test_stable_identity_outlives_legacy_ttl_and_new_occurrence_is_eligible():
- r,s,_,_=rig();details=event(r,s);s.pending.clear();s.director.mark_event({'kind':'edge',**details},'acknowledged')
+def test_stable_identity_outlives_legacy_ttl_and_new_occurrence_is_recorded():
+ r,s,_,_=rig();details=event(r,s);s.director.mark_event({'kind':'edge',**details},'acknowledged')
  tick(r,120);s.enqueue('edge',50,details)
  assert not s.pending and s.director.counts['duplicate_occurrences']==1
- event(r,s,id='edge2');assert len(s.pending)==1
+ event(r,s,id='edge2');assert s.director.counts['duplicate_occurrences']==1 and s.recent_events[-1]['event_id']=='edge2'
  assert len(s.director.occurrences)<=1024
 
 
@@ -70,10 +71,11 @@ def test_transition_alias_and_reconnect_cannot_replay_edge_or_mode():
  assert s.pending
 
 
+@pytest.mark.usefixtures('deck_off')
 async def test_mode_reacts_once_without_second_historical_event_in_prompt():
  wire=[];m=ModelManager(transport=runtime(wire,'[[expression:focused]]A new direction is selected.'))
  await m.select(AIConfig(model='nova-narrative-v1:latest'))
- r,s,_,frames=rig(m,experimental_idle_enabled=False);r.state['experience']='headplay';r.step(85)
+ r,s,_,frames=rig(m);r.state['experience']='headplay';r.step(85)
  details=event(r,s,'experience_changed','mode1',previous_experience='classic',current_experience='headplay',current_goal='tease',previous_goal='tease')
  tick(r,3);s.pump();await s.task
  assert len(wire)==1 and wire[0][1]['think'] is False
@@ -86,63 +88,52 @@ async def test_mode_reacts_once_without_second_historical_event_in_prompt():
  await s.close()
 
 
-async def test_idle_without_event_varies_intents_and_respects_topic_cooldown():
- r,s,a,frames=rig(max_consecutive_unsolicited=4);seed(s)
- for _ in range(4):
-  tick(r,51);s.pump();assert s.task;await s.task
- intents=list(s.director.memory['initiative_intents']);assert len(intents)==4 and len(set(intents))==4
- assert all('trigger_event' not in summary for summary,_,_ in a.calls)
- assert all(not summary['recent_events'] for summary,_,_ in a.calls)
- keys=list(s.director.memory['initiative_topics']);assert len(keys)==4
- assert all(summary['director_opportunity']['intent'] in intents for summary,_,_ in a.calls)
- assert not any(f['type']=='conversation_error' for f in frames)
+@pytest.mark.usefixtures('deck_off')
+async def test_a_quiet_running_session_with_story_and_memory_gets_no_idle_initiative():
+ # The legacy idle selector and narrative continuation are retired. Seeded story, memory and long
+ # quiet periods produce no unsolicited turn without the deck.
+ r,s,a,frames=rig(unlimited_unsolicited=False,max_consecutive_unsolicited=4);seed(s)
+ for _ in range(6):tick(r,51);s.pump();assert s.task is None
+ assert not a.calls and not list(s.director.memory['initiative_intents'])
+ assert not any(f['type'] in ('speech','conversation_error') for f in frames)
  await s.close()
 
 
-def test_recent_topic_suppresses_only_repeated_opportunity_and_event_does_not_wait_on_idle():
- r,s,_,_=rig();d=s.director;tick(r,51)
- d.memory['initiative_topics']['curiosity']=r.clock.mono()
- assert d.idle_candidate(None,[],r.observation.session_id,'RUNNING',True,False)[1]=='topic_cooldown'
- tick(r,181);op,_=d.idle_candidate(None,[],r.observation.session_id,'RUNNING',True,False);assert op['intent']=='character_curiosity'
- d.idle_dispatched(op);d.dispatched({'kind':'idle_initiative','narrative':True},'idle')
- # Idle is not a physiological/session-event cooldown and cannot starve a new event.
- assert d.opportunity({'kind':'edge','priority':50,'category':'authoritative'})[0]
+def test_legacy_selectors_are_retired_and_card_novelty_state_stays_bounded():
+ r,s,_,_=rig();d=s.director
+ assert not hasattr(d,'idle_candidate') and not hasattr(d,'narrative_opportunity')
+ # Director 2.0 still records its card intents and topics through idle_dispatched.
+ for i in range(80):d.idle_dispatched({'intent':'card','topic_key':'card:'+str(i),'session_id':r.observation.session_id})
+ assert len(d.memory['initiative_topics'])==32 and len(d.memory['initiative_intents'])==12
 
 
-async def test_direct_user_preempts_idle_and_quiet_is_cross_model_until_explicit_resume():
- gate=asyncio.Event()
- class Slow(Adapter):
-  async def reply(self,*args):self.calls.append(args);await gate.wait();return 'A synthetic reply.'
- r,s,a,frames=rig(Slow());seed(s);tick(r,51);s.pump();idle=s.task;await asyncio.sleep(0)
- s.request('Give me a break.',user=True);await idle
+async def test_quiet_request_is_cross_model_until_explicit_resume():
+ r,s,a,frames=rig();seed(s)
+ s.request('Give me a break.',user=True)
+ if s.task:await s.task
  assert s.director.memory['quiet_requested'] and not s.pending
- assert not any(f['type']=='speech' for f in frames)
- tick(r,51);s.pump();assert len(a.calls)==1
+ calls=len(a.calls);tick(r,51);s.pump();assert len(a.calls)==calls
  a.config=AIConfig(model='evelyn-narrative-v1:latest');s.activate_model();assert s.director.memory['quiet_requested']
- s.request('What is your name?',True);gate.set();await s.task
+ s.request('What is your name?',True);await s.task
  assert s.director.memory['quiet_requested'] # direct chat is permitted, not automatic consent
  s.request('You can talk again.',True);await s.task;assert not s.director.memory['quiet_requested']
  await s.close()
 
 
-async def test_new_major_event_preempts_idle_but_never_a_direct_user_turn():
+async def test_a_major_event_never_preempts_a_direct_user_turn():
  gate=asyncio.Event()
  class Slow(Adapter):
   async def reply(self,*args):self.calls.append(args);await gate.wait();return 'A valid fresh reply.'
- r,s,a,_=rig(Slow());seed(s);tick(r,51);s.pump();idle=s.task;await asyncio.sleep(0)
- event(r,s);await idle;assert idle.done()
+ r,s,a,_=rig(Slow());seed(s)
  s.request('Answer me directly.',True);user=s.task;await asyncio.sleep(0)
- s.pump();assert s.task is user and s.pending
+ event(r,s);s.pump();assert s.task is user and not s.pending
  gate.set();await user;await s.close()
 
 
-async def test_stopped_session_drops_queued_and_inflight_initiative_direct_chat_on_pause_works():
- gate=asyncio.Event()
- class Slow(Adapter):
-  async def reply(self,*args):await gate.wait();return 'A stale thought must not be displayed.'
- r,s,_,frames=rig(Slow());seed(s);tick(r,51);s.pump();await asyncio.sleep(0)
- r.step(85,status='IDLE');gate.set();await s.task
- assert not any(f['type']=='speech' for f in frames)
+@pytest.mark.usefixtures('deck_off')
+async def test_stopped_session_stays_silent_and_direct_chat_on_pause_works():
+ r,s,_,frames=rig();seed(s);tick(r,51);s.pump();assert s.task is None
+ r.step(85,status='IDLE')
  event(r,s,'session_started');s.pump();assert not s.pending
  tick(r,60);s.pump();assert not any(f['type']=='speech' for f in frames)
  r.step(85,status='PAUSED');s.request('Can we still chat?',True);await s.task
@@ -163,30 +154,21 @@ async def test_idle_context_memory_reference_is_source_backed_and_not_telemetry(
  await s.close()
 
 
-async def test_memory_disabled_idle_does_not_include_old_fiction_or_other_character():
- wire=[];m=ModelManager(transport=runtime(wire,'[[expression:neutral]]A fresh conversational angle.'))
- await m.select(AIConfig(model='nova-narrative-v1:latest'))
- r,s,_,_=rig(m);seed(s);m.memory=MemoryConfig(enabled=False)
- tick(r,51);s.pump();await s.task
- data=json.dumps(wire[-1]);assert 'garden' not in data and 'atlas' not in data and 'preferred drink' not in data
- assert s.director.memory['initiative_intents'][-1]=='character_curiosity'
- await s.close()
-
-
 def test_model_scoped_settings_authenticated_strict_and_migrated(tmp_path):
  wire=[];app=create_app(TOKEN,tmp_path,transport=runtime(wire))
  with TestClient(app) as client:
   with client.websocket_connect('/observe',headers={'Origin':ORIGIN}) as ws:
-   auth(ws);ws.send_json({'version':1,'type':'configure_director','model':'qwen3:8b','proactive_enabled':True,'experimental_idle_enabled':True,'idle_interval_seconds':50.,'topic_cooldown_seconds':180.})
-   saved=until(ws,'character_state');assert saved['director_saved'] and saved['director']['settings']['experimental_idle_enabled']
+   auth(ws);ws.send_json({'version':1,'type':'configure_director','model':'qwen3:8b','proactive_enabled':True,'reaction_interval_seconds':9.,'max_consecutive_unsolicited':5})
+   saved=until(ws,'character_state');assert saved['director_saved'] and saved['director']['settings']['reaction_interval_seconds']==9.
    assert not wire
    ws.send_json({'version':1,'type':'configure_director','model':'not-selected','proactive_enabled':False})
    assert until(ws,'character_menu_error')
  speech=app.state.speech;speech.adapter.config=AIConfig(model='nova-narrative-v1:latest');speech.activate_model()
- assert not speech.director.config.experimental_idle_enabled
- restored=create_app(TOKEN,tmp_path,transport=runtime(wire));assert restored.state.director.config.experimental_idle_enabled
- assert DirectorConfig.model_validate({'spontaneous_interval_seconds':120.}).idle_interval_seconds==50.
- assert not DirectorConfig().experimental_idle_enabled
+ assert speech.director.config.reaction_interval_seconds==4.
+ restored=create_app(TOKEN,tmp_path,transport=runtime(wire));assert restored.state.director.config.reaction_interval_seconds==9.
+ # Settings saved before the retirement still load; the retired pacing fields are ignored.
+ legacy=DirectorConfig.model_validate({'spontaneous_interval_seconds':120.,'experimental_idle_enabled':True,'idle_interval_seconds':50.,'category_cooldowns':{'edge':1.},'reaction_interval_seconds':6.})
+ assert legacy.reaction_interval_seconds==6. and not hasattr(legacy,'experimental_idle_enabled')
 
 
 @pytest.mark.parametrize('fields',[{'idle_interval_seconds':0},{'reaction_interval_seconds':90},{'topic_cooldown_seconds':-1},{'experimental_idle_enabled':'true'},{'hardware':'start'}])
@@ -195,7 +177,7 @@ def test_settings_cannot_add_control_or_invalid_timing(fields):
 
 
 async def test_obsolete_selection_is_dropped_before_inference_and_snapshot_has_no_event():
- r,s,a,_=rig(experimental_idle_enabled=False)
+ r,s,a,_=rig()
  event(r,s,'experience_changed','old-mode',previous_experience='classic',current_experience='headplay')
  tick(r,3);s.pump();assert not s.pending and not a.calls
  # Merely refreshing accepted state does not schedule a new transition.
@@ -205,15 +187,16 @@ async def test_obsolete_selection_is_dropped_before_inference_and_snapshot_has_n
 async def test_measurement_epoch_reconnect_cancels_stale_event_scope():
  gate=asyncio.Event()
  class Late(Adapter):
-  async def reply(self,*args):await gate.wait();return 'An obsolete edge acknowledgement.'
- r,s,_,frames=rig(Late(),experimental_idle_enabled=False)
- details=event(r,s,sequence=r.observation.sequence);s.pump();await asyncio.sleep(0)
+  async def reply(self,*args):await gate.wait();return 'An obsolete selection acknowledgement.'
+ r,s,_,frames=rig(Late());r.state['experience']='headplay';r.step(85)
+ event(r,s,'experience_changed','mode',previous_experience='classic',current_experience='headplay',current_goal='tease',previous_goal='tease',sequence=r.observation.sequence)
+ tick(r,3);s.pump();assert s.task;await asyncio.sleep(0)
  r.observation.begin_epoch();r.step(85,seconds=0);gate.set();await s.task
  assert not any(f['type']=='speech' for f in frames)
  await s.close()
 
 
-async def test_provider_inference_remains_serialized_when_direct_user_interrupts_idle():
+async def test_provider_inference_remains_serialized_when_a_direct_user_turn_interrupts_another():
  gate=asyncio.Event();first=asyncio.Event();active=0;peak=0;wire=[]
  class Stream(httpx.AsyncByteStream):
   async def __aiter__(self):
@@ -228,37 +211,31 @@ async def test_provider_inference_remains_serialized_when_direct_user_interrupts
   if req.url.path=='/api/ps':return httpx.Response(200,json={'models':[]})
   wire.append(json.loads(req.content));return httpx.Response(200,stream=Stream())
  m=ModelManager(transport=httpx.MockTransport(transport));await m.select(AIConfig(model='qwen3:8b'))
- r,s,_,frames=rig(m);seed(s);tick(r,51);s.pump();old=s.task;await asyncio.wait_for(first.wait(),2)
- s.request('Answer this directly.',True);gate.set();await old;await s.task
+ r,s,_,frames=rig(m);seed(s);s.request('First question.',True);old=s.task;await asyncio.wait_for(first.wait(),2)
+ s.request('Answer this directly.',True);gate.set();await asyncio.gather(old,return_exceptions=True);await s.task
  assert peak==1 and all(v['think'] is False and not v.get('tools') for v in wire)
  assert sum(f['type']=='speech' and f['source']=='event' for f in frames)==0
  assert sum(f['type']=='speech' and f['source']=='user' for f in frames)==1
  await s.close()
 
 
-def test_initial_idle_wait_and_bounded_novelty_state():
- r,s,_,_=rig();d=s.director
- assert d.idle_candidate(None,[],r.observation.session_id,'RUNNING',True,False)[1]=='idle_interval'
- for i in range(80):
-  d.idle_dispatched({'intent':'character_curiosity','topic_key':'synthetic-'+str(i),'session_id':r.observation.session_id})
- assert len(d.memory['initiative_topics'])==32 and len(d.memory['initiative_intents'])==12
-
-
-async def test_benchmark_has_no_duplicate_ack_or_hardware_calls_and_varied_idle_intents():
+@pytest.mark.usefixtures('deck_off')
+async def test_benchmark_has_no_unsolicited_turns_duplicate_ack_or_hardware_calls():
  from tests.fork.director_session_benchmark import run_arm
  result=await run_arm(True)
- assert result['autonomous_messages']>0 and result['duplicate_accepted_event_ids']==0
+ # Only acknowledging the user's own experience selection remains unsolicited without the deck.
+ assert set(result['trigger_categories'])<={'experience_changed','goal_changed'} and result['duplicate_accepted_event_ids']==0
  assert result['duplicate_events_suppressed']>=9 and result['errors']==0
- assert result['maximum_parallel_inference']==1 and result['thinking_off'] and result['output_budget_unchanged']
+ assert result['maximum_parallel_inference']<=1 and result['thinking_off'] and result['output_budget_unchanged']
  assert not result['hardware_tools_exposed'] and not result['messages_after_stop']
- assert len(set(result['requested_trigger_categories'])&{'narrative_development','dialogue_follow_up','memory_recall','character_curiosity','contextual_observation'})==5
+ assert set(result['requested_trigger_categories'])<={'experience_changed','goal_changed'}
 
 
 def test_unreadable_model_settings_preserve_file_and_use_defaults(tmp_path):
  path=tmp_path/'director-models.json';path.write_text('{broken')
  app=create_app(TOKEN,tmp_path,transport=runtime([]));s=app.state.speech
- assert s.director_settings_error and not s.director.config.experimental_idle_enabled
- with pytest.raises(ValueError):s.configure_director({'experimental_idle_enabled':True},s.responder()['model'])
+ assert s.director_settings_error and s.director.config==DirectorConfig()
+ with pytest.raises(ValueError):s.configure_director({'reaction_interval_seconds':5.},s.responder()['model'])
  assert path.read_text()=='{broken'
 
 
@@ -314,14 +291,16 @@ def test_checkpoint_reproduces_id_expiry_and_new_envelope_duplicate_defects():
  assert old.receive('edge',50,alias) and not new.receive('edge',50,alias)
 
 
-async def test_idle_does_not_reprime_acknowledged_event_prose_but_user_history_is_intact():
+async def test_card_turn_does_not_reprime_acknowledged_event_prose_but_user_history_is_intact():
+ # Director 2.0 card turns share this projection (narrative opportunity events).
  r,s,a,_=rig();seed(s)
  prose='The old transition invites the SAME-OLD-EVENT-ANGLE.'
  eid='old-selection';epoch=s.narrative.state['epoch']
  s.history.append({'role':'assistant','content':prose,'trigger_origin':'system_event','event_id':eid,'narrative_epoch':epoch})
  s.director.accepted(prose,False,{'kind':'experience_changed','event_id':eid});s.director.memory['event_responses'][-1]['narrative_epoch']=epoch
  s.narrative.state['developments'].append(prose)
- tick(r,51);s.pump();await s.task
+ op={'intent':'general_conversation','topic_key':'card:general-remark','reference_id':None,'session_id':r.observation.session_id,'card_id':'general-remark','brief':'Make a light remark.'}
+ tick(r,51);s.request('Director card',False,event={'kind':'deck_card','narrative':True,'opportunity':op});await s.task
  summary,prompt,history=a.calls[-1]
  assert prose not in str(history) and prose not in str(summary.get('narrative_context'))
  assert summary['idle_context_exclusions']['history_rows']>=1
@@ -330,13 +309,6 @@ async def test_idle_does_not_reprime_acknowledged_event_prose_but_user_history_i
  s.request('What did you say about that earlier transition?',True);await s.task
  assert prose in str(a.calls[-1][2])
  await s.close()
-
-
-def test_idle_memory_candidate_uses_existing_significance_not_routine_detours():
- r,s,_,_=rig();s.narrative.accepted('A visitor leaves parcel number 12 on the table. My preferred drink is tea.','Understood.',True)
- tick(r,51);op,reason=s.director.idle_candidate(s.narrative.context(),[],r.observation.session_id,'RUNNING',True,True)
- source=next(f for f in s.narrative.state['facts'] if f['id']==op['reference_id'])
- assert op['intent']=='memory_recall' and 'preferred drink' in source['text']
 
 
 def test_queued_user_behind_discovery_prevents_idle_scheduling(tmp_path):
@@ -349,7 +321,7 @@ def test_queued_user_behind_discovery_prevents_idle_scheduling(tmp_path):
   while not release.is_set():await asyncio.sleep(.005)
   return httpx.Response(200,json={'models':[{'name':'qwen3:8b'}]})
  app=create_app(TOKEN,tmp_path,adapter=a,transport=httpx.MockTransport(transport),clock=c.mono)
- app.state.director.config=DirectorConfig(experimental_idle_enabled=True,regenerate_once=False)
+ app.state.director.config=DirectorConfig(regenerate_once=False)
  try:
   with TestClient(app) as client:
    with client.websocket_connect('/observe',headers={'Origin':ORIGIN}) as ws:
@@ -368,19 +340,17 @@ def test_queued_user_behind_discovery_prevents_idle_scheduling(tmp_path):
 
 
 def test_idle_source_filter_preserves_established_personal_facts_introduced_with_events():
- r,s,_,_=rig();text='I work as an archivist.';epoch=s.narrative.state['epoch']
+ r,s,_,_=rig();text='I work as an archivist.';s.narrative.config=s.narrative.config.model_copy(update={'assistant_facts':True});epoch=s.narrative.state['epoch']
  s.narrative.accepted('Observed application event',text,False,event='experience_changed')
  s.director.accepted(text,False,{'kind':'experience_changed','event_id':'old-mode'});s.director.memory['event_responses'][-1]['narrative_epoch']=epoch
  projection={'narrative_context':s.narrative.context()};s.idle_context(projection,[])
  assert any(f['text']==text and f['category']=='character_detail' for f in projection['narrative_context']['facts'])
 
 
-async def test_validated_lifecycle_precedes_ordinary_events_without_general_cooldown_delay():
- r,s,a,_=rig(experimental_idle_enabled=False)
- s.last_event=s.director.last_spoken=s.director.last_event_dispatch=r.clock.mono()
- s.director.last_category['session']=r.clock.mono()
+@pytest.mark.usefixtures('deck_off')
+async def test_lifecycle_and_ordinary_events_without_the_deck_are_recorded_not_spoken():
+ r,s,a,_=rig()
  event(r,s,'edge','earlier-edge');tick(r,1);event(r,s,'session_resumed','resume')
- s.pump();await s.task
- assert a.calls[-1][0]['trigger_event']['kind']=='session_resumed'
- assert any(row['kind']=='edge' for row in s.pending)
+ s.pump();assert s.task is None and not a.calls and not s.pending
+ assert [e['kind'] for e in list(s.recent_events)[-2:]]==['edge','session_resumed']
  await s.close()

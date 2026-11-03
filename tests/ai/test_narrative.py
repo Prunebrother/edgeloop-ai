@@ -107,7 +107,9 @@ async def test_extended_forty_turn_session_and_transport_thinking_off():
     assert len(speech.history)==8
     await speech.close()
 
-async def test_director_initiative_requires_engagement_and_is_spent_once():
+@pytest.mark.usefixtures('deck_off')
+async def test_a_welcomed_story_thread_is_remembered_but_never_continued_unprompted_without_the_deck():
+    # Story Memory still records the welcomed thread; only the retired legacy continuation would have spoken it.
     c,o,s=observation();calls=[]
     class Adapter:
         config=AIConfig();mode='ollama'
@@ -117,10 +119,11 @@ async def test_director_initiative_requires_engagement_and_is_spent_once():
     speech.narrative.accepted('Imagine a mystery. I choose the garden.','I will keep the key for later.',True)
     d.user('Continue the story.');c.tick(121)
     s['details']['captured_at_ms']=int(c.wall()*1000);s['details']['hr_recorded_at_ms']=int(c.wall()*1000);o.accept(Observation.model_validate(frame(s,1)))
-    speech.pump();await speech.task
-    assert len(calls)==1 and calls[0]['narrative_initiative'] and 'trigger_event' not in calls[0]
-    c.tick(121);speech.pump();assert len(calls)==1
-    d.memory['consecutive_unsolicited']=2;assert d.narrative_opportunity(True)[1]=='unsolicited_limit'
+    assert speech.narrative.opportunity()
+    speech.pump();assert speech.task is None and not calls
+    c.tick(121);speech.pump();assert not calls
+    assert speech.request('What happens next?',user=True)['accepted'];await speech.task
+    assert len(calls)==1 and calls[0]['narrative_context']['premise']
     await speech.close()
 
 def test_reset_message_is_read_only_strict_protocol():
@@ -159,7 +162,7 @@ def test_previous_session_operational_dialogue_is_omitted_on_story_continuation(
     history=[{'role':'assistant','content':'The session was at 120 BPM.','session_id':'old'}, {'role':'user','content':'The blue envelope matters.','session_id':'old'}]
     messages,warnings=compose_messages(summary,'Continue our mystery.',history,AIConfig())
     assert not any(m['content']=='The session was at 120 BPM.' for m in messages)
-    assert any(m['content']=='The blue envelope matters.' for m in messages)
+    assert len(messages)==2 and '"The blue envelope matters."' in messages[-1]['content'] and 'EARLIER, THE PARTICIPANT SAID (already answered' in messages[-1]['content']
     assert warnings
 
 
@@ -189,16 +192,14 @@ def test_narrative_cannot_claim_generic_hardware_motion_or_paused_after_stop():
     assert 'unsupported_session_status' in violations('With the session officially paused, we can talk.',o.canonical())
 
 
-@pytest.mark.parametrize('reply',['[[expression:focused]]A new clue waits by the window.','[SILENCE]'])
-async def test_initiative_wire_payload_and_silence_spend_one_bounded_opportunity(reply):
-    c,o,s=observation();wire=[];m=ModelManager(transport=runtime(wire,reply));await m.select(AIConfig(model='daisy-narrative-v1:latest'))
+@pytest.mark.usefixtures('deck_off')
+async def test_no_bounded_narrative_opportunity_reaches_the_wire_without_the_deck():
+    c,o,s=observation();wire=[];m=ModelManager(transport=runtime(wire,'[[expression:focused]]A new clue waits by the window.'));await m.select(AIConfig(model='daisy-narrative-v1:latest'))
     d=ObserverDirector(DirectorConfig(regenerate_once=False),clock=c.mono);d.session_status='RUNNING'
     speech=ConversationService(o,lambda _:None,m,clock=c.mono,director=d)
     speech.narrative.accepted('Imagine a mystery. I choose the garden.','I will keep the key.',True)
     d.user('Continue our story.');c.tick(121)
     s['details']['captured_at_ms']=int(c.wall()*1000);s['details']['hr_recorded_at_ms']=int(c.wall()*1000);assert o.accept(Observation.model_validate(frame(s,1)))
-    speech.pump();await speech.task
-    assert len(wire)==1 and wire[0][1]['think'] is False
-    assert 'bounded narrative opportunity' in wire[0][1]['messages'][0]['content']
-    c.tick(121);speech.pump();assert len(wire)==1
+    speech.pump();c.tick(121);speech.pump()
+    assert speech.task is None and not wire
     await speech.close()

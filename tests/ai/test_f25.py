@@ -137,8 +137,8 @@ def test_event_classification_uses_actual_contract_only():
 def test_observer_reconnect_default_off_and_validated_event_payload(tmp_path):
     from tests.fork.test_observer import TOKEN, ORIGIN, snapshot, frame, auth, until
     wire=[];app=create_app(TOKEN,tmp_path,transport=runtime(wire))
-    # Test the same scheduler with clocks/cooldowns removed, never production policy.
-    app.state.director.config=DirectorConfig(spontaneous_interval_seconds=0.0,user_idle_before_spontaneous_seconds=0.0,category_cooldowns={})
+    # Without a deck there is no unsolicited milestone reaction; the validated event is still recorded.
+    app.state.director.config=DirectorConfig(user_idle_before_spontaneous_seconds=0.0)
     app.state.speech.policy=SpeechPolicy(min_interval_seconds=0.0,user_grace_seconds=0.0)
     browser=str(uuid4());state=snapshot();state['seconds']=299
     with TestClient(app) as client:
@@ -150,7 +150,9 @@ def test_observer_reconnect_default_off_and_validated_event_payload(tmp_path):
             state['seconds']=300
             event={'id':str(uuid4()),'kind':'milestone','session_id':state['session_id']}
             ws.send_json(frame(ready['epoch'],1,state,[event]));until(ws,'observation_ack')
-            result=until(ws,'speech');assert result['source']=='event' and result['expression']=='proud'
+            speech=app.state.speech;assert speech.recent_events[-1]['kind']=='milestone' and not speech.pending
+            ws.send_json({'version':1,'type':'chat','model':'brand-new:latest','text':'Hello'})
+            result=until(ws,'speech');assert result['source']=='user'
         with client.websocket_connect('/observe',headers={'Origin':ORIGIN}) as ws:
             ready=auth(ws,browser)
             ws.send_json({'version':1,'type':'select_model','selection':{'model':'brand-new:latest'}});assert until(ws,'model_selected')['thinking'] is False
@@ -173,7 +175,7 @@ def test_backend_inference_config_rejects_on_and_can_disable_expressions(tmp_pat
 async def test_routine_events_cannot_queue_in_observer_and_busy_generation_is_not_interrupted(tmp_path):
     # Direct policy tests complement the full validated websocket milestone test.
     from companion_ai.director import ConversationDirector
-    director=ConversationDirector(DirectorConfig(spontaneous_interval_seconds=0.0,user_idle_before_spontaneous_seconds=0.0,category_cooldowns={}))
+    director=ConversationDirector(DirectorConfig(user_idle_before_spontaneous_seconds=0.0))
     class Slow:
         mode='ollama';streaming=True;config=AIConfig()
         async def reply(self,*args,on_chunk=None):
@@ -185,12 +187,13 @@ async def test_routine_events_cannot_queue_in_observer_and_busy_generation_is_no
     active=speech.task
     speech.enqueue('milestone',50,{'session_id':state.session_id,'significance':'major'})
     speech.pump()
-    assert speech.task is active and not active.cancelled() and speech.pending
-    speech.adapter.config=AIConfig(model='different:latest');speech.activate_model()
-    assert not speech.pending
+    # Recorded as context only: it neither queues nor interrupts the user's turn.
+    assert speech.task is active and not active.cancelled() and not speech.pending
+    assert speech.recent_events[-1]['kind']=='milestone'
     speech.interrupt();await active;await speech.close()
 
 
+@pytest.mark.usefixtures('deck_off')
 def test_routine_observer_updates_never_trigger_inference(tmp_path):
     from tests.fork.test_observer import TOKEN,ORIGIN,snapshot,frame,auth,until
     import time

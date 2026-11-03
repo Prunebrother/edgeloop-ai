@@ -166,3 +166,37 @@ body.companion-app {margin:0;padding:0;display:block;height:100dvh;min-height:0;
 #session-journal label { display:block; margin:.7rem 0; }
 #session-journal pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:.75rem; }
 .character-toolbar { flex-wrap:wrap; }
+
+
+/* Director-only layout: keep everyday pacing visible and technical detail optional. */
+#character-director .drawer-content {container-type:inline-size;scrollbar-gutter:stable;padding-top:16px}
+#character-director .director-overview {padding:14px;border:1px solid #514363;border-radius:10px;background:#171c2d}
+#character-director h4 {font-size:14px;margin:0 0 12px}
+#character-director .director-state {font-size:14px;font-weight:600;color:#e4d7fa;margin:0 0 12px}
+#character-director .menu-setting {margin-top:22px}
+#character-director p,#character-director dt,#character-director dd {font-size:13px;line-height:1.6}
+#character-director dl {grid-template-columns:minmax(0,.9fr) minmax(0,1.2fr);gap:10px 16px}
+#character-director dt {color:#aab8cd}
+#character-director dd {white-space:pre-wrap}
+#character-director details {border-top:1px solid #354055;margin-top:16px;padding-top:4px}
+#character-director summary {padding:12px 0;font-size:13px;font-weight:600;color:#d3baf4;cursor:pointer;overflow-wrap:anywhere}
+#character-director label {line-height:1.5;min-width:0}
+#character-director .director-toggle {align-items:flex-start;padding:10px 0;font-size:14px}
+#character-director input[type=checkbox] {width:18px;height:18px;flex:0 0 18px;margin:2px 0}
+#character-director .director-number,#character-director [data-context-inputs] label {display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:12px;align-items:center;margin:14px 0;font-size:13px}
+#character-director input[type=number],#character-director select {height:auto;min-height:42px;min-width:0;max-width:100%;background:#0a1221;color:#e2e8f0;border:1px solid #46516a;border-radius:8px;padding:10px;font:inherit;font-size:14px}
+#character-director input[type=number] {width:100px;font-variant-numeric:tabular-nums}
+#character-director input:invalid {border-color:#fda4af}
+#character-director :focus-visible {outline:2px solid #c4b5fd;outline-offset:3px}
+#character-director .director-save {position:sticky;bottom:-12px;padding:12px 0;background:#0d1423;margin-top:12px;z-index:1}
+#character-director [data-save-director] {width:100%;min-height:42px;font-size:14px;font-weight:600}
+#character-director .event-intelligence {border-top:0;padding-top:0;margin-top:0}
+#character-director .event-intelligence label {font-size:13px}
+#character-director .event-intelligence input[type=number] {width:100px}
+#character-director .event-intelligence [data-detector-health] p {font-size:12px}
+@container (max-width:360px) {
+ #character-director dl {grid-template-columns:minmax(0,1fr);gap:4px}
+ #character-director dd {margin-bottom:10px}
+ #character-director .director-number,#character-director [data-context-inputs] label {grid-template-columns:minmax(0,1fr);gap:6px}
+ #character-director .director-number input,#character-director [data-context-inputs] input {width:100%}
+}

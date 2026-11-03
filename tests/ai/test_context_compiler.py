@@ -119,7 +119,8 @@ def test_recent_explicit_directive_outranks_optional_narrative_under_soft_pressu
  case=cases()[1];instruction='Never invent an answer to my questions. '+'Keep the answer transparent. '*35
  case.history=[{'role':'user','content':instruction}]
  info={};messages,warnings=compose_messages(case.summary()|{'narrative_context':{'premise':'A library mystery.','developments':['A desk clue.']}},'Hello',case.history,AIConfig(),context_config=ContextConfig(target_prompt_tokens=512,history_tokens=100),diagnostics=info)
- assert any(m['content']==instruction for m in messages)
+ # Standing directives are carried in the current turn as instructions that still apply.
+ assert len(messages)==2 and 'STANDING INSTRUCTION FROM THE PARTICIPANT (still applies)' in messages[-1]['content'] and instruction in messages[-1]['content']
  assert any('explicit user directive' in w for w in warnings)
 
 
@@ -127,7 +128,7 @@ def test_explicit_operational_boundary_is_a_directive_not_an_old_measurement():
  case=cases()[1];instruction='Never infer feelings from heart rate or claim hardware control.'
  case.history=[{'role':'user','content':instruction,'session_id':'earlier-session'}]
  messages,_,_=compile(case,prompt='What is my current BPM?')
- assert any(m['content']==instruction for m in messages)
+ assert 'STANDING INSTRUCTION FROM THE PARTICIPANT (still applies)' in messages[-1]['content'] and instruction in messages[-1]['content']
  assert 'Heart rate [hr]: 98 BPM' in messages[-1]['content']
 
 
@@ -138,6 +139,7 @@ def test_unknown_model_without_narrative_uses_generic_grounded_context():
  assert not info['narrative_references'] and 'Heart rate [hr]: 98 BPM' in messages[-1]['content']
 
 
+@pytest.mark.usefixtures('deck_off')
 async def test_event_arriving_mid_generation_cannot_replace_user_focus():
  import asyncio,json,httpx
  from companion_ai.conversation import ConversationService,ModelManager
@@ -157,7 +159,9 @@ async def test_event_arriving_mid_generation_cannot_replace_user_focus():
  for bpm in range(85,111):service.process_derived(r.step(bpm))
  service.pump()
  assert manager.context_diagnostics['focus']['category']=='answer_user'
- assert any(row['decision']=='deferred:active_generation' for row in r.detector.history)
+ # With no deck, the derived event is recorded as context only; it never competes with the user's turn.
+ assert any(row['decision']=='context_only:no_card_dealer' for row in r.detector.history)
+ assert not any(row['decision']=='deferred:active_generation' for row in r.detector.history) and not service.pending
  assert len(calls)==1 and calls[0]['think'] is False
  release.set();await service.task
  assert manager.context_diagnostics['focus']['category']=='answer_user' and len(calls)==1

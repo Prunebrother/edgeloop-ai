@@ -1,5 +1,5 @@
 {
-  "version": "v0.3.1",
+  "version": "v0.4.0",
   "platform": "linux-x86_64",
   "ollama": {
     "version": "0.40.13",
@@ -17,13 +17,6 @@
   ],
   "models": [
     {
-      "name": "qwen3:8b",
-      "manifest": "registry.ollama.ai/library/qwen3/8b",
-      "weights_sha256": "a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f",
-      "license": "Apache-2.0",
-      "source": "https://huggingface.co/Qwen/Qwen3-8B"
-    },
-    {
       "name": "huihui_ai/qwen3.5-abliterated:9b",
       "manifest": "registry.ollama.ai/huihui_ai/qwen3.5-abliterated/9b",
       "weights_sha256": "afb54ad43a39f947407f5cabc59856348d70e072baa5c62d436332157c151bcd",
@@ -31,19 +24,19 @@
       "source": "https://huggingface.co/huihui-ai/Huihui-Qwen3.5-9B-abliterated"
     }
   ],
-  "characters": [
-    "evelyn",
-    "daisy",
-    "evelyn-lite",
-    "daisy-lite",
-    "evelyn-lite-candidate",
+  "intermediate_characters": [
+    "nova-narrative-v1",
     "evelyn-narrative-v1",
     "daisy-narrative-v1",
-    "celeste-narrative-v1",
-    "celeste-narrative-v2",
-    "nova-narrative-v1"
+    "celeste-narrative-v2"
   ],
-  "default_model": "nova-narrative-v1:latest",
+  "characters": [
+    "nova-narrative-f29-v011",
+    "evelyn-narrative-f29-v013",
+    "daisy-narrative-f29-v014",
+    "celeste-narrative-f29-v012"
+  ],
+  "default_model": "nova-narrative-f29-v011:latest",
   "third_party_sources": [
     {
       "name": "gcc-8.5.0-28.el8_10.alma.1-openmp-source.tar.gz",

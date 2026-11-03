@@ -1,9 +1,9 @@
-from pathlib import Path
 # SPDX-License-Identifier: AGPL-3.0-only
 from copy import deepcopy
+from pathlib import Path
 import json,subprocess,sys,types
 import pytest
-from companion_ai.narrative import NarrativeMemory
+from companion_ai.narrative import NarrativeConfig,NarrativeMemory
 from companion_ai.narrative_facts import extract,retrieve,MAX_FACTS
 from companion_ai.context_compiler import ContextCompiler,ContextConfig
 from companion_ai.models import AIConfig
@@ -17,7 +17,7 @@ CASES=[
 ]
 @pytest.mark.parametrize('model,hobby,reply',CASES)
 def test_natural_hobby_retrieval_survives_detours_and_selects_evidence(model,hobby,reply):
- n=NarrativeMemory();n.activate(model,'synthetic');prompt=ESTABLISH.format(hobby=hobby)
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate(model,'synthetic');prompt=ESTABLISH.format(hobby=hobby)
  n.accepted(prompt,reply,True)
  original=next(r for r in n.state['facts'] if r['slot'].startswith(('hobby:character','interest:character:')));assert original['speaker']=='assistant' and original['text'] in reply
  for i in range(32):n.accepted(f'A visitor leaves parcel number {i} on the table. Reply with one brief unrelated observation.',f"I'll leave that parcel unresolved for a moment, and see what follows in room {i}.",True)
@@ -58,7 +58,7 @@ def test_non_personal_or_unestablished_material_is_not_hobby_evidence(reply):
 
 
 def test_legacy_generic_detail_is_retrievable_without_rewriting_provenance():
- n=NarrativeMemory();n.activate('celeste','s');reply=CASES[2][2]
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('celeste','s');reply=CASES[2][2]
  n.accepted(ESTABLISH.format(hobby=CASES[2][1]),reply,True)
  fact=next(r for r in n.state['facts'] if r['slot'].startswith(('hobby:character','interest:character:')));fact.update(slot='detail:legacy_personal_statement',category='development')
  before=deepcopy(fact)
@@ -68,7 +68,7 @@ def test_legacy_generic_detail_is_retrievable_without_rewriting_provenance():
 
 
 def test_small_narrative_budget_reports_budget_exclusion_not_missing_evidence():
- model,hobby,reply=CASES[0];n=NarrativeMemory();n.activate(model,'s');n.accepted(ESTABLISH.format(hobby=hobby),reply,True)
+ model,hobby,reply=CASES[0];n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate(model,'s');n.accepted(ESTABLISH.format(hobby=hobby),reply,True)
  summary,history,_=fixture(model);summary|={'narrative_context':n.context(),'narrative_scope':[model]}
  _,_,d=ContextCompiler(ContextConfig(narrative_tokens=0)).compile(summary,'What is your hobby?',history,AIConfig())
  assert d['narrative_recall']['matched_fact_ids'] and not d['narrative_recall']['selected_fact_ids']
@@ -89,7 +89,7 @@ def test_setup_cue_does_not_misattribute_third_party_activities(reply):
 
 @pytest.mark.parametrize('question',['What is your hobby?','What is your pastime?','What do you do in your spare time?','What do you do in your free time?'])
 def test_recall_question_paraphrases(question):
- n=NarrativeMemory();n.activate('daisy','s');n.accepted('Tell me your hobby.',"I've been spending my evenings pressing wildflowers.",True)
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('daisy','s');n.accepted('Tell me your hobby.',"I've been spending my evenings pressing wildflowers.",True)
  intent,found,_=retrieve(n.context(),question,'daisy',n.state['epoch'])
  assert intent=='hobby' and found
 
@@ -120,7 +120,7 @@ def test_checkpoint_retains_generic_statement_but_slot_only_recall_fails(model,h
  ('I find precision in restoring vintage fountain pens.','My hobby is repairing old fountain pens.'),
 ])
 def test_faithful_activity_paraphrase_keeps_source_without_false_conflict(source,answer):
- n=NarrativeMemory();n.activate('character','s');n.accepted('Tell me a hobby.',source,True)
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('character','s');n.accepted('Tell me a hobby.',source,True)
  original=next(r for r in n.state['facts'] if r['slot'].startswith(('hobby:character','interest:character:')))
  n.accepted('What is your hobby?',answer,True)
  assert original['status']=='active' and original['text']==source
@@ -128,7 +128,7 @@ def test_faithful_activity_paraphrase_keeps_source_without_false_conflict(source
 
 
 def test_shared_object_does_not_hide_a_changed_activity():
- n=NarrativeMemory();n.activate('character','s');n.accepted('Tell me a hobby.','My hobby is pressing wildflowers.',True)
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('character','s');n.accepted('Tell me a hobby.','My hobby is pressing wildflowers.',True)
  n.accepted('What is your hobby?','My hobby is painting wildflowers.',True)
  assert any(r['status']=='conflict' and 'painting' in r['text'] for r in n.state['facts'])
 

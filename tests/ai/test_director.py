@@ -39,25 +39,30 @@ def test_repetition_normalizes_phrases_and_questions():
 def test_equivalent_events_deduplicated_and_aggregated():
     clock,state,_,director,speech=directed()
     for hr in [90,91,92,94]:speech.enqueue('hr_rising',20,{'hr':hr,'delta_bpm':10})
-    assert len(speech.pending)==1
+    # Recorded and deduplicated, but never queued for commentary: the deck is the only proactive scheduler.
+    assert not speech.pending
     assert director.counts['events_suppressed']==3
     assert director.aggregates['hr_rising']['count']==4
     clock.now+=91;speech.enqueue('hr_rising',20,{'hr':100})
     assert director.counts['significant_events_retained']==2
 
 
-def test_current_topic_protected_and_category_cooldown():
+def test_selection_acknowledgement_waits_for_the_user_turn_and_reaction_cooldown():
+    # The only reaction the Director still schedules is acknowledging the user's own selection.
     clock,_,_,director,_=directed()
     director.user('Let us talk about old libraries and books.')
-    event={'kind':'hr_rising'}
-    assert director.opportunity(event)[1]=='active_conversation'
-    clock.now+=31
-    assert director.opportunity(event)[1]=='continue_user_topic'
-    clock.now+=91
+    event={'kind':'experience_changed','not_before':clock.now+1}
+    assert director.opportunity(event)[1]=='selection_settling'
+    clock.now+=1.5
+    assert director.opportunity(event)[1]=='user_turn_grace'
+    clock.now+=1
+    assert director.opportunity(event)==(True,'verified_action:experience_changed')
+    director.dispatched(event,'verified_action:experience_changed')
+    assert director.opportunity(event)[1]=='reaction_cooldown'
+    director.memory['quiet_requested']=True
+    assert director.opportunity(event)[1]=='user_requested_quiet'
+    director.memory['quiet_requested']=False;clock.now+=5
     assert director.opportunity(event)[0]
-    director.dispatched(event,'test')
-    clock.now+=121
-    assert director.opportunity(event)[1]=='category_cooldown'
 
 
 async def test_event_response_retained_as_assistant_not_user_and_shared_with_next_turn():
@@ -77,7 +82,7 @@ async def test_event_response_retained_as_assistant_not_user_and_shared_with_nex
     await speech.close()
 
 
-async def test_event_turn_receives_completed_user_history_and_no_numerical_prompt():
+async def test_telemetry_event_without_the_deck_is_recorded_but_never_spoken():
     calls=[]
     class Adapter:
         async def reply(self,summary,prompt,history):
@@ -85,8 +90,10 @@ async def test_event_turn_receives_completed_user_history_and_no_numerical_promp
     clock,state,_,director,speech=directed(Adapter())
     speech.request('Let us tell a story.',user=True);await speech.task
     clock.now+=100;state.report['status']='RUNNING';state.received=clock.now;speech.policy=SpeechPolicy(min_interval_seconds=0.,user_grace_seconds=0.)
-    speech.enqueue('hr_rising',20,{'hr':119,'delta_bpm':25});speech.pump();await speech.task
-    assert calls[-1][2] and '119' not in calls[-1][1] and '119' not in json.dumps({k:v for k,v in calls[-1][0].items() if k!='narrative_scope'})
+    turns=len(calls)
+    speech.enqueue('hr_rising',20,{'hr':119,'delta_bpm':25});speech.pump()
+    assert len(calls)==turns and (speech.task is None or speech.task.done()) and not speech.pending
+    assert director.aggregates['hr_rising']['hr']==119 and speech.recent_events[-1]['kind']=='hr_rising'
     await speech.close()
 
 

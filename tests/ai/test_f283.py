@@ -17,7 +17,7 @@ POTS='vintage, slightly dented teapots'
 MODELS=('evelyn-narrative-v1','daisy-narrative-v1','celeste-narrative-v2')
 ROOT=Path(__file__).resolve().parents[2]
 def memory(model=MODELS[0],store=None,persist=False):
- n=NarrativeMemory(NarrativeConfig(persist_between_sessions=persist),store);n.activate(model,'synthetic-session');return n
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True,persist_between_sessions=persist),store);n.activate(model,'synthetic-session');return n
 
 def establish(n):
  n.accepted('The Glasshouse page said: "'+QUOTE+'".','I collect '+POTS+'.',True)

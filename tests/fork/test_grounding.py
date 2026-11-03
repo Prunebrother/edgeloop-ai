@@ -139,12 +139,12 @@ def test_watchdog_reset_cannot_turn_a_nonlive_reading_into_current_telemetry():
 
 def test_expired_measurements_do_not_reenter_from_assistant_memory_but_personal_history_remains():
     case=next(c for c in cases() if c.name=='stale_connection')
-    original=case.history+[{'role':'user','content':'My name is Alex.'},{'role':'assistant','content':'Good to see you, Alex.'}]
+    original=case.history+[{'role':'user','content':'My name is Sean.'},{'role':'assistant','content':'Good to see you, Sean.'}]
     stored=deepcopy(original)
     messages,warnings=compose_messages(case.summary(),case.prompt,original,AIConfig(max_tokens=256))
     assert original==stored and warnings
     assert not any('98 BPM' in m['content'] for m in messages)
-    assert any('Alex' in m['content'] for m in messages)
+    assert any('Sean' in m['content'] for m in messages)
     assert 'CURRENT SESSION —' in messages[-1]['content']
 
 
@@ -165,7 +165,7 @@ def test_current_session_question_uses_no_old_dialogue_as_measurement_history_ev
     assert 'Heart rate [hr]: 98 BPM' in messages[-1]['content']
     # Explicit questions about prior dialogue still retain the conversation.
     past,_=compose_messages(case.summary(),'What did I say about my BPM earlier?',case.history,AIConfig(max_tokens=512),MemoryConfig(max_messages=64))
-    assert any('130 BPM' in m['content'] for m in past[:-1])
+    assert '130 BPM' in past[-1]['content'].split('EARLIER, THE PARTICIPANT SAID (already answered',1)[1].split('\n\n',1)[0]  # as background, not as a fresh turn
 
 
 def test_model_data_distinguishes_heart_sensor_from_stimulation_transports():

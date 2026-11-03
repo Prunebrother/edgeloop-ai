@@ -37,6 +37,7 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
     runtime_config=RuntimeConfig.load()
     endpoint=validate_ollama_url(ollama_url) if ollama_url is not None else runtime_config.ollama_url
     manager=ModelManager(endpoint,store=store,transport=transport)
+    manager.verified_journal=journal  # trusted internal reference; no new public endpoint
     manager.config=manager.config.model_copy(update={'thinking':False,'explicit_expressions':runtime_config.explicit_expressions})
     manager.current_summary=state.summary
     director=ObserverDirector(DirectorConfig.model_validate(store.read('director.json',{})),clock=clock)
@@ -140,12 +141,13 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                         # Latest-state protocol, not a telemetry backlog. Bound flood processing.
                         now=clock()
                         previous=state.report
-                        urgent=bool(message.snapshot.details and message.snapshot.details.terminal_outcome) or bool(previous and (previous.get('details') or {}).get('terminal_outcome') and message.snapshot.status=='IDLE') or previous and ((message.snapshot.status in {'PAUSED','IDLE'} and message.snapshot.status!=previous['status']) or
+                        urgent=bool(message.snapshot.details and (message.snapshot.details.terminal_outcome or message.snapshot.details.completion_reported and not (previous and (previous.get('details') or {}).get('completion_reported')))) or bool(previous and (previous.get('details') or {}).get('terminal_outcome') and message.snapshot.status=='IDLE') or previous and ((message.snapshot.status in {'PAUSED','IDLE'} and message.snapshot.status!=previous['status']) or
                             message.snapshot.safety.signal=='stale' and previous['safety']['signal']!='stale')
                         if now-last_observation<.1 and not urgent:
                             publish({'type':'observation_ack','accepted':False,'reason':'rate_limit'});continue
                         if not state.accept(message):
                             publish({'type':'observation_ack','accepted':False,'reason':'sequence'});continue
+                        if message.snapshot.details and message.snapshot.details.terminal_outcome=='safety_stop' and not any(e.kind=='stop' and e.id in state.accepted_event_ids for e in message.events):speech.safety('emergency_stop')
                         if state.status!='IDLE':speech.curator.cancel()
                         last_observation=now
                         if previous and previous['session_id']!=state.session_id:
@@ -162,6 +164,7 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                             if event.id in seen:continue
                             seen[event.id]=now
                             if len(seen)>256:seen.pop(next(iter(seen)))
+                            speech.deck_event(event.kind,event.id)
                             priority, rank=significance(event.kind,previous,state.report)
                             evidence=next((e for e in reversed(state.events) if e['kind']==event.kind),{})
                             if priority in {'major','critical'}:speech.last_validated_event={'kind':event.kind,'significance':priority,'session_id':state.session_id,'received':clock()}
@@ -191,17 +194,26 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                                     speech.event_intelligence.decision(event.id,'context_only:completion_transition')
                                 director.observation(event.kind,details,'edgeloop_telemetry');continue
                             if priority=='critical' or event.kind in {'pause','stop'}:
-                                speech.safety(event.kind)
+                                speech.safety('emergency_stop' if message.snapshot.details and message.snapshot.details.terminal_outcome=='safety_stop' else event.kind)
                                 speech.event_intelligence.decision(event.id,'deterministic_safety_notice')
-                            if narrative_priority=='major' and event.kind not in {'stop','pause'}:speech.enqueue(event.kind,rank,details)
+                            if narrative_priority=='major' and event.kind not in {'stop','pause','came_early'} and not (event.kind=='completion_accepted' and state.status=='IDLE'):speech.enqueue(event.kind,rank,details)
                             elif narrative_priority=='routine':
                                 speech.event_intelligence.decision(event.id,'context_only:low_significance' if eligible and relevance else 'context_only:disabled_or_character_preference')
                                 director.observation(event.kind,details,'edgeloop_telemetry')
                             publish({'type':'ai_diagnostics','last_event':event.kind,'event_priority':priority,'director_decision':director.last_reason,'thinking':False,'inference_error':manager.metrics.last_error})
+                        final = next((s for s in reversed(state.completed_sessions) if s['session_id']==state.session_id), None)
+                        closing = bool(previous and previous['session_id']==state.session_id and previous['status']!='IDLE' and state.status=='IDLE' and final and not final['protection_observed'] and not final['device_unready_observed'] and final['termination'] not in {'cancelled','safety_stop','cancelled_or_unclassified_stop'})
+                        if closing:
+                            # Journal persistence has already run inside state.accept; inference is queued only.
+                            completion_event=next((e for e in message.events if e.kind in {'completion_accepted','came_early'} and e.id in state.accepted_event_ids),None)
+                            speech.enqueue(completion_event.kind if completion_event else 'session_ended',70,{'event_id':completion_event.id if completion_event else 'session-ended:'+state.session_id,'session_id':state.session_id,
+                                'at_ms':final['received_at_ms'],'sequence':message.sequence,'category':'authoritative',
+                                'session_result':{k:final.get(k) for k in ('active_running_seconds','last_verified_running_ticks','edges','experience','goal','termination','completion_status','completion_source','completeness')},
+                                'evidence':'Session ended; use only the supplied counters and their completeness. Completion status is explicit user report or unknown, never inferred from measurements.'})
                         speech.process_derived()
                         publish({'type':'observation_ack','accepted':True,'sequence':message.sequence,'session_id':state.session_id,
                             'rejected_events':[{'id':e.id,'kind':e.kind,'reason':'duplicate_stale_or_unproven'} for e in message.events if e.id not in state.accepted_event_ids],
-                            'events':[{'id':e.id,'kind':e.kind,'session_id':state.session_id} | ({'preserve_reaction':True} if e.kind=='stop' and (accepted_release or any(p['kind'] in {'came_early','completion_accepted'} for p in speech.pending) or speech.active_event_kind in {'came_early','completion_accepted'} and speech.task is not None and not speech.task.done()) else {}) for e in message.events if e.id in state.accepted_event_ids]})
+                            'events':[{'id':e.id,'kind':e.kind,'session_id':state.session_id} | ({'preserve_reaction':True} if e.kind=='stop' and (closing or accepted_release or any(p['kind'] in {'came_early','completion_accepted'} for p in speech.pending) or speech.active_event_kind in {'came_early','completion_accepted'} and speech.task is not None and not speech.task.done()) else {}) for e in message.events if e.id in state.accepted_event_ids]})
                     elif isinstance(message,ConfigureCurator):
                         try:
                             speech.curator.configure(message.config)

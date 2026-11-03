@@ -97,7 +97,7 @@ async def evaluate(args):
      speech.pump();model['turns'].append({'scenario':kind,'inference':False,'reason':'stale observation; no unattended narration'});continue
     if kind=='initiative':
      o.connected=True;o.received=c.mono();d.session_status=s['status']
-     allowed,reason=d.narrative_opportunity(speech.narrative.opportunity());start=len(messages);speech.pump()
+     allowed,reason=False,'legacy_narrative_continuation_retired';start=len(messages);speech.pump()
      if speech.task:await speech.task
      model['turns'].append({'scenario':kind,'inference':len(messages)>start,'decision':reason,'frames':messages[start:]});continue
     if kind=='switch_restore':

@@ -16,11 +16,12 @@ def test_matched_default_budget_reproduces_and_repairs_starvation(model):
  old,_,od=baseline_compiler().compile(summary,'Good evening.',history,config,reserve_characters=len(native))
  messages,_,d=ContextCompiler().compile(summary,'Good evening.',history,config,reserve_characters=len(native))
  assert len(old)==2 and not od['narrative_references']
- assert len(messages)>=4 and d['narrative_references']
- assert all(any(m['content']==h['content'] for m in messages) for h in history[-2:])
+ assert len(messages)==2 and d['narrative_references']
+ last_user=[h for h in history if h['role']=='user'][-1]
+ assert json.dumps(last_user['content'],ensure_ascii=False) in messages[-1]['content'] and 'EARLIER, THE PARTICIPANT SAID' in messages[-1]['content']
  assert d['budget']['soft_target_tokens']==2800
  assert d['estimated_prompt_tokens']<=d['budget']['hard_prompt_tokens']
- assert d['allocation']['protected_history_messages']==2 and d['allocation']['protected_story_items']==1
+ assert d['allocation']['protected_history_messages']==1 and d['allocation']['protected_story_items']==1
  assert (summary,history)==before and messages[-1]['content'].endswith('Good evening.')
 
 @pytest.mark.parametrize('history_cap,story_cap',[(0,450),(1200,0),(0,0),(120,80),(1200,450)])
@@ -203,14 +204,15 @@ async def test_provider_receives_native_identity_and_retained_context(model):
  m=ModelManager(transport=httpx.MockTransport(handler));await m.start(AIConfig(model=model+':latest'))
  await m.reply(summary,'Good evening.',history)
  assert len(wire)==1 and wire[0]['think'] is False and wire[0]['messages'][0]['content'].startswith(native+'\n\n')
- assert m.context_diagnostics['allocation']['retained_history_messages']>=2
+ assert m.context_diagnostics['allocation']['retained_history_messages']==1 and [x['role'] for x in wire[0]['messages']]==['system','user']
  assert m.context_diagnostics['allocation']['retained_story_items']>=1
  assert 'BLE' not in wire[0]['messages'][-1]['content']
 
 @pytest.mark.parametrize('model',MODELS)
-def test_realistic_long_dialogue_preserves_a_whole_recent_exchange(model):
+def test_realistic_long_dialogue_preserves_the_whole_latest_user_message(model):
  summary,history,native=fixture(model)
  history=[m|{'content':m['content']+' We agreed to keep the notebook on the bench, and return together tomorrow.'*8} for m in history]
  m,_,d=ContextCompiler().compile(summary,'Could we return to our garden plans?',history,AIConfig(),reserve_characters=len(native))
- assert all(any(message['content']==old['content'] for message in m) for old in history[-2:])
+ last_user=[h for h in history if h['role']=='user'][-1]
+ assert [message['role'] for message in m]==['system','user'] and json.dumps(last_user['content'],ensure_ascii=False) in m[-1]['content']
  assert d['narrative_references'] and d['estimated_prompt_tokens']<=d['budget']['hard_prompt_tokens']

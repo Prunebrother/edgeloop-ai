@@ -4,7 +4,7 @@
 set -euo pipefail
 # Verification must not rewrite sealed Python caches, including in older bundles.
 export PYTHONDONTWRITEBYTECODE=1
-version=v0.3.1
+version=v0.4.0
 base="https://github.com/Prunebrother/edgeloop-ai/releases/download/$version"
 cache="${XDG_CACHE_HOME:-$HOME/.cache}/edgeloop-ai/$version"
 destination="$HOME/.local/share/edgeloop-ai/releases/$version"
@@ -20,7 +20,7 @@ if [[ -d "$destination" ]]; then
   exec bash "$destination/tools/install-bundle.sh" "$@"
 fi
 echo 'Downloading EdgeLoop AI with all portraits, models, Ollama and Python.'
-echo 'Allow approximately 15 GB for downloads and 25 GB for installation (40 GB free recommended).'
+echo 'Allow approximately 9 GB for downloads and 12 GB for installation (25 GB free recommended).'
 curl -fL --retry 3 "$base/SHA256SUMS" -o "$cache/SHA256SUMS"
 parts=()
 while read -r digest filename; do

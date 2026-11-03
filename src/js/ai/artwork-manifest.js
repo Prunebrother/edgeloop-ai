@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // One configurable identity/asset contract, shared with the local static server.
-import manifest from '../../assets/characters/manifest.json' with {type:'json'};
+import manifest from '../../assets/characters/manifest.json?v=f29-candidates-1' with {type:'json'};
 export const CHARACTER_MANIFEST=manifest;
 export const EXPRESSIONS=Object.freeze([...manifest.expressions]);
 export const ACTIVITIES=Object.freeze([...manifest.activities]);

@@ -41,13 +41,15 @@ def test_bundle_verification_rejects_corruption_missing_files_and_escape(tmp_pat
         bundle.verify(tmp_path)
 
 
-def test_new_user_gets_nova_and_existing_selection_is_preserved(tmp_path):
+def test_new_user_gets_the_release_default_and_existing_selection_is_preserved(tmp_path):
     bundle = load('bundle')
     bundle.configure(tmp_path, desktop=False, start=False)
     data = tmp_path / '.local/share/edgeloop-ai/data'
     from companion_ai.conversation import ModelManager
     from companion_ai.storage import SettingsStore
-    assert ModelManager(store=SettingsStore(data)).config.model == 'nova-narrative-v1:latest'
+    default = json.loads((ROOT / 'release-inputs.json').read_text())['default_model']
+    assert default == 'nova-narrative-f29-v011:latest'
+    assert ModelManager(store=SettingsStore(data)).config.model == default
     file = data / 'selection.json'
     original = json.dumps({'config': {'model': 'daisy-narrative-v1:latest'}})
     file.write_text(original)
@@ -80,10 +82,19 @@ def test_bundled_desktop_uses_its_runtime_and_store(tmp_path):
 def test_release_art_and_model_inventory_is_complete():
     inputs = json.loads((ROOT / 'release-inputs.json').read_text())
     catalog = json.loads((ROOT / 'src/assets/characters/manifest.json').read_text())
-    assert len(inputs['characters']) == 10
+    assert inputs['characters'] == ['nova-narrative-f29-v011', 'evelyn-narrative-f29-v013',
+                                    'daisy-narrative-f29-v014', 'celeste-narrative-f29-v012']
+    assert [m['name'] for m in inputs['models']] == ['huihui_ai/qwen3.5-abliterated:9b']
+    assert inputs['default_model'] == inputs['characters'][0] + ':latest'
+    intermediates = set(inputs['intermediate_characters'])
     for name in inputs['characters']:
         assert any(line.startswith('FROM ') for line in (ROOT / f'characters/models/{name}/Modelfile').read_text().splitlines())
         assert name + ':latest' in catalog['models']
+    # Every FROM resolves to a base model or an intermediate built earlier in the same store.
+    for name in [*inputs['intermediate_characters'], *inputs['characters']]:
+        parent = next(l.split(None, 1)[1].strip() for l in (ROOT / f'characters/models/{name}/Modelfile').read_text().splitlines()
+                      if l.startswith('FROM '))
+        assert parent in {m['name'] for m in inputs['models']} or parent.removesuffix(':latest') in intermediates, (name, parent)
     for character in catalog['characters'].values():
         assert len(character['expressions']) == 12
         for image in character['expressions'].values():

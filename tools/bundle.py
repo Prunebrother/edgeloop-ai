@@ -29,7 +29,8 @@ def configure(home, desktop=True, start=True, root=ROOT):
     data.mkdir(parents=True, exist_ok=True, mode=0o700)
     config = data / 'selection.json'
     if not config.exists():
-        config.write_text(json.dumps({'config': {'model': 'nova-narrative-v1:latest', 'thinking': False}}) + '\n')
+        default = json.loads((root / 'release-inputs.json').read_text())['default_model']
+        config.write_text(json.dumps({'config': {'model': default, 'thinking': False}}) + '\n')
         config.chmod(0o600)
     if desktop:
         from install_desktop import install

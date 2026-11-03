@@ -94,14 +94,18 @@ class BrowserObservation:
             complete=bool(pre_reset and captured is not None and not gap)
             classification=('calibration_completed' if terminal=='calibration_completed' and any(e.kind=='completion_accepted' and e.id in self.accepted_event_ids for e in message.events) else
                             'accidental_release' if terminal=='premature_release' or any(e.kind=='came_early' and e.id in self.accepted_event_ids for e in message.events) else
-                            'manual_stop' if terminal=='manual_stop' else 'cancelled' if terminal=='cancelled' else
+                            'safety_stop' if terminal=='safety_stop' else
+                            'manual_stop' if terminal=='manual_stop' else 'other_stop' if terminal=='other_stop' else 'cancelled' if terminal=='cancelled' else
                             'stop_with_protection_observed' if previous['safety']['watchdog_paused'] or previous['safety']['fault'] in {'signal_lost','no_contact'} else 'cancelled_or_unclassified_stop')
             self.completed_sessions.append({'session_id':self.session_id,'model_scope':self.model_scope,
                 'active_running_seconds':final['seconds'] if complete else None,
                 'last_verified_running_ticks':final['seconds'], 'edges':final['edges'],
                 'experience':final['experience'],'goal':final['goal'],'termination':classification,
                 'final_verified_at_ms':final_stamp,'received_at_ms':int(self.wall()*1000),
-                'protection_observed':previous['safety']['watchdog_paused'] or previous['safety']['fault'] in {'signal_lost','no_contact'},
+                'completion_status':'user_reported' if details.get('completion_reported') or (previous.get('details') or {}).get('completion_reported') or classification=='accidental_release' else 'accepted_application_event' if classification=='calibration_completed' else 'unknown',
+                'completion_source':'explicit user report; not sensor evidence' if details.get('completion_reported') or (previous.get('details') or {}).get('completion_reported') else 'validated engine action; not physiological proof' if classification=='calibration_completed' else None,
+                'device_unready_observed':any(s['fault']=='device_unready' for s in (previous['safety'],report['safety'])),
+                'protection_observed':terminal=='safety_stop' or any(s['watchdog_paused'] or s['no_contact'] or s['fault'] in {'signal_lost','no_contact'} for s in (previous['safety'],report['safety'])),
                 'sensor_available':self.hr_current(),'measurement_source':self.hr_source(),
                 'milestones':[{k:v for k,v in e.items() if k in {'event_id','kind','evidence','sequence','at_ms'}} for e in list(self.events)[-6:]],
                 'completeness':'final_counter_captured' if complete else 'final_duration_unavailable',

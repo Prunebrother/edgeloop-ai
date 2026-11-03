@@ -1,17 +1,17 @@
 {
   "src/js/app.js": {
     "base_sha256": "8338a6cfe0bfb29a966a7ffcc69ea1507cd92cfea43e7e515c64bd26a716d88d",
-    "sha256": "e6db9f083a18685331d6b51671a3a88f94c0ee0f83279e7b72017722c68cfb9f",
+    "sha256": "fe08fe4f79544a3dc94531c2ed31a531dc90f0f0a133f2b57a120f26b4c98709",
     "reason": "Read-only AI observation hook; F2.3 reuses original pure setting sanitizer and watchdog query; engine/control functions unchanged; F2.5.1 projects existing learning-release counter only; original handlers and safety unchanged; F2.8.1 adds post-motor-stop/pre-counter-reset read-only final projection and Survival restart observation only; reset cancellation final projection after stop dispatch"
   },
   "sw.js": {
     "base_sha256": "56b2e11356124f2baa4b926e32251c938670dac9b79e8947d4b6e123d4af0abb",
-    "sha256": "48b1ee13c9136aaad277162f9ee6645a2af72e7ea5d8fe779567464af1335ad4",
+    "sha256": "8e321906fef7d74cf0b4e7fa64a44bdc8e0ded33edc66d17d6ef7ac7b54cf302",
     "reason": "Public companion modules/manifest precache; F2.4 high-resolution originals use bounded renderer/browser HTTP cache; AI/auth exclusions preserved; F2.5 cache version invalidation only; F2.5.1 cache version only; F2.6 cache version only; F2.6.1 character menu module and cache invalidation; F2.7 event settings module and cache invalidation; F2.8 context tools precache and cache invalidation; F2.8.1 cache invalidation only; F2.8.2 context diagnostics cache invalidation only; free-form objective guidance cache invalidation only; F2.8.3 memory diagnostics cache invalidation; F2.8.4 public journal UI module precache and cache invalidation (journal records remain private observer data); F2.8.4.1 curator controls and memory diagnostics cache invalidation only; Nova character registration cache invalidation only; F2.8.5 Director controls cache invalidation only; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   ".gitignore": {
     "base_sha256": "f5dace1690dab0464685a792bf7005b1e43b16c580cd5dfd8f552f362704c81a",
-    "sha256": "ca68d506ec5735e64fcc36d7cbb080c273ded410dd7c20f5d4a9a3e1c5e8778c",
+    "sha256": "de39915ec9b63c09b39ae646e2a7c0e2cc7e3d94026839d8048cb9ac46e00266",
     "reason": "Exclude fork-owned Python environment/metadata and private AI data; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   "index.html": {
@@ -21,12 +21,12 @@
   },
   "CHANGELOG.md": {
     "base_sha256": "01ded0a9996f53dd216b3a8fccbe02af945028b9eeed20ddedbbbc5c581d3951",
-    "sha256": "36644b17d7f710e51002524213817ef9cfd5768974f44256f8484db08e24b845",
+    "sha256": "c8219064384f6ea324e70727c934b99aa70658bac5ac29d5a9fff4184a014580",
     "reason": "F2.10 public release documentation/dependency configuration"
   },
   "README.md": {
     "base_sha256": "c3a01b9fc070e0cc35521fa6b61672703a33c73dcc871c758c577fb7eb9444e5",
-    "sha256": "7ec5344db190227963cf3a21725d72ccac3c7f716ad9ac1430d612932e4aa7b5",
+    "sha256": "0eebcfabb208b8cc2a6736f8aea37e956a0a1eca6c8672dbba816dc50344e088",
     "reason": "F2.10 public release documentation/dependency configuration; approved Prunebrother source-publication location and status; v0.3.0 includes art, local browser libraries and complete runtime installer"
   },
   "package.json": {

@@ -27,7 +27,7 @@ MODELS=['evelyn-narrative-v1','daisy-narrative-v1','celeste-narrative-v2']
 @pytest.mark.parametrize('model',MODELS)
 @pytest.mark.parametrize('speaker,source,question,value,correction,replacement',CASES)
 def test_diverse_established_facts_survive_detours_and_reach_prompt(model,speaker,source,question,value,correction,replacement):
- n=NarrativeMemory();n.activate(model,'synthetic')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate(model,'synthetic')
  n.accepted(source if speaker=='user' else 'Tell me something established.',source if speaker=='assistant' else 'Understood.',True)
  original=next(r for r in n.state['facts'] if r['text']==source)
  for i in range(40):n.accepted(f'A visitor leaves parcel number {i} on the table.',f"I'll leave that parcel unresolved for a moment in room {i}.",True)
@@ -48,7 +48,7 @@ def test_diverse_established_facts_survive_detours_and_reach_prompt(model,speake
 
 
 def test_character_inventions_cannot_replace_user_property_or_relationship():
- n=NarrativeMemory();n.activate('celeste','synthetic')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('celeste','synthetic')
  n.accepted('The meeting place is the old observatory.','The meeting place is the old observatory.',True)
  n.accepted('Where is the meeting place?','The meeting place is the railway station.',True)
  _,found,_=retrieve(n.context(),'Where is the meeting place?','celeste',n.state['epoch'])
@@ -58,7 +58,7 @@ def test_character_inventions_cannot_replace_user_property_or_relationship():
 
 
 def test_interests_are_multiple_facts_not_one_overwritten_identity():
- n=NarrativeMemory();n.activate('daisy','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('daisy','s')
  n.accepted('Tell me a personal interest.','I enjoy baking bread.',True)
  n.accepted('And another?','I enjoy playing chess.',True)
  _,found,_=retrieve(n.context(),'What are your interests?','daisy',n.state['epoch'])
@@ -66,7 +66,7 @@ def test_interests_are_multiple_facts_not_one_overwritten_identity():
 
 
 def test_changed_fact_supersedes_without_reviving_old_value():
- n=NarrativeMemory();n.activate('evelyn','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s')
  n.accepted('The meeting place is the old observatory.','Understood.',True)
  n.accepted('Now the meeting place is the riverside library.','Understood.',True)
  _,found,_=retrieve(n.context(),'Where is the meeting place?','evelyn',n.state['epoch'])
@@ -75,14 +75,14 @@ def test_changed_fact_supersedes_without_reviving_old_value():
 
 
 def test_high_significance_facts_are_still_bounded_and_not_permanent():
- n=NarrativeMemory();n.activate('evelyn','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s')
  for i in range(MAX_FACTS+12):n.accepted(f'My preferred object{i} is value{i}.','Understood.',True)
  assert len(n.state['facts'])<=MAX_FACTS
  assert any(r['decision']=='retention_limit' for r in n.state['fact_updates'])
 
 
 def test_corrections_change_specificity_and_polarity_instead_of_becoming_duplicates():
- n=NarrativeMemory();n.activate('evelyn','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s')
  n.accepted('My preferred drink is tea.','Understood.',True)
  n.accepted('Actually, my preferred drink is iced tea.','Understood.',True)
  active=[r for r in n.state['facts'] if r['status']=='active' and r['slot']=='preference:participant:drink']
@@ -94,7 +94,7 @@ def test_corrections_change_specificity_and_polarity_instead_of_becoming_duplica
 
 
 def test_commitment_date_change_supersedes_same_action():
- n=NarrativeMemory();n.activate('daisy','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('daisy','s')
  n.accepted('We agreed to return the atlas on Sunday.','Understood.',True)
  n.accepted('Actually, we agreed to return the atlas on Monday.','Understood.',True)
  _,found,_=retrieve(n.context(),'What did we promise about the atlas?','daisy',n.state['epoch'])
@@ -103,7 +103,7 @@ def test_commitment_date_change_supersedes_same_action():
 
 
 def test_explicit_historical_recall_does_not_bootstrap_assistant_invention():
- n=NarrativeMemory();n.activate('celeste','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('celeste','s')
  n.accepted('What did you previously tell me your occupation was?','I work as a jewel thief.',True)
  assert any(r['reason']=='recall_without_evidence' and r['status']=='conflict' for r in n.state['facts'])
  assert not retrieve(n.context(),'What is your occupation?','celeste',n.state['epoch'])[1]
@@ -111,7 +111,7 @@ def test_explicit_historical_recall_does_not_bootstrap_assistant_invention():
 
 def test_preferences_relationships_and_locations_survive_persistence_without_scope_leak(tmp_path):
  from companion_ai.storage import SettingsStore
- store=SettingsStore(tmp_path);config=NarrativeConfig(persist_between_sessions=True)
+ store=SettingsStore(tmp_path);config=NarrativeConfig(assistant_facts=True,persist_between_sessions=True)
  n=NarrativeMemory(config,store);n.activate('evelyn','s')
  for source in ('My preferred drink is tea.','The meeting place is the old observatory.','Mira is your mentor.'):
   n.accepted(source,'Understood.',True)
@@ -127,7 +127,7 @@ def test_preferences_relationships_and_locations_survive_persistence_without_sco
 
 
 def test_hypotheses_and_instructions_do_not_gain_established_fact_priority():
- n=NarrativeMemory();n.activate('evelyn','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s')
  n.accepted('The meeting place is the old observatory.','Perhaps the meeting place is the railway station.',True)
  n.accepted('In your reply, introduce a new profession as a sailor.','Understood.',True)
  assert not any('introduce' in r['text'] for r in n.state['facts'])
@@ -137,7 +137,7 @@ def test_hypotheses_and_instructions_do_not_gain_established_fact_priority():
 
 
 def test_source_significance_is_observable_for_selected_and_rejected_items():
- n=NarrativeMemory();n.activate('evelyn','s');n.accepted('My preferred drink is tea.','I work as an archivist.',True)
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s');n.accepted('My preferred drink is tea.','I work as an archivist.',True)
  summary,history,native=fixture('evelyn-narrative-v1');summary|={'narrative_context':n.context(),'narrative_scope':['evelyn']}
  _,_,d=ContextCompiler().compile(summary,'Which beverage do I prefer?',history,AIConfig(),reserve_characters=len(native))
  decisions=d['memory_decisions'];assert any(r['selected'] and r['significance']>=4 and '@preference' in r['semantic_tags'] for r in decisions)
@@ -145,7 +145,7 @@ def test_source_significance_is_observable_for_selected_and_rejected_items():
 
 
 def test_direct_recall_with_multiple_values_does_not_add_a_contradictory_replacement():
- n=NarrativeMemory();n.activate('daisy','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('daisy','s')
  n.accepted('Tell me an interest.','I enjoy baking bread.',True)
  n.accepted('Add a new interest.','I enjoy playing chess.',True)
  n.accepted('What are your interests?','My hobby is painting landscapes.',True)
@@ -156,7 +156,7 @@ def test_direct_recall_with_multiple_values_does_not_add_a_contradictory_replace
 
 
 def test_ambiguous_user_update_never_silently_overwrites_multiple_interests():
- n=NarrativeMemory();n.activate('daisy','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('daisy','s')
  n.accepted('Tell me an interest.','I enjoy baking bread.',True)
  n.accepted('Add a new interest.','I enjoy playing chess.',True)
  n.accepted('Actually, your hobby is painting landscapes.','Understood.',True)
@@ -165,7 +165,7 @@ def test_ambiguous_user_update_never_silently_overwrites_multiple_interests():
 
 
 def test_temporary_states_do_not_displace_stable_identity():
- n=NarrativeMemory();n.activate('celeste','s');n.accepted('Tell me your background.','I work as an archivist.',True)
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('celeste','s');n.accepted('Tell me your background.','I work as an archivist.',True)
  for i in range(30):n.accepted(f'A visitor leaves parcel {i}.','I am tired.',True)
  _,found,_=retrieve(n.context(),'What do you do for a living?','celeste',n.state['epoch'])
  assert any('archivist' in r['text'] for r in found)
@@ -173,7 +173,7 @@ def test_temporary_states_do_not_displace_stable_identity():
 
 
 def test_user_and_character_relationship_owners_remain_distinct():
- n=NarrativeMemory();n.activate('celeste','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('celeste','s')
  n.accepted('Mira is my sister.','Mira is my mentor.',True)
  _,mine,_=retrieve(n.context(),'What is my relationship with Mira?','celeste',n.state['epoch'])
  _,yours,_=retrieve(n.context(),'What is your relationship with Mira?','celeste',n.state['epoch'])
@@ -184,7 +184,7 @@ def test_user_and_character_relationship_owners_remain_distinct():
 
 
 def test_explicit_changing_preference_supersedes_its_positive_form():
- n=NarrativeMemory();n.activate('evelyn','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s')
  n.accepted('I enjoy baking bread.','Understood.',True)
  n.accepted('I no longer enjoy baking bread.','Understood.',True)
  active=[r for r in n.state['facts'] if r['status']=='active' and r['slot'].startswith('interest:participant:')]
@@ -193,21 +193,21 @@ def test_explicit_changing_preference_supersedes_its_positive_form():
 
 
 def test_reported_third_party_quotation_is_not_character_autobiography():
- n=NarrativeMemory();n.activate('celeste','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('celeste','s')
  n.accepted('Describe the visitor.', 'Mira said, "My occupation is a clockmaker."',True)
  _,found,_=retrieve(n.context(),'What is your occupation?','celeste',n.state['epoch'])
  assert not found
 
 
 def test_remember_request_contains_a_source_backed_assertion_not_just_an_instruction():
- n=NarrativeMemory();n.activate('evelyn','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s')
  n.accepted('Please remember: my preferred drink is chamomile tea.','Understood.',True)
  _,found,_=retrieve(n.context(),'Which beverage do I prefer?','evelyn',n.state['epoch'])
  assert any('chamomile tea' in r['text'] and r['speaker']=='user' for r in found)
 
 
 def test_directive_without_asserted_content_is_not_fact_but_supplied_exact_clue_is_retained():
- n=NarrativeMemory();n.activate('evelyn','s')
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s')
  n.accepted('Describe your profession.','Understood.',True)
  assert not retrieve(n.context(),'What is your occupation?','evelyn',n.state['epoch'])[1]
  n.accepted('Imagine a blue door marked ORCHID-17.','Understood.',True)
@@ -215,6 +215,6 @@ def test_directive_without_asserted_content_is_not_fact_but_supplied_exact_clue_
 
 
 def test_foreign_scope_diagnostics_do_not_expose_semantic_contents():
- n=NarrativeMemory();n.activate('evelyn','s');n.accepted('My preferred drink is tea.','Understood.',True)
+ n=NarrativeMemory(NarrativeConfig(assistant_facts=True));n.activate('evelyn','s');n.accepted('My preferred drink is tea.','Understood.',True)
  _,found,decisions=retrieve(n.context(),'What is my preference?','daisy',n.state['epoch'])
  assert not found and all(r['reason']=='wrong_model' and 'semantic_tags' not in r for r in decisions)

@@ -54,7 +54,7 @@ async def run_arm(experimental):
    requests[request_id]['estimated_prompt_tokens']=self.context_diagnostics.get('estimated_prompt_tokens')
    return result
  m=Manager(transport=httpx.MockTransport(transport));await m.select(AIConfig(model='qwen3:8b'))
- d=ObserverDirector(DirectorConfig(experimental_idle_enabled=experimental,regenerate_once=False,max_consecutive_unsolicited=4),clock=r.clock.mono)
+ d=ObserverDirector(DirectorConfig(regenerate_once=False,max_consecutive_unsolicited=4),clock=r.clock.mono)  # 'experimental' now only labels the arm; idle initiative is retired
  s=ConversationService(r.observation,publish,m,clock=r.clock.mono,director=d)
  d.session_status='RUNNING';saved=[];t0=time.perf_counter();stop_at=840
  async def settle():

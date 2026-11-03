@@ -89,8 +89,19 @@ def create_characters(stage, inputs, log):
                     time.sleep(.25)
             else:
                 raise RuntimeError('Build Ollama did not become ready')
-            for name in inputs['characters']:
+            # Intermediate aliases are parents of the shipped characters (their FROM). A created
+            # model copies every parent layer, so parents are removed and only characters ship.
+            intermediates = inputs.get('intermediate_characters', [])
+            for name in [*intermediates, *inputs['characters']]:
                 run(binary, 'create', name, '-f', stage / f'characters/models/{name}/Modelfile', env=env)
+            for name in intermediates:
+                run(binary, 'rm', name, env=env)
+            with HTTP.open(endpoint + '/api/tags', timeout=10) as response:
+                installed = sorted(m['name'] for m in json.load(response)['models'])
+            expected = sorted(n + ':latest' for n in inputs['characters'])
+            base = sorted(m['name'] for m in inputs['models'])
+            if sorted(n for n in installed if n not in base) != expected:
+                raise RuntimeError(f'Bundled model store holds {installed}, expected {expected} plus base models')
         finally:
             process.terminate()
             try:

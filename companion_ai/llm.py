@@ -282,10 +282,10 @@ class OllamaProvider:
             result.raise_for_status()
 
 
-async def collect_reply(provider, request, on_chunk=None, on_expression=None):
+async def collect_reply(provider, request, on_chunk=None, on_expression=None, card=False):
     """Text-only application path: structured calls require an explicit external router."""
     from .expressions import ExpressionStream
-    parser = ExpressionStream(on_expression, request.config.explicit_expressions)
+    parser = ExpressionStream(on_expression, request.config.explicit_expressions, card=card)
     content = ''
     async for event in provider.stream(request):
         if event.kind == 'text_delta':

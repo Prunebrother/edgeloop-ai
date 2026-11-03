@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """Version 1 presentation envelope. Never accepts user text or session commands."""
+import re
+
 EXPRESSIONS = ('neutral', 'happy', 'playful', 'flirty', 'mischievous', 'focused',
                'excited', 'surprised', 'disappointed', 'concerned', 'proud', 'comforting')
 FORMAT_INSTRUCTION = (
@@ -9,6 +11,18 @@ FORMAT_INSTRUCTION = (
     'Then give your normal dialogue in your established character. '
     'Choose the expression for the delivery of this particular reply; do not copy an earlier header mechanically. The header describes your intended delivery, never the user or session state. '
     'Do not explain the header or narrate a facial gesture for this format.')
+# Repeats the contract at the start of a short card prompt, where this model otherwise malforms it.
+HEADER_REMINDER = 'Begin with the [[expression:ID]] header, with ID from the allowed list.'
+_IDS = '|'.join(EXPRESSIONS)
+# One-bracket lookalikes of the header, on card turns only. At the start of a reply they stand where the
+# header belongs. Further in, only the unmistakable forms count, so "He looked [proud] of it." stays visible.
+_SINGLE_BRACKET_TAG = re.compile(rf'\[\s*(?:expression\s*:\s*)?(?:{_IDS})\s*(?::[^\]\n]*)?\]', re.I)
+_INLINE_TAG = re.compile(rf'\[\s*(?:expression\s*:[^\]\n]*|(?:{_IDS})\s*:\S*)\s*\]', re.I)
+_SINGLE_BRACKET_LIMIT = 48
+
+
+def _is_bare_id(content):
+    return content.strip().lower() in EXPRESSIONS
 
 
 class ExpressionStream:
@@ -16,12 +30,15 @@ class ExpressionStream:
 
     Double-bracket envelopes containing a colon are reserved presentation data.
     Only the canonical leading expression header is accepted. Malformed envelopes
-    are removed, never translated into another protocol. Ordinary [[prose]] is
-    preserved. Legacy inline reasoning is suppressed independently.
+    are removed, never translated into another protocol. Ordinary [[prose]] and [prose]
+    are preserved. Legacy inline reasoning is suppressed independently.
+
+    `card` is for the Director's own turns, where a model malforms the header it was just
+    reminded of: a leading [[happy]], [happy] or [happy:Daisy] goes as well.
     """
     tokens = ('[[', '<think>', '</think>')
 
-    def __init__(self, on_expression=None, enabled=True):
+    def __init__(self, on_expression=None, enabled=True, card=False):
         self.pending = ''
         self.mode = 'text'
         self.envelope = ''
@@ -34,10 +51,17 @@ class ExpressionStream:
         self.headers = 0
         self.on_expression = on_expression
         self.enabled = enabled
+        self.card = card
+
+    def _bare_header(self, content):
+        return self.card and self.leading and _is_bare_id(content)
+
+    def _lookalike(self, tag):
+        return (_SINGLE_BRACKET_TAG if self.leading else _INLINE_TAG).fullmatch(tag)
 
     def _envelope_end(self, closed):
         content = self.envelope[:-2] if closed else self.envelope.rstrip('\n')
-        reserved = self.oversized or ':' in content or content.startswith('expression')
+        reserved = self.oversized or ':' in content or content.startswith('expression') or self._bare_header(content)
         if not reserved:
             self.leading = False
             return '[[' + self.envelope
@@ -85,6 +109,12 @@ class ExpressionStream:
                 if lower == '</think>':
                     self.pending = '';break
                 if any(token.startswith(lower) for token in self.tokens):break
+                if self.card and self.pending[0] == '[':
+                    closing = self.pending.find(']')
+                    if closing < 0 and len(self.pending) < _SINGLE_BRACKET_LIMIT and '\n' not in self.pending:break
+                    if closing >= 0 and self._lookalike(self.pending[:closing + 1]):
+                        self.pending = self.pending[closing + 1:]
+                        continue
                 visible = self.pending[0];self.pending = self.pending[1:]
                 output.append(visible)
                 if not visible.isspace():self.leading = False
@@ -93,10 +123,14 @@ class ExpressionStream:
     def finish(self):
         # Never release a truncated reserved prefix. Retain ordinary bracket prose.
         remainder=self.pending if self.pending in {'[','<'} else ''
+        if self.card and self.pending.startswith('[') and not self.pending.startswith('[['):
+            word=re.split(r'[:\]]',self.pending[1:].lower(),maxsplit=1)[0].strip()
+            truncated_tag=word=='expression' or word in EXPRESSIONS and (self.leading or ':' in self.pending)
+            if not truncated_tag:remainder=self.pending
         self.pending = ''
         if self.mode == 'metadata':
             content = self.envelope
-            if not self.oversized and ':' not in content and not 'expression'.startswith(content) and not content.startswith('expression'):
+            if not self.oversized and ':' not in content and not 'expression'.startswith(content) and not content.startswith('expression') and not (self.card and _is_bare_id(content)):
                 return '[[' + content
             self.valid = False
         return remainder

@@ -14,12 +14,20 @@ class NarrativeConfig(StrictModel):
     persist_between_sessions: bool = False
     max_excerpts: int = Field(default=8, ge=2, le=12)
     excerpt_characters: int = Field(default=180, ge=60, le=240)
+    # Companion-spoken lines are still checked against established facts, but are
+    # not stored as facts themselves, so the model is not fed its own claims back.
+    assistant_facts: bool = False
+    # Likewise raw clips of companion replies (developments, commitments, its open
+    # question) are kept out of the prompt; only the user's own premise/choices and
+    # story-card replies (card memory 'story') are replayed.
+    assistant_excerpts: bool = False
 
 # Real operational assertions remain outside story anchors; fictional numbers and
 # ordinary narrative wording are permitted by operational_text().
 INVITATION = re.compile(r'\b(?:story|scene|premise|imagine|fiction|narrative)\b',re.I)
 QUIET = re.compile(r"\b(?:stop|disengage|quiet|silence|leave me|no more|do not continue|don.t continue|pause the story)\b",re.I)
 CHOICE = re.compile(r"\b(?:choose|chose|pick|prefer|let.s|decide|instead|agree|suggest|propose|yes)\b",re.I)
+BLOCKING = {'contradicts_established_detail','native_canon_conflict','recall_without_evidence'}
 PROMISE = re.compile(r"\b(?:I.ll|I will|promise|later|next time|we.ll)\b",re.I)
 
 class NarrativeObjective(StrictModel):
@@ -114,7 +122,7 @@ class NarrativeMemory:
         if text and text not in self.state[key]:
             self.state[key].append(text);self.state[key]=self.state[key][-self.config.max_excerpts:]
 
-    def accepted(self,prompt,text,user,event=None,initiative=False):
+    def accepted(self,prompt,text,user,event=None,initiative=False,story=False):
         if not self.config.enabled:return
         s=self.state
         if user and abandonment_requested(prompt):return
@@ -131,12 +139,15 @@ class NarrativeMemory:
                 quote=clean_dialogue(prompt)[:self.config.excerpt_characters] or None
             if not s['premise'] and INVITATION.search(prompt):s['premise']=quote
             if CHOICE.search(prompt):self.append('choices',quote)
-        updates=merge(s['facts'],extract(text,'assistant',self.scope,s['epoch'],prompt if user else ''),canon=self.canon.get(self.scope))
-        s['fact_updates']=(s['fact_updates']+updates)[-8:]
-        quote=None if any(u['decision'] in {'contradicts_established_detail','native_canon_conflict','recall_without_evidence'} for u in updates) else self.excerpt(text)
-        if not s['premise'] and user and s['initiative_allowed']:s['premise']=quote
-        self.append('developments',quote)
-        if quote and PROMISE.search(quote):self.append('commitments',quote)
+        keep=self.config.assistant_facts
+        updates=merge(s['facts'] if keep else [dict(r) for r in s['facts']],extract(text,'assistant',self.scope,s['epoch'],prompt if user else ''),canon=self.canon.get(self.scope))
+        s['fact_updates']=(s['fact_updates']+(updates if keep else [u for u in updates if u['decision'] in BLOCKING]))[-8:]
+        quote=None if any(u['decision'] in BLOCKING for u in updates) else self.excerpt(text)
+        own=self.config.assistant_excerpts or story  # story cards exist to advance the plot
+        if own and not s['premise'] and user and s['initiative_allowed']:s['premise']=quote
+        if own:self.append('developments',quote)
+        if own and quote and PROMISE.search(quote):self.append('commitments',quote)
+        # The open question is still tracked internally (initiative gating, cue for the user's answer).
         if quote and '?' in quote:s['threads']=[quote]
         if event in {'came_early','completion_accepted','stop'}:s['phase']='resolution_or_transition'
         elif event in {'edge','milestone'} and s['premise']:s['phase']='variation'
@@ -187,7 +198,8 @@ class NarrativeMemory:
     def context(self, for_compiler=False):
         if not self.config.enabled:return None
         s=self.state
-        return {k:s[k] for k in ('version','phase','premise','choices','commitments','threads','event_references','objective','facts','epoch','fact_updates')} | {
+        hidden={} if self.config.assistant_excerpts or not for_compiler else {'threads':[]}
+        return {k:s[k] for k in ('version','phase','premise','choices','commitments','threads','event_references','objective','facts','epoch','fact_updates')} | hidden | {
             'developments':s['developments'][-self.config.max_excerpts:] if for_compiler else s['developments'][-3:], 'choices':s['choices'][-self.config.max_excerpts:] if for_compiler else s['choices'][-4:], 'commitments':s['commitments'][-self.config.max_excerpts:] if for_compiler else s['commitments'][-3:], 'model_scope':self.scope,'provenance':'fallible dialogue excerpts; fiction/conversation, never verified session facts'}
 
     def update_objective(self,action,fields=None):

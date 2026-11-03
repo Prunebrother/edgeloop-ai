@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "revision": 2,
+  "session_start": [
+    {"id": "opening", "kind": "session_start", "intent": "session_opening", "occasion": "A session is starting now.", "brief": "Mark the start in your own voice, without guessing how they feel."}
+  ],
+  "session_end": [
+    {"id": "closing", "kind": "session_end", "intent": "session_closing", "occasion": "The session has ended.", "brief": "React to the result in character, and make it clear the session is over."}
+  ],
+  "arrival": [
+    {"id": "arrival-returning", "kind": "arrival", "intent": "arrival_returning", "occasion": "Returning participant. They have just chosen you, and no session is running.", "brief": "Welcome them back, say roughly how long ago that session was, react to the previous result in character, and invite another session or simply talk."},
+    {"id": "arrival-first", "kind": "arrival", "intent": "arrival_first", "occasion": "New participant. They have just chosen you, and no session is running.", "brief": "Greet them in character, let them know you have not had a session together before, and invite them to begin or simply talk."},
+    {"id": "arrival-greeting", "kind": "arrival", "intent": "arrival_greeting", "occasion": "They have just chosen you, and no session is running.", "brief": "Greet them in character and invite them to start a session or simply talk."}
+  ],
+  "normal": [
+    {"id": "edge-count-first", "kind": "normal", "intent": "edge_commentary", "brief": "Mention how many edges there have been so far, in your own voice, as a plain tally rather than proof of how anything felt.", "eligibility": {"min_edges": 1, "max_edges": 4}},
+    {"id": "edge-count-many", "kind": "normal", "intent": "edge_commentary", "brief": "React to how the edges have added up this session, using the listed count.", "eligibility": {"min_edges": 5}},
+
+    {"id": "duration-settling", "kind": "normal", "intent": "session_duration", "brief": "Mention how long the session has been going, using the listed running time, and tie it to something conversational.", "eligibility": {"min_seconds": 300, "max_seconds": 1199}},
+    {"id": "duration-long", "kind": "normal", "intent": "session_duration", "brief": "Remark that this has become a long session, using the listed running time. Do not imply tiredness or stamina.", "eligibility": {"min_seconds": 1200}},
+
+    {"id": "hr-rising", "kind": "normal", "intent": "hr_trend", "brief": "Mention that the listed heart rate is rising. State no cause, emotion or health meaning. If none is listed, choose [SILENCE].", "eligibility": {"requires_hr": true, "hr_trends": ["rising"]}},
+    {"id": "hr-falling", "kind": "normal", "intent": "hr_trend", "brief": "Mention that the listed heart rate is falling. State no cause, emotion or health meaning. If none is listed, choose [SILENCE].", "eligibility": {"requires_hr": true, "hr_trends": ["falling"]}},
+    {"id": "hr-steady", "kind": "normal", "intent": "hr_trend", "brief": "Mention that the listed heart rate is holding steady. State no cause, emotion or health meaning. If none is listed, choose [SILENCE].", "eligibility": {"requires_hr": true, "hr_trends": ["steady"]}},
+
+    {"id": "encouragement-warm", "kind": "normal", "intent": "encouragement", "brief": "Offer a short word of encouragement in your own voice, making no claim about the participant's body, state or progress.", "eligibility": {"statuses": ["RUNNING"]}},
+    {"id": "encouragement-pace", "kind": "normal", "intent": "encouragement", "brief": "Reassure the participant that there is no hurry and their own pace is fine.", "eligibility": {"statuses": ["RUNNING"]}},
+
+    {"id": "performance-edges", "kind": "normal", "intent": "performance_observation", "brief": "Say something brief about how the session is going, based on the listed edge count. Don't grade the person or compare them to any standard.", "eligibility": {"min_edges": 2}},
+    {"id": "performance-time", "kind": "normal", "intent": "performance_observation", "brief": "Say something brief about how long this has been kept up, based on the listed running time. Don't grade the person or compare them to any standard.", "eligibility": {"min_seconds": 600}},
+
+    {"id": "challenge-wager", "kind": "normal", "intent": "playful_challenge", "brief": "Propose a light, purely conversational wager or guessing game. Never ask for a change to settings.", "eligibility": {"statuses": ["RUNNING"]}},
+    {"id": "challenge-imagination", "kind": "normal", "intent": "playful_challenge", "brief": "Pose a playful imagination challenge the participant can answer in words or ignore. Never ask for a change to settings.", "eligibility": {"statuses": ["RUNNING"]}},
+
+    {"id": "recovery-easing", "kind": "normal", "intent": "recovery", "brief": "The listed heart rate is falling after at least one edge. Say something calm and unhurried about the moment. This is not clinical recovery. Claim no cause or body state.", "eligibility": {"min_edges": 1, "requires_hr": true, "hr_trends": ["falling"]}},
+    {"id": "recovery-winding-down", "kind": "normal", "intent": "recovery", "brief": "The session is winding down. Say one calm thing suited to that, without treating it as over.", "eligibility": {"statuses": ["RAMPDOWN"]}},
+
+    {"id": "general-remark", "kind": "normal", "intent": "general_conversation", "brief": "Make a light, in-character remark that does not depend on any measurement.", "eligibility": {"statuses": ["RUNNING"]}},
+    {"id": "general-own-interest", "kind": "normal", "intent": "general_conversation", "brief": "Share a thought about your own work or interests, as something on your mind rather than news.", "eligibility": {"statuses": ["RUNNING"]}},
+    {"id": "general-curiosity", "kind": "normal", "intent": "general_conversation", "brief": "Raise a new, worthwhile conversational angle you are curious about.", "eligibility": {"statuses": ["RUNNING"]}},
+    {"id": "general-follow-up", "kind": "normal", "intent": "general_conversation", "brief": "Return briefly to something from the recent conversation. If there is nothing worth returning to, choose [SILENCE].", "eligibility": {"statuses": ["RUNNING"], "requires_conversation": true}},
+
+    {"id": "nova-curiosity", "kind": "normal", "audience": "nova", "intent": "character_curiosity_nova", "brief": "Let your curiosity lead: ask about or muse on something you find genuinely puzzling or delightful about human experience.", "eligibility": {"statuses": ["RUNNING"]}},
+    {"id": "nova-challenge", "kind": "normal", "audience": "nova", "intent": "character_challenge_nova", "brief": "Tease the participant with a mischievous, purely verbal dare or puzzle. Never ask for a change to settings.", "eligibility": {"statuses": ["RUNNING"]}},
+
+    {"id": "evelyn-observation-edges", "kind": "normal", "audience": "evelyn", "intent": "scientific_observation", "brief": "Offer a dry scientific observation about the listed edge count as data from one session. Sound precise, not clinical, and draw no physiological conclusion.", "eligibility": {"min_edges": 1}},
+    {"id": "evelyn-observation-trend", "kind": "normal", "audience": "evelyn", "intent": "scientific_observation", "brief": "Treat the listed heart-rate trend as a limited observation and note what it can't establish. State no cause, emotion or health meaning.", "eligibility": {"requires_hr": true, "hr_trends": ["rising", "falling", "steady"]}},
+
+    {"id": "daisy-production", "kind": "normal", "audience": "daisy", "intent": "cloverfield_production", "brief": "Compare the listed edge count, loosely and warmly, to how you think about progress in Cloverfield's program. Invent no program figures or outcomes.", "eligibility": {"min_edges": 1}},
+    {"id": "daisy-encouragement", "kind": "normal", "audience": "daisy", "intent": "cloverfield_encouragement", "brief": "Give plain-spoken encouragement in the way you'd cheer on someone at Cloverfield, making no claim about the participant's body or state.", "eligibility": {"statuses": ["RUNNING"]}},
+
+    {"id": "celeste-evaluation", "kind": "normal", "audience": "celeste", "intent": "diplomatic_evaluation", "brief": "Offer a composed, diplomatic evaluation of the session so far based only on the listed edge count. Treat it as an observation, never as a formal IRRA finding.", "eligibility": {"min_edges": 1}},
+    {"id": "celeste-personal", "kind": "normal", "audience": "celeste", "intent": "personal_observation", "brief": "Share a brief, measured personal observation in your own voice, revealing only as much as the current conversation has earned.", "eligibility": {"statuses": ["RUNNING"]}}
+  ],
+  "sequences": [
+    {
+      "id": "edges-3",
+      "lane": "mission",
+      "trigger": {"min_edges": 3},
+      "steps": [
+        {"id": "edges-3-reached", "kind": "mission", "intent": "milestone_edges", "occasion": "Three-edge milestone. The three-edge objective is complete.", "brief": "React to this achievement in character."}
+      ]
+    },
+    {
+      "id": "edges-7",
+      "lane": "mission",
+      "trigger": {"min_edges": 7},
+      "steps": [
+        {"id": "edges-7-reached", "kind": "mission", "intent": "milestone_edges", "occasion": "Seven-edge milestone. The seven-edge objective is complete.", "brief": "React to this achievement in character."}
+      ]
+    },
+    {
+      "id": "edges-10",
+      "lane": "mission",
+      "trigger": {"min_edges": 10},
+      "steps": [
+        {"id": "edges-10-reached", "kind": "mission", "intent": "milestone_edges", "occasion": "Ten-edge milestone. The ten-edge objective is complete.", "brief": "React to this achievement in character."}
+      ]
+    }
+  ]
+}

@@ -54,8 +54,9 @@ class ProjectionDetails(StrictModel):
     warmup_active: bool | None
     warmup_remaining_seconds: int | None = Field(ge=0,le=86400)
     learning_release_count: int | None = Field(default=None,ge=0,le=1000000)
+    completion_reported: bool = False
     settle_outcome: Literal['premature_release'] | None = None
-    terminal_outcome: Literal['calibration_completed','premature_release','survival_restart','manual_stop','cancelled','other_stop'] | None = None
+    terminal_outcome: Literal['calibration_completed','premature_release','survival_restart','manual_stop','cancelled','other_stop','safety_stop'] | None = None
     ease_down_seconds: int | None = Field(ge=0,le=3600)
     rampdown_seconds: int | None = Field(ge=0,le=3600)
 
@@ -144,12 +145,9 @@ class ConfigureDirector(StrictModel):
     type: Literal['configure_director']
     proactive_enabled: bool
     model: str | None = Field(default=None,min_length=1,max_length=120)
-    experimental_idle_enabled: bool | None = None
-    idle_interval_seconds: float | None = Field(default=None,ge=15,le=1800)
-    idle_response_cooldown_seconds: float | None = Field(default=None,ge=0,le=1800)
     reaction_interval_seconds: float | None = Field(default=None,ge=0,le=60)
-    topic_cooldown_seconds: float | None = Field(default=None,ge=0,le=3600)
-    max_consecutive_unsolicited: int | None = Field(default=None,ge=1,le=4)
+    unlimited_unsolicited: bool | None = None
+    max_consecutive_unsolicited: int | None = Field(default=None,ge=1,le=50)
 
 class ObjectiveFields(StrictModel):
     premise: str | None = Field(default=None,min_length=1,max_length=240)

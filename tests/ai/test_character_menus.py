@@ -94,11 +94,11 @@ def test_reset_is_model_specific_and_boundary_survives_new_session(tmp_path):
 
 def test_read_only_state_reports_real_cooldown_and_same_session_event():
     c,o,s=observation();speech=ConversationService(o,lambda _:None,clock=c.mono)
-    speech.director.config=DirectorConfig();speech.director.last_spoken=c.mono()
+    speech.director.config=DirectorConfig();speech.director.last_reaction=c.mono()
     speech.last_validated_event={'kind':'goal_changed','significance':'major','session_id':o.session_id,'received':c.mono()}
-    info=speech.character_state();assert info['director']['cooldown_seconds']==120
+    info=speech.character_state();assert info['director']['reaction_cooldown_seconds']==4 and 'cooldown_seconds' not in info['director']
     assert info['director']['last_event']['kind']=='goal_changed'
-    c.tick(5);assert speech.character_state()['director']['cooldown_seconds']==115
+    c.tick(3);assert speech.character_state()['director']['reaction_cooldown_seconds']==1
     speech.last_validated_event['session_id']='old';assert speech.character_state()['director']['last_event'] is None
 
 

@@ -1355,7 +1355,11 @@ function pickSessionTargetSeconds() {
 // Zero every per-session counter and its display. Called when a session
 // stops, on Reset, and again on START so a new run can never inherit time,
 // edges or motion samples from the previous one.
+let completionHistoryId = null;
+
 function resetSessionCounters() {
+    state.completionReported = false;
+    completionHistoryId = null;
     state.sessionSeconds = 0;
     state.chosenTargetSeconds = 0;
     state.durationMinSeconds = 0;
@@ -1996,7 +2000,9 @@ stopBtn?.addEventListener('click', () => {
         sendPeerCommand({ type: 'SESSION_STATE', status: 'IDLE' });
         return;
     }
-    stopSession("Stopped");
+    const safetyStop = stopBtn.dataset.safetyStop === 'true';
+    delete stopBtn.dataset.safetyStop;
+    stopSession(safetyStop ? "Emergency Stop" : "Stopped");
 });
 
 function clearSettle() {
@@ -2131,7 +2137,7 @@ function stopSession(outcome = "Stopped", voiceText = null) {
         console.warn('Session history could not be saved', e);
     } finally {
         // Read-only final projection AFTER motors stop, BEFORE original counters reset.
-        if (wasActive) syncAiObservation(undefined, outcome);
+        if (wasActive || outcome === 'Emergency Stop') syncAiObservation(undefined, outcome);
         resetSessionCounters();
         resetGameState();
         leaveCalibration();
@@ -2308,6 +2314,16 @@ function offerCalibration() {
 cameEarlyBtn?.addEventListener('click', () => {
     // The learning profile and the typed max belong to the host.
     if (isRemotePage || isRemoteViewer) return;
+    if (['calibrate', 'survival'].includes(state.activeMode) && ['RUNNING', 'PAUSED'].includes(state.sessionStatus)) {
+        if (state.settleEndsSession || state.settleRestartsSurvival) return;
+        if (!state.completionReported) {
+            // The report is independent of the optional maximum-HR calibration.
+            state.completionReported = true;
+            try { completionHistoryId = saveSessionToHistory('User-reported completion'); }
+            catch (error) { console.warn('Completion history could not be saved', error); }
+            syncAiObservation();
+        }
+    }
     if (state.activeMode === 'calibrate') {
         if (state.sessionStatus !== 'RUNNING' && state.sessionStatus !== 'PAUSED') {
             confirm('Press play first. Finished me saves the heart rate once Calibration is running.');
@@ -4838,7 +4854,9 @@ function renderTCodeSummaryBadge() {
 // Session History & Funscript Downloader Hook
 function saveSessionToHistory(outcome) {
     const history = safeParse('edgeloop_history', []);
-    const sessionId = Date.now();
+    const sessionId = completionHistoryId ?? Date.now();
+    const existing = history.findIndex(session => session.id === sessionId);
+    if (existing >= 0) history.splice(existing, 1);
     history.unshift({
         id: sessionId,
         date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -4847,6 +4865,9 @@ function saveSessionToHistory(outcome) {
         pauses: state.pauses,
         peakHr: state.peakHr,
         outcome,
+        experience: state.teaseMode,
+        goal: state.gameMode || 'tease',
+        completion_status: state.completionReported ? 'user_reported' : 'unknown',
         // Raw 4 Hz timeline; both funscripts are built from it on download.
         samples: [...funscriptSamples]
     });
@@ -4857,6 +4878,7 @@ function saveSessionToHistory(outcome) {
     } else if (result.dropped > 0 || result.stripped) {
         console.warn(`Storage quota reached: dropped ${result.dropped} oldest session(s)${result.stripped ? ' and the motion trace of this one' : ''}`);
     }
+    return sessionId;
 }
 
 // Build the requested channel script for a stored session. New entries carry
@@ -5211,6 +5233,7 @@ function syncAiObservation(readiness = null, terminalOutcome = null) {
             single_max_bpm: limits.invalid.includes('max') ? null : limits.maxHr,
             dual_max_bpm: Number.isFinite(dual) && dual > limits.minHr && dual <= 250 ? dual : null,
             warmup_minutes: advancedSettings.warmupMinutes, hr_live: pulseIsLive(),
+            completion_reported: Boolean(state.completionReported),
             learning_release_count: advancedSettings.learningProfile?.breakthroughEvents ?? 0, terminal_outcome: terminalOutcome });
     } catch { /* AI is optional; the original session continues independently. */ }
 }

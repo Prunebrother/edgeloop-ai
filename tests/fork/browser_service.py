@@ -60,7 +60,7 @@ async def event_policy(mode: str):
     from companion_ai.models import SpeechPolicy
     from companion_ai.director import DirectorConfig
     app.state.speech.policy=SpeechPolicy(min_interval_seconds=0.0,user_grace_seconds=0.0) if mode=='fast' else SpeechPolicy()
-    app.state.director.config=DirectorConfig(spontaneous_interval_seconds=0.0,user_idle_before_spontaneous_seconds=0.0,category_cooldowns={},topic_protection_seconds=0.0) if mode=='fast' else DirectorConfig()
+    app.state.director.config=DirectorConfig(user_idle_before_spontaneous_seconds=0.0) if mode=='fast' else DirectorConfig()
     app.state.speech.last_event=float('-inf');app.state.speech.busy_until=0
     return {'mode':mode}
 

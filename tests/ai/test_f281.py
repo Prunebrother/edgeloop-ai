@@ -64,29 +64,25 @@ def test_summary_sensor_availability_scope_retention_restart_and_staleness():
  assert len(o.completed_sessions)==8 and len(o.completed())==3
 
 
-async def test_completion_cooldowns_generation_stop_reset_duplicate_and_restart():
- c,o,s=observation();messages=[];gate=asyncio.Event()
+@pytest.mark.usefixtures('deck_off')
+async def test_completion_without_the_deck_is_recorded_once_and_never_spoken():
+ # The legacy closing reaction is retired: Director 2.0's Closing card is the only closing commentary.
+ c,o,s=observation();messages=[]
  class Adapter:
   config=AIConfig(model='daisy-narrative-v1:latest');mode='ollama'
-  async def reply(self,*args,**kw):await gate.wait();return 'A fine conclusion. Rest well.'
+  async def reply(self,*args,**kw):return 'A fine conclusion. Rest well.'
  d=ConversationDirector(clock=c.mono);service=ConversationService(o,messages.append,Adapter(),clock=c.mono,director=d)
- d.last_spoken=d.last_reaction=c.mono();d.memory['last_user']=c.mono();service.last_event=c.mono()
- service.event_intelligence.commentary_at['session_milestone']=c.mono()
  details={'event_id':'accepted','session_id':o.session_id}
- service.enqueue('completion_accepted',70,details);service.pump();await asyncio.sleep(0)
- assert service.task and not service.task.done()
- service.enqueue('completion_accepted',70,details);assert not service.pending
- service.safety('stop');o.report.update(status='IDLE',seconds=0);gate.set();await service.task
- assert sum(m['type']=='speech' and m['source']=='event' for m in messages)==1
- service.pump();assert not service.pending
- # New session boundary invalidates even an adapter that ignores cancellation.
- gate.clear();service.enqueue('completion_accepted',70,{'event_id':'second','session_id':o.session_id});service.pump();await asyncio.sleep(0)
- o.session_id=str(uuid4());o.report['session_id']=o.session_id;gate.set();await service.task
- assert sum(m['type']=='speech' and m['source']=='event' for m in messages)==1
+ service.enqueue('completion_accepted',70,details);service.pump()
+ assert service.task is None and not service.pending and service.recent_events[-1]['kind']=='completion_accepted'
+ service.enqueue('completion_accepted',70,details);assert not service.pending and d.counts['duplicate_occurrences']==1
+ service.safety('stop');o.report.update(status='IDLE',seconds=0);service.pump()
+ assert any(m['type']=='speech' and m['source']=='safety' for m in messages)
+ assert not any(m['type']=='speech' and m['source']=='event' for m in messages)
  await service.close()
 
 
-async def test_event_during_generation_waits_and_stale_start_cannot_follow_stop():
+async def test_event_during_generation_never_queues_and_stale_start_cannot_follow_stop():
  c,o,s=observation();messages=[];gate=asyncio.Event()
  class Adapter:
   config=AIConfig();mode='ollama'
@@ -95,9 +91,12 @@ async def test_event_during_generation_waits_and_stale_start_cannot_follow_stop(
    return 'Good evening.' if summary['conversation_source']=='user' else 'We can close here.'
  service=ConversationService(o,messages.append,Adapter(),clock=c.mono,director=ConversationDirector(clock=c.mono))
  service.request('Hello',user=True);await asyncio.sleep(0)
- service.enqueue('completion_accepted',70,{'event_id':'during','session_id':o.session_id});service.pump();assert service.pending
- gate.set();await service.task;service.pump();await service.task
- assert any(m['type']=='speech' and m['source']=='event' for m in messages)
+ user=service.task
+ service.enqueue('completion_accepted',70,{'event_id':'during','session_id':o.session_id});service.pump()
+ assert service.task is user and not service.pending
+ gate.set();await service.task;service.pump();assert service.task is user
+ assert any(m['type']=='speech' and m['source']=='user' for m in messages)
+ assert not any(m['type']=='speech' and m['source']=='event' for m in messages)
  o.report.update(status='IDLE')
  assert not service.reaction_current({'trigger_event':{'kind':'session_started','session_id':o.session_id}})
  assert service.reaction_current({'trigger_event':{'kind':'completion_accepted','session_id':o.session_id}})
@@ -232,7 +231,8 @@ async def test_each_model_gets_own_conversational_scope_and_native_completion_co
  await service.close()
 
 
-def test_completion_e2e_survives_reset_with_identity_significance_stages_and_expression(tmp_path):
+@pytest.mark.usefixtures('deck_off')
+def test_completion_e2e_survives_reset_with_identity_significance_and_no_reaction_without_the_deck(tmp_path):
  import threading,json,httpx
  from fastapi.testclient import TestClient
  from ai_observer.server import create_app
@@ -250,6 +250,7 @@ def test_completion_e2e_survives_reset_with_identity_significance_stages_and_exp
   body=json.loads(request.content);requests.append(body);return httpx.Response(200,stream=Delayed())
  c=Clock();app=create_app(TOKEN,tmp_path,clock=c.mono,transport=httpx.MockTransport(handler));app.state.observation.wall=c.wall
  s=snapshot(c,active_mode='calibrate',goal='calibrate',seconds=937)
+ s['devices'].update(toy_ready=True,handy=True);s['safety']['fault']='none'
  with TestClient(app) as client:
   with client.websocket_connect('/observe',headers={'Origin':ORIGIN}) as ws:
    epoch=auth(ws)['epoch'];ws.send_json(dict(version=1,type='select_model',selection={'model':'daisy-narrative-v1:latest'}));until(ws,'model_selected')
@@ -259,15 +260,15 @@ def test_completion_e2e_survives_reset_with_identity_significance_stages_and_exp
    s['status']='IDLE';s['details'].update(warmup_active=False,terminal_outcome='calibration_completed',captured_at_ms=int(c.wall()*1000))
    source=send(1,['completion_accepted','stop']);ack=until(ws,'observation_ack')
    assert ack['events'][-1]['preserve_reaction']
-   start=until(ws,'response_start')
    c.tick(.3);s.update(seconds=0,edges=0);s['details'].update(terminal_outcome=None,captured_at_ms=int(c.wall()*1000))
    duplicate=send(2,['completion_accepted','stop']);ack=until(ws,'observation_ack');assert len(ack['rejected_events'])==2
-   release.set();result=until(ws,'speech');assert result['id']==start['id'] and result['expression']=='neutral'
+   release.set()
+   # Identity, significance and the completed record survive; without a deck nothing is spoken.
    record=app.state.speech.event_intelligence.snapshot()['recent_events'][0]
    assert record['event']['id']==source['events'][0]['id'] and record['event']['significance']=='major'
-   assert record['decision']=='acknowledged' and any(v['decision']=='generation_started' for v in record['stages'])
+   assert record['decision'].startswith('context_only') and app.state.speech.task is None
    assert app.state.observation.completed()[-1]['active_running_seconds']==937
-   assert len(requests)==1 and requests[0]['think'] is False
+   assert not requests
 
 
 def test_acknowledged_event_is_only_reused_when_the_user_requests_history():

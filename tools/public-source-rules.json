@@ -1,0 +1,25 @@
+{
+  "description": "Which files of a development commit enter the public source release. Applied by tools/export-public-source.py; every exclusion carries its reason.",
+  "exclude": {
+    "docs/fork/**": "Historical development reports, screenshots and private notes; curated files listed under keep are published",
+    ".github/workflows/**": "Upstream deployment configuration omitted; no release deployment authorized",
+    "wrangler.jsonc": "Upstream deployment configuration omitted; no release deployment authorized",
+    "Characters_F2.9_update/**": "Unapproved character review drafts awaiting author sign-off",
+    "characters/models/*/character.REVIEW.yaml": "Unapproved character review draft awaiting author sign-off",
+    "characters/models/*/SYSTEM.CANDIDATE.txt": "Unapproved character review draft awaiting author sign-off",
+    "characters/EVELYN_LITE_HISTORY.md": "Development history notes",
+    ".claude/**": "Local assistant workspace"
+  },
+  "keep": [
+    "docs/fork/f2-changes.json",
+    "docs/fork/f2101-release-privacy.md",
+    "docs/fork/f22/migration-sources.json",
+    "docs/fork/release-exclusions.json",
+    "docs/fork/upstream-pin.json"
+  ],
+  "art": {
+    "root": "Character_Art/",
+    "catalog": "src/assets/characters/manifest.json",
+    "reason": "Only portraits referenced by the character catalog are authorized for publication"
+  }
+}

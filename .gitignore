@@ -45,3 +45,7 @@ core
 # Release audit materials are always private
 *private-audit*
 tools/smoke-out/
+
+# Development-only
+.pytest_cache/
+.claude/
