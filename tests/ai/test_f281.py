@@ -160,7 +160,7 @@ def test_character_canon_remains_native_and_runtime_has_no_competing_persona():
  for name in ('evelyn-narrative-v1','daisy-narrative-v1','celeste-narrative-v2'):
   history=[{'role':'user','content':f'Turn {i}: Tell me about Laurent.'} for i in range(40)]
   messages,_=compose_messages(o.summary()|{'conversation_source':'user'},'Who is Laurent to you?',history,AIConfig(model=name+':latest'))
-  assert 'named third parties' in messages[0]['content'] and 'scientist' not in messages[0]['content'].lower()
+  assert 'People from your backstory are not you' in messages[0]['content'] and 'scientist' not in messages[0]['content'].lower()
 
 
 def test_objective_endpoint_contract_refresh_and_diagnostic_errors(tmp_path):

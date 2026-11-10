@@ -14,7 +14,7 @@ SESSION = 'session-a'
 EPOCH = 'a' * 32
 RESULT = {'active_running_seconds': 600, 'last_verified_running_ticks': 600, 'edges': 4, 'experience': 'classic',
           'goal': 'tease', 'termination': 'manual_stop', 'completion_status': 'unknown', 'completion_source': None,
-          'completeness': 'final_counter_captured'}
+          'completeness': 'final_counter_captured', 'orgasms': None}
 
 
 def card(card_id, kind='normal', **values):

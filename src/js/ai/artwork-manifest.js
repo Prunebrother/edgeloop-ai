@@ -7,9 +7,20 @@ export const ACTIVITIES=Object.freeze([...manifest.activities]);
 export const MODEL_ARTWORK=manifest.models;
 export const CHARACTERS=manifest.characters;
 export const DEFAULT_CHARACTER=Object.freeze({name:'Your companion',expressions:{}});
+// Character Builder: the active custom character on its model, set from model_selected.
+let custom=null;
+export function setCustomCharacter(model,character,origin){
+    if(!model||!character){custom=null;return;}
+    const src=character.portrait?.file&&/^[0-9a-f]{64}\.(png|jpg|webp)$/.test(character.portrait.file)&&origin?origin+'/character-art/'+character.portrait.file:null;
+    custom={model,id:character.identity,character:{name:character.name,fit:character.portrait?.fit||'contain',position:character.portrait?.position||'50% 50%',
+        // One portrait serves every expression until the builder supports expression sets.
+        expressions:src?Object.fromEntries(manifest.expressions.map(e=>[e,src])):{}}};
+}
+export function customCharacter(){return custom;}
 export function resolveArtwork(model,expression='neutral',catalog=CHARACTER_MANIFEST) {
-    const id=Object.hasOwn(catalog.models,model||'')?catalog.models[model]:null;
-    const character=id&&Object.hasOwn(catalog.characters,id)?catalog.characters[id]:DEFAULT_CHARACTER;
+    const own=catalog===CHARACTER_MANIFEST&&custom&&model===custom.model;
+    const id=own?custom.id:Object.hasOwn(catalog.models,model||'')?catalog.models[model]:null;
+    const character=own?custom.character:id&&Object.hasOwn(catalog.characters,id)?catalog.characters[id]:DEFAULT_CHARACTER;
     const requested=EXPRESSIONS.includes(expression)?expression:'neutral';
     const candidates=[{src:character.expressions?.[requested],expression:requested},{src:character.expressions?.neutral,expression:'neutral'}];
     const sources=candidates.filter((x,i,a)=>x.src&&a.findIndex(y=>y.src===x.src)===i);

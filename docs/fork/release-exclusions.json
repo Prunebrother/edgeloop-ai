@@ -1,5 +1,19 @@
 {
   ".github/workflows/dev.yml": "Upstream deployment configuration omitted; no release deployment authorized",
   ".github/workflows/test.yml": "Upstream deployment configuration omitted; no release deployment authorized",
+  "app/host.mjs": "Upstream local headset/VLC app alpha (Node host); not part of this Linux bundle",
+  "app/host.test.mjs": "Upstream local headset/VLC app alpha (Node host); not part of this Linux bundle",
+  "app/start.bat": "Upstream local headset/VLC app alpha (Node host); not part of this Linux bundle",
+  "app/start.sh": "Upstream local headset/VLC app alpha (Node host); not part of this Linux bundle",
+  "icon-dev-180.png": "Upstream dev-site artwork; this build uses the live icon",
+  "icon-dev-192.png": "Upstream dev-site artwork; this build uses the live icon",
+  "icon-dev-512.png": "Upstream dev-site artwork; this build uses the live icon",
+  "icon-dev-maskable-512.png": "Upstream dev-site artwork; this build uses the live icon",
+  "icon-dev-maskable.svg": "Upstream dev-site artwork; this build uses the live icon",
+  "icon-dev.svg": "Upstream dev-site artwork; this build uses the live icon",
+  "manifest-dev.json": "Upstream dev-site install manifest; this build uses the live manifest",
+  "packaging/flatpak/app.edgeloop.App.yml": "Upstream Flatpak/portable packaging; this fork ships its own installer",
+  "packaging/pack-portable.mjs": "Upstream Flatpak/portable packaging; this fork ships its own installer",
+  "src/js/session-telemetry.test.js": "Upstream redaction test embeds a synthetic device MAC; the release privacy scan admits no MAC-shaped strings",
   "wrangler.jsonc": "Upstream deployment configuration omitted; no release deployment authorized"
 }

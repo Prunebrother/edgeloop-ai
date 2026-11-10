@@ -8,7 +8,7 @@ import {
     resolveEdgeTriggerHr,
     describeEdgeHoldPreview,
     micBoostReachesMotors,
-    CRAWL_PERCENT
+    clampCrawlPercent
 } from './engine.js';
 import {
     KEYBIND_ACTIONS,
@@ -33,8 +33,7 @@ import {
     addMissedDay,
     clearNnn,
     tickNnnHold,
-    recordNnnEdge,
-    rollNnnOutcome
+    recordNnnEdge
 } from './nnn.js';
 import {
     ORGASM_BOOST_CAP,
@@ -67,16 +66,22 @@ import { applySettingSchema } from './settings-schema.js';
 import { createWriteCoalescer } from './write-coalescer.js';
 import { planBannerUpdate, canClearBanner, hiddenBannerState, BANNER_OWNER_ANY } from './alert-banner.js';
 import { pushSample, buildFunscripts, toFunscript } from './funscript.js';
+import { createSessionLog, buildSessionExport, pauseReasonFromSource } from './session-telemetry.js';
+import { formatLiveHr } from './hr-readout.js';
+import { FOCUS_LOST_TEXT, pageIsInFront } from './page-focus.js';
 import { drawTelemetryChart, shouldDrawPullbackLine, watchChartResize } from './chart.js';
-import { connectBleHeartRate, disconnectBle, isBleConnected, isBleReconnecting } from './hardware/ble.js';
+import { connectBleHeartRate, disconnectBle, isBleConnected, isBleReconnecting, bindBlePageLifecycle } from './hardware/ble.js';
 import { describeBluetoothSupport, describeBleError } from './hardware/ble-protocol.js';
 import { createHrWatchdog, clampStaleSeconds } from './hr-watchdog.js';
-import { connectHandy, disconnectHandy, dispatchHandy, stopHandyOnUnload, handyConnected, setHandyHandlers } from './hardware/handy.js';
+import { connectHandy, disconnectHandy, dispatchHandy, stopHandyOnUnload, handyConnected, setHandyHandlers, getHandyKey, getHandyInfo } from './hardware/handy.js';
+import { createHandyHsp } from './hardware/handy-hsp.js';
+import { handyScriptRoute, resolveApplicationId, HANDY_APP_ID_STORAGE_KEY } from './hardware/handy-hsp-protocol.js';
 import { normalizeEnvelope, applyEndMargin, clampEndMargin } from './hardware/handy-protocol.js';
 import { RUIN_RIDE_SECONDS, RUIN_LOCK_SECONDS } from './patterns.js';
 import { APP_VERSION, parseChangelog, GITHUB_CHANGELOG_URL, GITHUB_RELEASES_URL } from './version.js';
 import {
     connectIntifaceServer,
+    setIntifaceScriptFeed,
     disconnectIntiface,
     rescanIntiface,
     dispatchIntiface,
@@ -104,6 +109,7 @@ import {
     connectTCode,
     disconnectTCode,
     dispatchTCode,
+    setTCodeScriptFeed,
     stopTCode,
     setTCodeHandlers,
     setAxisRole as setTCodeAxisRole,
@@ -174,6 +180,15 @@ import {
     serializeVoiceCues,
     clampEncourageSeconds
 } from './voice-cues.js';
+import { createScriptFeed } from './player/script-feed.js';
+import { createPlayer } from './player/player.js';
+import { sanitizeScriptSettings, describeScriptPhase, edgeActionPausesVideo, sessionTargetForVideo, complementSecondary, scriptMotion, secondaryFromScript, climaxApproach, boostedAllowance, scriptExpand, clampClimaxSeconds, clampClimaxPhaseSeconds, DEFAULT_CLIMAX_RAMP_SECONDS, DEFAULT_CLIMAX_EASE_SECONDS } from './player/script-governor.js';
+import { offsetFor, rememberOffset, readOffsets, climaxMarksFor, rememberClimaxMarks, readClimaxMarks, describeVideoStall, describePlayerHardwareWait, videoCoupled, OFFSET_NUDGE_MS, SCRIPT_OFFSETS_STORAGE_KEY, SCRIPT_CLIMAX_STORAGE_KEY, BEAT_SYNC_CONSENT_KEY, BEAT_SYNC_STORAGE_KEY, BEAT_SYNC_CONSENT_TEXT } from './player/player-rules.js';
+import { rhythmAt, hampTarget } from './player/script-rhythm.js';
+import { posAt } from './player/script-track.js';
+import { effectiveInvert } from './player/script-shaper.js';
+import { createAiSettingsControl, AI_SETTINGS_STORAGE_KEY } from './ai-settings/control.js';
+import { withAiSettingsPanel } from './ai-settings/panel.js';
 
 // Load persisted settings. The old 15/85 default envelope is migrated to
 // 0/100 exactly once (flagged), so a user who deliberately types 15/85 later
@@ -284,6 +299,36 @@ const viewerRoom = urlParams.get('group_sub');
 export const isRemoteController = Boolean(partnerRoom);
 export const isRemoteViewer = !isRemoteController && Boolean(viewerRoom);
 const isRemotePage = isRemoteController || isRemoteViewer;
+const SESSION_LOG_KEY = 'edgeloop_session_log';
+const sessionLog = createSessionLog();
+let sessionLogOptIn = safeParse(SESSION_LOG_KEY, false) === true;
+// A remote Pause sets this before the transport click, so the log can tell
+// a partner's pause from the button on this page.
+let pendingPauseReason = '';
+
+// Off until the person running the session turns it on. A remote page does
+// not record: it is watching someone else's session.
+function sessionLogWanted() {
+    return !isRemotePage && sessionLogOptIn;
+}
+let player = null;
+let secondaryTrack = null;
+let loadedClimaxMarks = [];
+const scriptFeed = isRemotePage ? null : createScriptFeed();
+if (scriptFeed) {
+    setIntifaceScriptFeed(scriptFeed);
+    setTCodeScriptFeed(scriptFeed);
+}
+const handyHsp = (!isRemotePage && scriptFeed) ? createHandyHsp({
+    feed: scriptFeed,
+    getKey: () => getHandyKey(),
+    getAppId: () => resolveApplicationId(safeGet(HANDY_APP_ID_STORAGE_KEY, '') || ''),
+    handlers: {
+        onPause: (reason) => triggerDisconnectAlert(reason, 'handy'),
+        onOffline: (reason) => triggerDisconnectAlert(reason || 'The Handy went offline.', 'handy')
+    }
+}) : null;
+let handyHspReleasing = null;
 const remoteRoom = isRemoteController ? partnerRoom : viewerRoom;
 const remoteRoleLabel = isRemoteViewer ? 'Viewer' : 'Remote Controller';
 // Set when the host link died (peer close / error / silent telemetry).
@@ -439,31 +484,47 @@ function hideAlertBanner(owner) {
 
 function triggerDisconnectAlert(message, source = 'device') {
     showAlertBanner(message, { severity: 'safety', source });
-
-    if (pauseSession(null)) syncTelemetry();
+    const reason = pauseReasonFromSource(source) || 'device';
+    if (pauseSession(null, reason)) syncTelemetry();
+    else if (state.sessionStatus === 'PAUSED' && state.pauseReason !== reason) {
+        // Already stopped, and a second fault explains it better than the first.
+        state.pauseReason = reason;
+        captureSessionLog();
+        syncTelemetry();
+    }
     checkReadiness();
 }
 
 // Pause a RUNNING or RAMPDOWN session, remembering which one so RESUME goes
 // back into the rampdown where it left off. Motors are stopped immediately.
+// `source` is the pause reason stored in the session log.
 // Returns false when there was nothing to pause.
-function pauseSession(voiceText = 'Paused.') {
+function pauseSession(voiceText = 'Paused.', source = 'button') {
     if (state.sessionStatus !== 'RUNNING' && state.sessionStatus !== 'RAMPDOWN') return false;
     state.resumeStatus = state.sessionStatus;
     state.sessionStatus = 'PAUSED';
-    state.pauses += 1;
-    const pauseEl = document.getElementById('pauseCount');
-    if (pauseEl) pauseEl.textContent = state.pauses;
+    state.pauseReason = pauseReasonFromSource(source) || 'button';
+    // An edged stop is a pause the wearer asked for so the edge can be
+    // counted. It does not add to the pause total.
+    if (state.pauseReason !== 'edged') {
+        state.pauses += 1;
+        const pauseEl = document.getElementById('pauseCount');
+        if (pauseEl) pauseEl.textContent = state.pauses;
+    }
     renderTransport('PAUSED');
     clearMicBoost(state);
     dispatchHardware(0, 0, 0, 100, true);
+    if (player && player.isPlaying()) player.pause();
     if (voiceText) cueVoice('paused');
+    captureSessionLog();
     return true;
 }
 
 // Put the transport button into the look for `status`. Shared by start,
 // pause, stop / reset and the remote controller's telemetry renderer.
 function renderTransport(status) {
+    paintEdgedButton();
+    renderICameButton();
     if (!playPauseBtn) return;
     playPauseBtn.disabled = false;
     if (status === 'RUNNING' || status === 'RAMPDOWN') {
@@ -479,14 +540,50 @@ function renderTransport(status) {
         if (playPauseIcon) playPauseIcon.innerHTML = `<path d="M8 5v14l11-7z"/>`;
         playPauseBtn.className = "flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-3 rounded-xl text-xs sm:text-sm transition tracking-wide flex justify-center items-center gap-1.5 shadow-lg shadow-emerald-950/40 cursor-pointer";
     }
+    paintPlayerChannels();
+}
+
+function paintEdgedButton() {
+    const btn = document.getElementById('edgedBtn');
+    if (!btn) return;
+    btn.classList.remove('hidden');
+    const calibrating = state.activeMode === 'calibrate';
+    btn.title = calibrating
+        ? 'You are on the edge. Saves this heart rate as your max and eases the toys down, before an orgasm.'
+        : 'Stop and count an edge the pulse has not reached. Counts for NNN. Does not add a pause.';
+}
+
+function commitEdge({ countNnn = true } = {}) {
+    state.edges += 1;
+    const edgeEl = document.getElementById('edgeCount');
+    if (edgeEl) edgeEl.textContent = state.edges;
+    reverseIntifaceRotation('edge');
+    cueVoice('edge');
+    if (countNnn && state.gameMode === 'nnn' && nnnState.holdSeconds <= 0) noteNnnEdge();
+}
+
+// The pulse never reached the mark, usually because the session was paused
+// first. One tap records that edge. A crossing the engine already counted
+// is left alone.
+function countManualEdge() {
+    if (isRemoteViewer || isRemoteController) return;
+    const live = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'PAUSED' || state.sessionStatus === 'RAMPDOWN';
+    if (!live || state.settleSecondsLeft > 0 || state.isEdged) return;
+    state.isEdged = true;
+    commitEdge({ countNnn: false });
+    if (state.gameMode === 'nnn') noteNnnEdge();
+    syncTelemetry();
 }
 
 // Grey out the transport with a reason while the hardware is not ready.
 function renderTransportWaiting(reason) {
+    paintEdgedButton();
+    renderICameButton();
     if (!playPauseBtn) return;
     playPauseBtn.disabled = true;
     if (playPauseText) playPauseText.textContent = reason;
     playPauseBtn.className = "flex-1 bg-slate-800 text-slate-500 font-bold py-3 px-3 rounded-xl text-xs sm:text-sm transition tracking-wide flex justify-center items-center gap-1.5 border border-slate-700/50 cursor-not-allowed";
+    paintPlayerChannels();
 }
 
 // Flag a numeric input as invalid (red border) or restore its normal border.
@@ -543,6 +640,7 @@ function setBadgeState(type, status, nameLabel, batteryLabel = null) {
         }
     }
 
+    if (card) card.dataset.link = status;
     if (card && dot) {
         if (status === 'connected') {
             card.className = "text-left p-2 rounded-xl bg-emerald-950/20 border border-emerald-800/80 hover:border-emerald-600 transition flex items-start gap-2 cursor-pointer min-w-0";
@@ -558,8 +656,114 @@ function setBadgeState(type, status, nameLabel, batteryLabel = null) {
             dot.className = "h-2 w-2 rounded-full bg-rose-500/30 border border-rose-500 shrink-0 mt-1";
         }
     }
+    layoutDeviceCards();
     checkReadiness();
 }
+
+let deviceCardsExpanded = false;
+const DEVICE_CARD_TYPES = ['Ble', 'Handy', 'Intiface', 'Vacuglide', 'TCode'];
+
+let channelConfig = null;
+
+function sessionIsLive() {
+    return state.sessionStatus === 'RUNNING' || state.sessionStatus === 'PAUSED' || state.sessionStatus === 'RAMPDOWN';
+}
+
+function paintPlayerChannels() {
+    if (!document.getElementById('playerPrimaryConfigBtn')) return;
+    const live = sessionIsLive();
+    const open = live ? null : channelConfig;
+    const primaryScript = player && typeof player.script === 'function' ? player.script() : null;
+    const secondaryScript = player && typeof player.secondary === 'function' ? player.secondary() : null;
+    const label = (script) => script ? (script.name || 'Funscript') : 'EdgeLoop';
+    const setText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    };
+    setText('playerPrimaryConfigName', label(primaryScript));
+    setText('playerSecondaryConfigName', label(secondaryScript));
+    setText('playerPrimaryConfigHint', open === 'primary' ? 'Tap to close' : 'Tap to configure');
+    setText('playerSecondaryConfigHint', open === 'secondary' ? 'Tap to close' : 'Tap to configure');
+    document.getElementById('playerPrimaryConfig')?.classList.toggle('hidden', open !== 'primary');
+    document.getElementById('playerSecondaryConfig')?.classList.toggle('hidden', open !== 'secondary');
+    document.getElementById('playerClearPrimaryBtn')?.classList.toggle('hidden', !primaryScript);
+    document.getElementById('playerClearSecondaryBtn')?.classList.toggle('hidden', !secondaryScript);
+    document.getElementById('playerMorph')?.classList.toggle('hidden', !(open && (primaryScript || secondaryScript)));
+    const edgeOpen = (open === 'primary' && !primaryScript) || (open === 'secondary' && !secondaryScript);
+    document.getElementById('playerEdgeLoopSettings')?.classList.toggle('hidden', !edgeOpen);
+    document.getElementById('playerOffsetRow')?.classList.toggle('hidden', !primaryScript);
+    const mark = (id, on) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle('bg-sky-800', on);
+        el.classList.toggle('bg-slate-800', !on);
+    };
+    mark('playerPrimaryEdgeBtn', !primaryScript);
+    mark('playerSecondaryEdgeBtn', !secondaryScript);
+}
+
+function placeSessionControls(immersive) {
+    const bar = document.getElementById('sessionControlBar');
+    const home = document.getElementById('sessionControlHome');
+    const slot = document.getElementById('hudSessionSlot');
+    const target = immersive && slot ? slot : home;
+    if (bar && target && bar.parentElement !== target) target.appendChild(bar);
+    syncSessionControlChrome();
+}
+
+let sessionControlTimer = null;
+function syncSessionControlChrome() {
+    const bar = document.getElementById('sessionControlBar');
+    const video = document.getElementById('playerVideo');
+    const immersive = document.getElementById('playerStage')?.dataset.immersive === 'on';
+    const playing = Boolean(video && !video.paused && !video.ended);
+    if (sessionControlTimer) clearTimeout(sessionControlTimer);
+    sessionControlTimer = null;
+    if (bar) bar.dataset.idle = 'off';
+    if (immersive || !playing) return;
+    sessionControlTimer = setTimeout(() => {
+        sessionControlTimer = null;
+        const still = document.getElementById('playerVideo');
+        const stillPlaying = Boolean(still && !still.paused && !still.ended);
+        const stillImmersive = document.getElementById('playerStage')?.dataset.immersive === 'on';
+        if (stillPlaying && !stillImmersive && bar) bar.dataset.idle = 'on';
+    }, 4000);
+}
+
+document.getElementById('playerSection')?.addEventListener('pointermove', () => player?.showHud?.());
+document.getElementById('playerSection')?.addEventListener('pointerdown', () => player?.showHud?.());
+
+function placeSessionSetup(inPlayer) {
+    const body = document.getElementById('playerBody');
+    if (body) body.dataset.player = inPlayer ? 'on' : 'off';
+    document.getElementById('playerFiles')?.classList.remove('hidden');
+    const slot = document.getElementById('playerEdgeLoopSettings');
+    const home = document.getElementById('sessionSetupHome');
+    const play = document.getElementById('playStylePanel');
+    const end = document.getElementById('endgamePanel');
+    const target = inPlayer && slot ? slot : home;
+    if (play && target && play.parentElement !== target) target.appendChild(play);
+    if (end && target && end.parentElement !== target) target.appendChild(end);
+    play?.classList.remove('hidden');
+    end?.classList.remove('hidden');
+}
+
+function layoutDeviceCards() {
+    const ready = hardwareReadiness();
+    const paired = ready.hrReady && ready.toyReady;
+    const hint = document.getElementById('deviceNeedHint');
+    const more = document.getElementById('deviceMoreBtn');
+    if (hint) hint.classList.toggle('hidden', paired);
+    if (more) more.classList.add('hidden');
+    for (const type of DEVICE_CARD_TYPES) {
+        document.getElementById(`card${type}`)?.classList.remove('hidden');
+    }
+}
+
+document.getElementById('deviceMoreBtn')?.addEventListener('click', () => {
+    deviceCardsExpanded = !deviceCardsExpanded;
+    layoutDeviceCards();
+});
 
 // Whether the host has a pulse source and a toy to drive. Sent to the remote
 // controller so its transport can mirror the host's readiness.
@@ -602,11 +806,30 @@ function transportWaitingReason(now = Date.now()) {
     if (!toyReady) return "WAITING FOR TOY CONNECTION";
     if (state.sessionStatus === 'PAUSED' && state.hrSignalPaused) return "WAITING FOR PULSE";
     if (!pulseIsFresh(now)) return "WAITING FOR PULSE";
+    if ((state.activeMode === 'script' || state.teaseMode === 'script') && !scriptFeed?.hasTrack()) return 'WAITING FOR A SCRIPT';
+    const externalClock = player && typeof player.usingExternalClock === 'function' && player.usingExternalClock();
+    if ((state.activeMode === 'script' || state.teaseMode === 'script') && !externalClock) {
+        const video = document.getElementById('playerVideo');
+        if (video && video.readyState < 2) return 'WAITING FOR THE VIDEO';
+    }
     return null;
 }
 
+function renderPlayerHardwareNotice() {
+    const el = document.getElementById('playerNotice');
+    if (!el) return;
+    const showingVideo = Boolean(player && player.hasVideo());
+    const idle = state.sessionStatus === 'IDLE' || state.sessionStatus === 'PAUSED';
+    const text = (!isRemotePage && showingVideo && idle) ? describePlayerHardwareWait(transportWaitingReason()) : '';
+    el.textContent = text;
+    el.classList.toggle('hidden', !text);
+}
+
 function checkReadiness() {
-    if (!playPauseBtn) return;
+    if (!playPauseBtn) {
+        renderPlayerHardwareNotice();
+        return;
+    }
 
     const active = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'PAUSED' || state.sessionStatus === 'RAMPDOWN';
 
@@ -621,11 +844,13 @@ function checkReadiness() {
             playPauseBtn.classList.remove('cursor-pointer');
             playPauseBtn.classList.add('cursor-not-allowed', 'opacity-70');
         }
+        renderPlayerHardwareNotice();
         return;
     }
 
     if (state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN') {
         playPauseBtn.disabled = false;
+        renderPlayerHardwareNotice();
         return;
     }
 
@@ -634,6 +859,7 @@ function checkReadiness() {
     const reason = transportWaitingReason();
     if (reason) renderTransportWaiting(reason);
     else renderTransport(state.sessionStatus === 'PAUSED' ? 'PAUSED' : 'IDLE');
+    renderPlayerHardwareNotice();
 }
 
 // Center Intensity Slider
@@ -948,8 +1174,7 @@ function updateEngine() {
     state.effectiveHr = hr;
     state.sensorHr = sensorHr;
 
-    const hrDisplay = document.getElementById('hrDisplay');
-    if (hrDisplay) hrDisplay.textContent = sensorHr;
+    paintLiveHr(sensorHr);
     if (!Number.isFinite(state.peakHr) || sensorHr > state.peakHr) state.peakHr = sensorHr;
 
     const learnBadge = document.getElementById('learnBadge');
@@ -1008,12 +1233,13 @@ function updateEngine() {
         handyHwMin: advancedSettings.handyHwMin,
         handyHwMax: advancedSettings.handyHwMax,
         sessionSeconds: state.sessionSeconds,
-        warmupMinutes: advancedSettings.warmupMinutes,
+        warmupMinutes: effectiveWarmupMinutes(),
         warmupElapsedSeconds: Math.max(0, state.sessionSeconds - (state.warmupOriginSeconds || 0)),
         cadenceBreathing: advancedSettings.cadenceBreathing,
         milkingWave: advancedSettings.milkingWave,
         stallGuardEngaged: state.stallGuardEngaged,
         ceilingBehaviour: advancedSettings.ceilingBehaviour,
+        crawlSpeed: clampCrawlPercent(advancedSettings.crawlPercent),
         edgeHoldPercent: advancedSettings.edgeHoldPercent,
         ruinHoldSeconds: state.ruinHoldSeconds,
         oracleState: state.oracleState,
@@ -1029,17 +1255,64 @@ function updateEngine() {
         orgasmFromPrimary: state.orgasmFromPrimary,
         orgasmFromSecondary: state.orgasmFromSecondary,
         orgasmFromStrokeMin: state.orgasmFromStrokeMin,
-        orgasmFromStrokeMax: state.orgasmFromStrokeMax
+        orgasmFromStrokeMax: state.orgasmFromStrokeMax,
+        scriptSettings: advancedSettings,
+        scriptReleasedAt: state.scriptReleasedAt
     });
-
-    if (result.newEdgeTriggered && !(state.settleSecondsLeft > 0)) {
-        state.edges += 1;
-        const edgeEl = document.getElementById('edgeCount');
-        if (edgeEl) edgeEl.textContent = state.edges;
-        reverseIntifaceRotation('edge');
-        cueVoice('edge');
-        if (state.gameMode === 'nnn' && nnnState.holdSeconds <= 0) noteNnnEdge();
+    if (result.scriptReleasedAt !== undefined) state.scriptReleasedAt = result.scriptReleasedAt;
+    if (scriptFeed) {
+        scriptFeed.setSettings(sanitizeScriptSettings(advancedSettings));
+        scriptFeed.setActive(state.activeMode === 'script');
     }
+    let sentPrimary = result.primaryPercent;
+    let climaxK = 0;
+    const climaxLive = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN';
+    const climaxMarks = typeof player?.climaxMarks === 'function' ? player.climaxMarks() : loadedClimaxMarks;
+    if (climaxLive && climaxMarks.length > 0) {
+        const peakMs = clampClimaxSeconds(advancedSettings.scriptClimaxSeconds) * 1000;
+        const rampMs = clampClimaxPhaseSeconds(advancedSettings.scriptClimaxRampSeconds, DEFAULT_CLIMAX_RAMP_SECONDS) * 1000;
+        const easeMs = clampClimaxPhaseSeconds(advancedSettings.scriptClimaxEaseSeconds, DEFAULT_CLIMAX_EASE_SECONDS) * 1000;
+        const t = state.activeMode === 'script' && scriptFeed?.hasTrack()
+            ? scriptFeed.scriptNow()
+            : (typeof player?.nowMs === 'function' ? player.nowMs() : NaN);
+        climaxK = climaxApproach(Number.isFinite(t) ? t : NaN, climaxMarks, { rampMs, peakMs, easeMs });
+        if (state.activeMode === 'script' && scriptFeed?.hasTrack()) {
+            sentPrimary = boostedAllowance(sentPrimary, climaxK);
+        } else if (state.activeMode !== 'script' && climaxK > 0) {
+            const lift = (percent) => {
+                const base = Number(percent) || 0;
+                return Math.round(base + (100 - base) * Math.max(0, Math.min(1, climaxK)));
+            };
+            result.primaryPercent = lift(result.primaryPercent);
+            result.secondaryPercent = lift(result.secondaryPercent);
+            sentPrimary = result.primaryPercent;
+        }
+    }
+    const expand = state.activeMode === 'script'
+        ? scriptExpand({
+            hr: state.sensorHr,
+            minHr: state.effectiveMinHr,
+            maxHr: state.effectiveMaxHr,
+            strokeModel: advancedSettings.scriptStrokeModel,
+            allowance: sentPrimary,
+            climax: climaxK
+        })
+        : 1;
+    state.scriptExpand = expand;
+    state.scriptClimax = climaxK;
+    if (scriptFeed) {
+        scriptFeed.setExpand(state.activeMode === 'script' ? expand : 1);
+        scriptFeed.setAllowance(state.activeMode === 'script' ? sentPrimary : 0);
+    }
+    if (player && state.activeMode === 'script') {
+        const pauseVideo = advancedSettings.scriptStrokeModel !== 'keep' && edgeActionPausesVideo(advancedSettings.scriptEdgeAction);
+        if (pauseVideo && result.isEdged) player.holdForEdge();
+        else if (player.edgeHeld()) player.releaseEdge();
+    }
+    const phaseEl = document.getElementById('playerPhase');
+    if (phaseEl && state.activeMode === 'script' && result.script) phaseEl.textContent = describeScriptPhase(result.script);
+
+    if (result.newEdgeTriggered && !(state.settleSecondsLeft > 0)) commitEdge();
 
     state.isEdged = result.isEdged;
     state.strokerSpeed = result.primaryPercent;
@@ -1071,7 +1344,8 @@ function updateEngine() {
             orgasmMode: state.orgasmMode,
             stallGuardEngaged: state.stallGuardEngaged,
             primaryPercent: result.primaryPercent,
-            secondaryPercent: result.secondaryPercent
+            secondaryPercent: result.secondaryPercent,
+            crawlPercent: clampCrawlPercent(advancedSettings.crawlPercent)
         });
         cutoffEl.textContent = cutoffText;
         cutoffEl.classList.toggle('hidden', !cutoffText);
@@ -1096,7 +1370,28 @@ function updateEngine() {
     updateWarmupBadge();
     updateGameNotice();
 
-    dispatchHardware(result.primaryPercent, result.secondaryPercent, result.strokeMinPercent, result.strokeMaxPercent);
+    let secondary = result.secondaryPercent;
+    if (state.activeMode === 'script' && scriptFeed?.hasTrack() && advancedSettings.scriptSecondChannel !== 'off') {
+        const t = scriptFeed.scriptNow();
+        const time = Number.isFinite(t) ? t : NaN;
+        if (secondaryTrack) {
+            secondary = secondaryFromScript(posAt(secondaryTrack, time), sentPrimary);
+        } else {
+            const rhythm = rhythmAt(scriptFeed.track(), time, {
+                invert: effectiveInvert(scriptFeed.meta(), scriptFeed.settings())
+            });
+            secondary = complementSecondary(sentPrimary, scriptMotion(rhythm.meanSpeed));
+        }
+        if (state.scriptExpand > 1) secondary = Math.min(100, Math.round(secondary * state.scriptExpand));
+    }
+    state.strokerSpeed = sentPrimary;
+    state.prostateSpeed = secondary;
+    if (strokerVal) strokerVal.textContent = `${sentPrimary}%`;
+    if (strokerBar) strokerBar.style.width = `${sentPrimary}%`;
+    if (prostateVal) prostateVal.textContent = `${secondary}%`;
+    if (prostateBar) prostateBar.style.width = `${secondary}%`;
+    dispatchHardware(sentPrimary, secondary, result.strokeMinPercent, result.strokeMaxPercent);
+    paintPlayerHud();
 }
 
 // Physical stroke bounds to send to the toys. engine.js has ALREADY mapped
@@ -1104,6 +1399,68 @@ function updateEngine() {
 function effectiveStrokeRange(strokeMin, strokeMax) {
     const env = normalizeEnvelope(advancedSettings.handyHwMin, advancedSettings.handyHwMax);
     return { min: strokeMin, max: strokeMax, env };
+}
+
+function handyHspWindow() {
+    const env = normalizeEnvelope(advancedSettings.handyHwMin, advancedSettings.handyHwMax);
+    return { envMin: env.min, envMax: env.max, endMargin: advancedSettings.handyEndMargin };
+}
+
+function handyBeatSyncWanted() {
+    return Boolean(handyHsp && scriptFeed && scriptFeed.hasTrack())
+        && state.activeMode === 'script'
+        && handyConnected
+        && state.handyRole === 'primary'
+        && handyHsp.beatSync()
+        && !handyHsp.unavailable();
+}
+
+function releaseHandyHsp() {
+    if (!handyHsp || handyHspReleasing) return handyHspReleasing || Promise.resolve(true);
+    handyHspReleasing = handyHsp.release().catch(() => false).finally(() => { handyHspReleasing = null; });
+    return handyHspReleasing;
+}
+
+function handyRhythmTarget(primarySpeed, range) {
+    const settings = scriptFeed.settings();
+    const t = scriptFeed.scriptNow();
+    const rhythm = rhythmAt(scriptFeed.track(), t === null ? NaN : t, { invert: effectiveInvert(scriptFeed.meta(), settings) });
+    const limits = handyHsp ? handyHsp.deviceLimits() : {};
+    const approach = settings.scriptStrokeModel === 'keep' ? 'slow' : settings.scriptApproach;
+    return hampTarget(rhythm, primarySpeed, {
+        envMin: range.env.min,
+        envMax: range.env.max,
+        travelMm: limits.travelMm,
+        maxSpeedMmS: limits.maxSpeedMmS,
+        maxSpeed: settings.scriptMaxSpeed,
+        approach
+    });
+}
+
+function routeTheHandy(primarySpeed, targetHandySpeed, range, force) {
+    const route = handyScriptRoute({
+        scriptDrives: Boolean(scriptFeed && scriptFeed.isActive()),
+        hspOwns: Boolean(handyHsp && handyHsp.owns()),
+        releasing: Boolean(handyHspReleasing),
+        role: state.handyRole
+    });
+    if (route === 'hsp' && !(force && state.sessionStatus === 'IDLE')) {
+        const allowance = state.handyRole === 'primary' ? primarySpeed : 0;
+        if (!force && handyHsp.owns()) handyHsp.setWindow(handyHspWindow()).catch(() => {});
+        handyHsp.dispatch({ allowance, cap: state.handyMaxCap, force });
+        return null;
+    }
+    if (route === 'hsp' || route === 'release') {
+        if (force) handyHsp.dispatch({ allowance: 0, force: true });
+        if (!handyHspReleasing) releaseHandyHsp();
+        return null;
+    }
+    if (route === 'rhythm') {
+        const target = handyRhythmTarget(primarySpeed, range);
+        const handyCap = (state.handyMaxCap ?? 100) / 100;
+        return { speed: Math.round(target.speed * handyCap), min: target.strokeMin, max: target.strokeMax };
+    }
+    return { speed: targetHandySpeed, min: range.min, max: range.max };
 }
 
 function dispatchHardware(primarySpeed, secondarySpeed, strokeMin, strokeMax, force = false) {
@@ -1126,7 +1483,8 @@ function dispatchHardware(primarySpeed, secondarySpeed, strokeMin, strokeMax, fo
     // driver and the funscript export still records what the engine asked
     // for. A T-Code or Intiface linear axis takes a wider zone as a longer,
     // slower stroke rather than a faster one, so they keep the envelope as is.
-    dispatchHandy(targetHandySpeed, range.min, range.max, force, range.env.min, range.env.max, advancedSettings.handyEndMargin);
+    const handyPlan = routeTheHandy(primarySpeed, targetHandySpeed, range, force);
+    if (handyPlan) dispatchHandy(handyPlan.speed, handyPlan.min, handyPlan.max, force, range.env.min, range.env.max, advancedSettings.handyEndMargin);
     // Intiface linear axes run on their own per-leg timers; this call only
     // updates the planner inputs (and, with force, issues StopAllDevices).
     dispatchIntiface(primarySpeed, secondarySpeed, range.min, range.max, range.env.min, range.env.max, force);
@@ -1205,9 +1563,10 @@ function warmupElapsedSeconds() {
 function updateWarmupBadge() {
     const badge = document.getElementById('warmupBadge');
     const remainingEl = document.getElementById('warmupRemainingText');
-    const warmupSeconds = Math.max(0, advancedSettings.warmupMinutes || 0) * 60;
+    const warmupSeconds = effectiveWarmupMinutes() * 60;
     const elapsed = warmupElapsedSeconds();
-    const active = state.sessionStatus === 'RUNNING' && warmupSeconds > 0 && elapsed < warmupSeconds;
+    const scripting = state.activeMode === 'script' || state.teaseMode === 'script';
+    const active = !scripting && state.sessionStatus === 'RUNNING' && warmupSeconds > 0 && elapsed < warmupSeconds;
     if (badge) badge.classList.toggle('hidden', !active);
     if (active && remainingEl) {
         const left = warmupSeconds - elapsed;
@@ -1273,6 +1632,86 @@ function renderCameEarlyButton() {
     cameEarlyBtn.classList.toggle('text-amber-300', !finishing);
 }
 
+// I came: a wanted orgasm, with or without Force Orgasm. It is counted, the
+// toys ease down, the warm-up starts again (Survival restarts its climb) and
+// the session keeps running, so a session can hold several. Came Early stays
+// the accidental release that ends the session. Calibration records its
+// orgasm with Finished me, so I came is not offered there.
+const iCameBtn = document.getElementById('iCameBtn');
+
+function settling() {
+    return Boolean(state.settleEndsSession || state.settleRestartsWarmup || state.settleRestartsSurvival);
+}
+
+function orgasmReportOpen() {
+    return !isRemotePage && state.activeMode !== 'calibrate'
+        && ['RUNNING', 'PAUSED'].includes(state.sessionStatus) && !settling();
+}
+
+function renderICameButton() {
+    if (!iCameBtn) return;
+    const open = orgasmReportOpen();
+    iCameBtn.classList.toggle('hidden', isRemotePage);
+    iCameBtn.disabled = !open;
+    // The tap is acknowledged on the button itself while the toys ease down.
+    const counted = Boolean(state.settleRestartsWarmup || state.settleRestartsSurvival);
+    const kicker = document.getElementById('iCameKicker'), label = document.getElementById('iCameLabel');
+    if (kicker) kicker.textContent = counted ? `Orgasm ${state.orgasmCount || 1}` : 'Orgasm';
+    if (label) label.textContent = counted ? 'Counted ✓' : 'I came';
+    iCameBtn.title = open
+        ? 'You came, and the session keeps going. The orgasm is counted, the toys ease down and the warm-up starts again.'
+        : state.activeMode === 'calibrate' ? 'Calibration records its orgasm with Finished me.'
+            : settling() ? 'Easing down after the orgasm.' : 'Start a session first.';
+}
+
+function countOrgasm() {
+    state.orgasmCount = (state.orgasmCount || 0) + 1;
+    state.lastOrgasmSeconds = state.sessionSeconds || 0;
+    if (!state.completionReported) {
+        state.completionReported = true;
+        try { completionHistoryId = saveSessionToHistory('User-reported completion'); }
+        catch (error) { console.warn('Completion history could not be saved', error); }
+    }
+}
+
+// A repeat inside this window is the same orgasm: a double tap or a held C.
+// It does not rely on the ease-down, which can be set to 0 seconds.
+const ORGASM_REPORT_GAP_MS = 3000;
+let lastOrgasmReportAt = -Infinity;
+
+function reportOrgasm() {
+    if (!orgasmReportOpen()) return;
+    const now = Date.now();
+    if (now - lastOrgasmReportAt < ORGASM_REPORT_GAP_MS) return;
+    lastOrgasmReportAt = now;
+    countOrgasm();
+    const survival = state.activeMode === 'survival';
+    if (state.sessionStatus === 'PAUSED') {
+        // Paused stays paused: count it and reset the climb, but the toys
+        // only move again when the wearer presses Resume.
+        if (state.orgasmMode) setOrgasmMode(false, { settle: false });
+        if (survival) restartSurvivalAfterOrgasm();
+        else restartWarmupAfterOrgasm();
+    } else {
+        beginSettle(survival ? { restartSurvival: true } : { restartWarmup: true });
+    }
+    renderICameButton();
+    syncAiObservation();
+    syncTelemetry();
+}
+
+// After a counted orgasm the session goes on from a fresh warm-up, the way
+// Survival restarts its climb. The session timer and edge count keep going.
+function restartWarmupAfterOrgasm() {
+    state.isEdged = false;
+    state.orgasmBoost = 0;
+    state.warmupOriginSeconds = state.sessionSeconds;
+    updateWarmupBadge();
+    updateEngine();
+    syncAiObservation();
+    syncTelemetry();
+}
+
 function calibrationHintText() {
     const on = state.activeMode === 'calibrate' || state.gameMode === 'calibrate';
     if (!on) return '';
@@ -1280,13 +1719,13 @@ function calibrationHintText() {
     const live = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'PAUSED';
     if (state.calibrationPass === 'dual') {
         return saved
-            ? `Primary and secondary both on. The app / Finished me saves that heart rate as the dual max. The primary max stays ${saved}.`
-            : 'Primary and secondary both on. The app / Finished me saves that heart rate as the dual max.';
+            ? `Primary and secondary both on. Edged saves the heart rate you are on as the dual max and eases the toys down. The app / Finished me saves the orgasm. The primary max stays ${saved}.`
+            : 'Primary and secondary both on. Edged saves the heart rate you are on as the dual max and eases the toys down. The app / Finished me saves the orgasm.';
     }
     if (saved && !live) {
-        return `Primary device only. The app / Finished me replaces your single max, now ${saved}.`;
+        return `Primary device only. Edged saves the heart rate you are on. The app / Finished me saves the orgasm and replaces your single max, now ${saved}.`;
     }
-    return 'Primary device only. Leave the secondary off. When you orgasm, tap The app / Finished me.';
+    return 'Primary device only. Leave the secondary off. Edged saves the heart rate you are on and eases the toys down. When you orgasm, tap The app / Finished me.';
 }
 
 function renderCalibration() {
@@ -1297,6 +1736,7 @@ function renderCalibration() {
         hint.textContent = calibrationHintText();
         hint.classList.toggle('hidden', !on);
     }
+    paintEdgedButton();
     if (!btn) return;
     btn.textContent = on ? 'Calibrating' : 'Calibrate';
     btn.className = on
@@ -1359,6 +1799,9 @@ let completionHistoryId = null;
 
 function resetSessionCounters() {
     state.completionReported = false;
+    state.orgasmCount = 0;
+    state.lastOrgasmSeconds = null;
+    state.roundsGranted = 0;
     completionHistoryId = null;
     state.sessionSeconds = 0;
     state.chosenTargetSeconds = 0;
@@ -1374,6 +1817,7 @@ function resetSessionCounters() {
     state.rampdownSecondsLeft = 45;
     state.warmupOriginSeconds = 0;
     state.resumeStatus = null;
+    state.pauseReason = '';
     state.durationFallback = false;
     state.endgameFired = false;
     state.endgameHeldByOrgasm = false;
@@ -1382,6 +1826,7 @@ function resetSessionCounters() {
     clearSettle();
     funscriptSamples = [];
     funscriptSessionStart = 0;
+    sessionLog.reset();
     const edgeEl = document.getElementById('edgeCount');
     const pauseEl = document.getElementById('pauseCount');
     const sVal = document.getElementById('strokerVal');
@@ -1462,7 +1907,7 @@ function tickSessionGuardsAndGames() {
     const crawlAtCeiling = advancedSettings.ceilingBehaviour !== 'stop';
     const guardArmed = Boolean(advancedSettings.stallGuard) && crawlAtCeiling && !state.orgasmMode
         && state.activeMode !== 'oracle' && !isUncappedClimb() && state.activeMode !== 'edgetrain'
-        && state.activeMode !== 'finisher';
+        && state.activeMode !== 'finisher' && state.activeMode !== 'script';
     const guard = tickStallGuard(
         { holdSeconds: state.edgeStallSeconds, pauseSeconds: state.stallPauseElapsed, engaged: state.stallGuardEngaged },
         {
@@ -1479,7 +1924,7 @@ function tickSessionGuardsAndGames() {
     if (guard.justResumed) cueVoice('stallResume');
     if (guard.justReleased) cueVoice('stallRecover');
 
-    const warmupSeconds = Math.max(0, advancedSettings.warmupMinutes || 0) * 60;
+    const warmupSeconds = effectiveWarmupMinutes() * 60;
     if (warmupSeconds > 0 && warmupElapsedSeconds() === warmupSeconds) {
         cueVoice('warmupDone');
     }
@@ -1621,6 +2066,77 @@ function tickSessionGuardsAndGames() {
     }
 }
 
+function primaryStrokeLive() {
+    if (handyConnected && state.handyRole === 'primary') return 1;
+    if (isIntifaceConnected() && Array.from(intifaceDevices.values()).some((dev) => (dev.axes || []).some((axis) => axis.role === 'primary' && !axis.inert))) return 1;
+    if (isTCodeConnected()) {
+        const dev = getTCodeDevice();
+        if (dev && Array.isArray(dev.axes) && dev.axes.some((axis) => axis.role === 'primary')) return 1;
+    }
+    return 0;
+}
+
+// What one dev-log sample holds. A pause records speed 0 and the reason,
+// so a later look can tell a button tap from a safety stop.
+function sessionLogFields(now = Date.now()) {
+    const paused = state.sessionStatus === 'PAUSED';
+    const range = effectiveStrokeRange(state.strokeMin, state.strokeMax);
+    const started = funscriptSessionStart || now;
+    return {
+        t: Math.max(0, now - started),
+        hr: state.sensorHr,
+        engineHr: state.effectiveHr,
+        mic: state.micApplied,
+        speed: paused ? 0 : state.strokerSpeed,
+        secondary: paused ? 0 : state.prostateSpeed,
+        strokeMin: range.min,
+        strokeMax: range.max,
+        edged: state.isEdged,
+        orgasm: state.orgasmMode,
+        stall: state.stallGuardEngaged,
+        edges: state.edges,
+        mode: state.teaseMode,
+        game: state.gameMode || '',
+        status: state.sessionStatus,
+        hrSignal: state.hrSignalState,
+        scriptMs: scriptFeed && state.activeMode === 'script' ? scriptFeed.scriptNow() : 0,
+        offsetMs: scriptFeed ? scriptFeed.offset() : 0,
+        expand: Math.round((Number(state.scriptExpand) || 1) * 100),
+        climax: Math.round((Number(state.scriptClimax) || 0) * 100),
+        ceiling: state.effectiveMaxHr,
+        primaryOn: primaryStrokeLive(),
+        intensity: state.intensityValue,
+        pauseReason: paused ? state.pauseReason : ''
+    };
+}
+
+function captureSessionLog(now = Date.now()) {
+    if (!sessionLogWanted() || isRemotePage) return;
+    const live = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN' || state.sessionStatus === 'PAUSED';
+    if (!live) return;
+    if (funscriptSessionStart === 0) funscriptSessionStart = now;
+    sessionLog.observe(sessionLogFields(now));
+}
+
+// The cockpit number. "--" until a monitor or the simulator has actually spoken.
+function liveHrText(bpm = state.hrCurrent) {
+    const simulated = !isRemotePage && Boolean(state.simEngaged);
+    const linked = isRemotePage ? Boolean(state.hrReadingSeen) : (isBleConnected() || simulated);
+    return formatLiveHr({
+        bpm,
+        linked,
+        simulated,
+        seen: Boolean(state.hrReadingSeen) || simulated
+    });
+}
+
+function paintLiveHr(bpm = state.hrCurrent) {
+    const label = liveHrText(bpm);
+    const hrDisplay = document.getElementById('hrDisplay');
+    if (hrDisplay) hrDisplay.textContent = label;
+    return label;
+}
+
 // 250ms Live Funscript Sampling Loop (4Hz). Records what was really sent to
 // the toys (speed plus the physical stroke zone); the buffer is capped at
 // four hours, oldest dropped first.
@@ -1634,14 +2150,15 @@ setInterval(() => {
     if (active || paused) {
         const now = Date.now();
         if (funscriptSessionStart === 0) funscriptSessionStart = now;
-        const range = effectiveStrokeRange(state.strokeMin, state.strokeMax);
+        const sample = sessionLogFields(now);
         pushSample(funscriptSamples, {
-            at: now - funscriptSessionStart,
-            speed: paused ? 0 : state.strokerSpeed,
-            secondary: paused ? 0 : state.prostateSpeed,
-            strokeMin: range.min,
-            strokeMax: range.max
+            at: sample.t,
+            speed: sample.speed,
+            secondary: sample.secondary,
+            strokeMin: sample.strokeMin,
+            strokeMax: sample.strokeMax
         });
+        if (sessionLogWanted()) sessionLog.observe(sample);
     }
 }, 250);
 
@@ -1655,6 +2172,7 @@ function recordHrReading(bpm, sensorContact = null, now = Date.now()) {
     document.getElementById('hrContactHint')?.classList.toggle('hidden', !state.hrNoContact);
     if (!valid) return false;
     state.hrCurrent = bpm;
+    state.hrReadingSeen = true;
     state.lastHrTimestamp = now;
     state.history.push(bpm);
     if (state.history.length > 60) state.history.shift();
@@ -1811,6 +2329,7 @@ function redrawChart() {
 
 // 1-Second Master Clock
 setInterval(() => {
+    rollNnnDay();
     if (isRemotePage) {
         renderRemoteClock();
         return;
@@ -1830,7 +2349,8 @@ setInterval(() => {
 
         // The endgame fires exactly once per session: the Orgasm endgame
         // arms Force Orgasm, which stays a toggle the wearer can cancel.
-        if (!state.endgameFired && state.chosenTargetSeconds > 0 && state.sessionSeconds >= state.chosenTargetSeconds) {
+        // Survival keeps climbing until Stop. A session length does not end it.
+        if (!state.endgameFired && state.activeMode !== 'survival' && state.chosenTargetSeconds > 0 && state.sessionSeconds >= state.chosenTargetSeconds) {
             const oracleResolving = state.activeMode === 'oracle'
                 && (state.oracleState === 'HOLD' || state.oracleState === 'CLIMAX' || state.orgasmMode);
             // Only an orgasm actually in progress defers the endgame. The
@@ -1922,7 +2442,16 @@ function updateTimerDisplay() {
     const aSecs = String(state.sessionSeconds % 60).padStart(2, '0');
     const activeStr = `${aMins}:${aSecs}`;
 
-    if (state.durationMode === 'fixed' && state.chosenTargetSeconds > 0) {
+    if (state.activeMode === 'survival') {
+        timerEl.textContent = activeStr;
+        subLabelEl.textContent = 'Survival';
+    } else if (state.scriptVideoClock && state.chosenTargetSeconds > 0) {
+        const rem = Math.max(0, state.chosenTargetSeconds - state.sessionSeconds);
+        const rMins = String(Math.floor(rem / 60)).padStart(2, '0');
+        const rSecs = String(rem % 60).padStart(2, '0');
+        timerEl.textContent = `${rMins}:${rSecs}`;
+        subLabelEl.textContent = `Video left · elapsed ${activeStr}`;
+    } else if (state.durationMode === 'fixed' && state.chosenTargetSeconds > 0) {
         const rem = Math.max(0, state.chosenTargetSeconds - state.sessionSeconds);
         const rMins = String(Math.floor(rem / 60)).padStart(2, '0');
         const rSecs = String(rem % 60).padStart(2, '0');
@@ -1938,12 +2467,60 @@ function updateTimerDisplay() {
         timerEl.textContent = activeStr;
         subLabelEl.textContent = "Endless Mode";
     }
+    paintPlayerHud();
+}
+
+function paintPlayerHud() {
+    if (!player || typeof player.renderHud !== 'function') return;
+    const hr = document.getElementById('hrDisplay');
+    const timer = document.getElementById('sessionTimer');
+    const phase = document.getElementById('playerPhase');
+    const mark = Number.isFinite(state.effectiveMaxHr) ? String(state.effectiveMaxHr) : '--';
+    player.renderHud({
+        hr: hr ? hr.textContent : '--',
+        mark,
+        phase: state.activeMode === 'script' && phase ? phase.textContent : '',
+        edges: String(state.edges || 0),
+        timer: timer ? timer.textContent : '00:00',
+        primary: `${Math.round(Number(state.strokerSpeed) || 0)}%`,
+        secondary: `${Math.round(Number(state.prostateSpeed) || 0)}%`
+    });
+    const hudPauses = document.getElementById('hudPauses');
+    if (hudPauses) hudPauses.textContent = String(state.pauses || 0);
 }
 
 // Start from IDLE or resume from PAUSED. Returns false when the session was
 // in neither state, or when the hardware is not ready: a pulse source with a
 // fresh valid reading and a toy are required, so a resume can never run the
 // motors on a frozen heart rate. The watchdog clocks are left untouched.
+function videoDurationSeconds() {
+    const d = player && typeof player.duration === 'function' ? player.duration() : 0;
+    return Number.isFinite(d) ? d : 0;
+}
+
+function applyVideoSessionLength() {
+    const picked = sessionTargetForVideo({
+        continueAfter: Boolean(advancedSettings.scriptContinueAfterVideo),
+        videoSeconds: player && player.hasVideo() ? videoDurationSeconds() : 0,
+        configuredSeconds: state.configuredTargetSeconds
+    });
+    state.scriptVideoClock = picked.fromVideo;
+    if (picked.fromVideo) state.chosenTargetSeconds = picked.seconds;
+}
+
+function continueAfterVideo() {
+    state.scriptVideoClock = false;
+    if (scriptFeed) scriptFeed.setActive(false);
+    if (state.teaseMode === 'script' && !state.gameMode) {
+        state.teaseMode = 'classic';
+        state.activeMode = 'classic';
+        highlightModeCard();
+        renderModeDetail();
+    }
+    updateTimerDisplay();
+    updateEngine();
+}
+
 function startOrResumeSession() {
     if (state.sessionStatus !== 'IDLE' && state.sessionStatus !== 'PAUSED') return false;
     if (transportWaitingReason()) {
@@ -1961,6 +2538,8 @@ function startOrResumeSession() {
         resetGameState();
         state.calibrationPass = pass;
         state.chosenTargetSeconds = pickSessionTargetSeconds();
+        state.configuredTargetSeconds = state.chosenTargetSeconds;
+        applyVideoSessionLength();
         updateTimerDisplay();
         cueVoice('sessionStart');
     } else {
@@ -1969,14 +2548,17 @@ function startOrResumeSession() {
     }
     state.sessionStatus = resumingRampdown ? 'RAMPDOWN' : 'RUNNING';
     state.resumeStatus = null;
+    state.pauseReason = '';
     clearHrSignalPause();
     document.getElementById('rampdownNotice')?.classList.toggle('hidden', !resumingRampdown);
     renderTransport(state.sessionStatus);
+    if (player && player.hasVideo() && !player.isPlaying()) player.play();
+    if (state.activeMode === 'script') state.scriptReleasedAt = state.sessionSeconds;
     return true;
 }
 
 // Session Controls Handlers
-playPauseBtn?.addEventListener('click', () => {
+playPauseBtn?.addEventListener('click', async () => {
     if (isRemoteViewer) return;
     if (isRemoteController) {
         // Ask the host; the button re-renders from the telemetry it sends back.
@@ -1985,9 +2567,21 @@ playPauseBtn?.addEventListener('click', () => {
         return;
     }
     if (state.sessionStatus === 'IDLE' || state.sessionStatus === 'PAUSED') {
-        startOrResumeSession();
+        if (handyBeatSyncWanted()) {
+            const ready = await handyHsp.prepare(handyHspWindow());
+            if (!ready.ok) {
+                triggerDisconnectAlert(ready.reason || 'Beat sync could not start. Switch it off to play the script as a rhythm.', 'beat-sync');
+                checkReadiness();
+                return;
+            }
+        }
+        const fromIdle = state.sessionStatus === 'IDLE';
+        const started = startOrResumeSession();
+        if (!started && handyHsp?.owns()) releaseHandyHsp();
+        if (started && fromIdle) aiSettingsControl?.newSession();
     } else if (state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN') {
-        pauseSession('Paused.');
+        pauseSession('Paused.', pendingPauseReason || 'button');
+        pendingPauseReason = '';
     }
     checkReadiness();
     syncTelemetry();
@@ -2003,6 +2597,26 @@ stopBtn?.addEventListener('click', () => {
     const safetyStop = stopBtn.dataset.safetyStop === 'true';
     delete stopBtn.dataset.safetyStop;
     stopSession(safetyStop ? "Emergency Stop" : "Stopped");
+    if (safetyStop) aiSettingsControl?.revoke();
+});
+
+document.getElementById('edgedBtn')?.addEventListener('click', () => {
+    if (isRemoteViewer || isRemoteController) return;
+    if (state.activeMode === 'calibrate') {
+        markCalibrationEdge();
+        checkReadiness();
+        syncTelemetry();
+        updateEngine();
+        return;
+    }
+    countManualEdge();
+    const finishing = state.orgasmMode || state.settleSecondsLeft > 0 || state.sessionStatus === 'IDLE';
+    if (!finishing && (state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN')) {
+        pauseSession(null, 'edged');
+    }
+    checkReadiness();
+    syncTelemetry();
+    updateEngine();
 });
 
 function clearSettle() {
@@ -2014,8 +2628,10 @@ function clearSettle() {
     state.settleFloor = 0;
     state.settleEndsSession = false;
     state.settleRestartsSurvival = false;
+    state.settleRestartsWarmup = false;
     state.settleOutcome = null;
     state.settleVoice = null;
+    renderICameButton();
 }
 
 function restartSurvivalAfterOrgasm() {
@@ -2042,13 +2658,13 @@ function restartSurvivalAfterOrgasm() {
 }
 
 function ceilingSettleFloor() {
-    return advancedSettings.ceilingBehaviour === 'stop' ? 0 : CRAWL_PERCENT;
+    return advancedSettings.ceilingBehaviour === 'stop' ? 0 : clampCrawlPercent(advancedSettings.crawlPercent);
 }
 
 // Ease from the speed the toys are at down to Crawl or Full Stop. An ending
 // (calibration, Came Early, Survival) stops the session when the ease finishes.
 // Cancelling Force Orgasm eases down and then the mode takes over again.
-function beginSettle({ endsSession = false, restartSurvival = false, outcome = null, voiceText = null } = {}) {
+function beginSettle({ endsSession = false, restartSurvival = false, restartWarmup = false, outcome = null, voiceText = null } = {}) {
     const seconds = clampOrgasmSettleSeconds(advancedSettings.orgasmSettleSeconds);
     if (seconds <= 0) {
         if (voiceText) cueVoice(voiceText, true);
@@ -2058,6 +2674,11 @@ function beginSettle({ endsSession = false, restartSurvival = false, outcome = n
         }
         if (restartSurvival) {
             restartSurvivalAfterOrgasm();
+            return true;
+        }
+        if (restartWarmup) {
+            if (state.orgasmMode) setOrgasmMode(false, { settle: false });
+            restartWarmupAfterOrgasm();
             return true;
         }
         return false;
@@ -2072,6 +2693,7 @@ function beginSettle({ endsSession = false, restartSurvival = false, outcome = n
     state.settleSecondsLeft = seconds;
     state.settleEndsSession = Boolean(endsSession);
     state.settleRestartsSurvival = Boolean(restartSurvival);
+    state.settleRestartsWarmup = Boolean(restartWarmup);
     state.settleOutcome = outcome;
     state.settleVoice = voiceText;
     if (state.sessionStatus === 'PAUSED') {
@@ -2085,12 +2707,15 @@ function beginSettle({ endsSession = false, restartSurvival = false, outcome = n
         const landing = state.settleFloor > 0 ? 'CRAWL' : 'A STOP';
         notice.textContent = restartSurvival
             ? `EASING DOWN TO ${landing}, THEN THE CLIMB STARTS AGAIN`
+            : restartWarmup
+                ? `EASING DOWN TO ${landing}, THEN THE WARM-UP STARTS AGAIN`
             : endsSession
                 ? `EASING DOWN TO ${landing}, THEN THE SESSION STOPS`
                 : `EASING DOWN TO ${landing}`;
         notice.classList.remove('hidden');
     }
     if (voiceText) cueVoice(voiceText, true);
+    renderICameButton();
     updateEngine();
     syncTelemetry();
     return true;
@@ -2099,6 +2724,7 @@ function beginSettle({ endsSession = false, restartSurvival = false, outcome = n
 function finishSettle() {
     const ends = state.settleEndsSession;
     const restart = state.settleRestartsSurvival;
+    const rewarm = state.settleRestartsWarmup;
     const outcome = state.settleOutcome;
     const voice = state.settleVoice;
     clearSettle();
@@ -2107,6 +2733,7 @@ function finishSettle() {
     // not say it again. An ending with no line of its own still gets the
     // normal stop cue.
     if (restart) restartSurvivalAfterOrgasm();
+    else if (rewarm) restartWarmupAfterOrgasm();
     else if (ends) stopSession(outcome || 'Stopped', voice ? false : null);
     else updateEngine();
 }
@@ -2126,9 +2753,12 @@ function stopSession(outcome = "Stopped", voiceText = null) {
     clearSettle();
     state.sessionStatus = 'IDLE';
     state.resumeStatus = null;
+    state.pauseReason = '';
     state.strokerSpeed = 0;
     state.prostateSpeed = 0;
     dispatchHardware(0, 0, 0, 100, true);
+    if (player && player.isPlaying()) player.pause();
+    if (handyHsp && (handyHsp.owns() || handyHspReleasing)) releaseHandyHsp();
     setOrgasmMode(false, { settle: false });
     clearHrSignalPause();
     try {
@@ -2202,7 +2832,96 @@ const sessionLimitsWriter = createWriteCoalescer({ write: () => persistSettings(
 window.addEventListener('pagehide', () => { sessionLimitsWriter.flush(); });
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') sessionLimitsWriter.flush();
+    else rollNnnDay();
+    paintFocusLost();
 });
+
+// The blur event runs before document.hasFocus() flips, so the paint waits
+// one turn. The note sits on top of the page and does not cover it, so a
+// shared window can stay readable. Don't show this again turns it off.
+const FOCUS_WARNING_KEY = 'edgeloop_focus_warning';
+
+function focusWarningOn() {
+    return safeParse(FOCUS_WARNING_KEY, true) !== false;
+}
+
+function setFocusWarning(on) {
+    safeSet(FOCUS_WARNING_KEY, Boolean(on));
+    paintFocusWarningToggle();
+    paintFocusLost();
+}
+
+function paintFocusWarningToggle() {
+    const box = document.getElementById('focusWarningToggle');
+    if (box) box.checked = focusWarningOn();
+}
+
+// Held from the press until the click has finished, so hiding the banner
+// cannot drop that click onto the card underneath.
+let focusDismissHold = false;
+
+function paintFocusLost() {
+    const overlay = document.getElementById('focusLostOverlay');
+    if (!overlay) return;
+    const msg = document.getElementById('focusLostMsg');
+    if (msg && msg.textContent !== FOCUS_LOST_TEXT) msg.textContent = FOCUS_LOST_TEXT;
+    const inFront = pageIsInFront({
+        hasFocus: typeof document.hasFocus === 'function' ? document.hasFocus() : true,
+        visibilityState: document.visibilityState
+    });
+    const show = focusDismissHold || (!inFront && focusWarningOn());
+    overlay.classList.toggle('hidden', !show);
+}
+
+let focusHideTimer = 0;
+
+function scheduleFocusLostPaint() {
+    clearTimeout(focusHideTimer);
+    const inFront = pageIsInFront({
+        hasFocus: typeof document.hasFocus === 'function' ? document.hasFocus() : true,
+        visibilityState: document.visibilityState
+    });
+    if (!inFront) {
+        paintFocusLost();
+        return;
+    }
+    focusHideTimer = setTimeout(paintFocusLost, 400);
+}
+
+window.addEventListener('blur', scheduleFocusLostPaint);
+window.addEventListener('focus', scheduleFocusLostPaint);
+document.getElementById('focusLostCard')?.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    clearTimeout(focusHideTimer);
+    focusDismissHold = true;
+    const btn = event.target.closest ? event.target.closest('#focusLostDismiss') : null;
+    if (btn && typeof btn.setPointerCapture === 'function') {
+        try { btn.setPointerCapture(event.pointerId); } catch (e) { /* already released */ }
+    }
+    if (!btn) return;
+    safeSet(FOCUS_WARNING_KEY, false);
+    paintFocusWarningToggle();
+}, true);
+function releaseFocusDismiss(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    if (!focusDismissHold) return;
+    setTimeout(() => {
+        focusDismissHold = false;
+        paintFocusLost();
+    }, 0);
+}
+document.getElementById('focusLostDismiss')?.addEventListener('pointerup', releaseFocusDismiss);
+document.getElementById('focusLostDismiss')?.addEventListener('pointercancel', releaseFocusDismiss);
+document.getElementById('focusLostDismiss')?.addEventListener('click', releaseFocusDismiss);
+document.getElementById('focusWarningToggle')?.addEventListener('change', (event) => {
+    setFocusWarning(event.target.checked === true);
+});
+paintFocusWarningToggle();
+scheduleFocusLostPaint();
 
 function persistSessionLimits(immediate = false) {
     if (isRemotePage) return false;
@@ -2243,6 +2962,61 @@ function finishHr() {
     const now = Number.isFinite(state.sensorHr) ? state.sensorHr : state.hrCurrent;
     const peak = Number.isFinite(state.peakHr) ? state.peakHr : now;
     return calibrationReading(Math.max(Number(now) || 0, Number(peak) || 0));
+}
+
+// The heart rate the wearer is on right now. Edged during Calibration saves
+// this, not the peak of the run: the peak may already be an orgasm.
+function liveCalibrationHr() {
+    const now = Number.isFinite(state.sensorHr) ? state.sensorHr : state.hrCurrent;
+    return calibrationReading(now);
+}
+
+// Confirm, store, and ease down. `edge` is the wearer saying they are on
+// the edge before an orgasm. Returns false when they cancel.
+function commitCalibrationReading(hr, { edge = false } = {}) {
+    const saved = calibrationReading(advancedSettings.calibrationPrimaryHr);
+    const pass = state.calibrationPass === 'dual' && saved ? 'dual' : 'primary';
+    const { dual } = stimulationRoles();
+    let voice = edge ? 'Saved. That heart rate is your edge.' : 'Saved. That heart rate is your max.';
+    if (pass === 'dual' && !dual) {
+        const asPrimary = confirm(`The secondary is not on, so this reading is from the primary device alone. Save ${hr} as your primary max instead?`);
+        if (!asPrimary) return false;
+        savePrimaryClimax(hr);
+    } else if (pass === 'dual') {
+        const single = readHrLimits().maxHr;
+        const line = edge
+            ? `Set the dual max to ${hr}, the heart rate you are on? Your primary max stays ${single}. The toys ease down, then stop, before an orgasm. You can change this number by hand.`
+            : `Set the dual max to ${hr}? Your primary max stays ${single}. The toys ease down, then stop. You can change this number by hand.`;
+        if (!confirm(line)) return false;
+        saveDualClimax(hr);
+        if (!edge) voice = 'Saved. That heart rate is your dual-stim max.';
+    } else {
+        const typed = readHrLimits().maxHr;
+        const line = edge
+            ? `Set the primary max to ${hr}, the heart rate you are on? This was your primary device alone. Your typed max is ${typed}. The toys ease down, then stop, before an orgasm. You can change this number by hand. After a rest, a run with both devices sets the dual max.`
+            : `Set the primary max to ${hr}? This was your primary device alone. Your typed max is ${typed}. The toys ease down, then stop. You can change this number by hand. After a rest, a run with both devices sets the dual max.`;
+        if (!confirm(line)) return false;
+        savePrimaryClimax(hr);
+    }
+    // Finished me is an orgasm: count it before the session can end.
+    if (edge) countManualEdge();
+    else countOrgasm();
+    beginSettle({ endsSession: true, outcome: 'Calibration', voiceText: voice });
+    return true;
+}
+
+function markCalibrationEdge() {
+    if (state.sessionStatus !== 'RUNNING' && state.sessionStatus !== 'PAUSED') {
+        confirm('Press play first. Edged saves the heart rate you are on once Calibration is running.');
+        return false;
+    }
+    if (state.settleSecondsLeft > 0) return false;
+    const hr = liveCalibrationHr();
+    if (hr === null) {
+        confirm('Edged needs a heart-rate reading between 40 and 220 before it can save your max.');
+        return false;
+    }
+    return commitCalibrationReading(hr, { edge: true });
 }
 
 function savePrimaryClimax(hr) {
@@ -2298,18 +3072,20 @@ function offerCalibration() {
     // Whichever devices are on decides the number this run replaces. A saved
     // max is not a reason to refuse another run.
     if (dual) {
-        const ok = confirm(`Both devices are on, so this run sets your dual max. It is ${dualMax} now, and Finished me replaces it. Your single max stays ${single}.\n\nIt slowly pushes until you orgasm. Tap the button labeled The app / Finished me.\n\nStart the both-devices run? Press play when you are ready.`);
+        const ok = confirm(`Both devices are on, so this run sets your dual max. It is ${dualMax} now. Your single max stays ${single}.\n\nIt slowly pushes. Tap Edged when you are on the edge, before it finishes you. That saves this heart rate as your dual max and eases the toys down. If it does finish you, tap the button labeled The app / Finished me.\n\nStart the both-devices run? Press play when you are ready.`);
         if (!ok) return false;
         armCalibration('dual');
         return true;
     }
     const ok = confirm(hadPrimary
-        ? `Primary device only, so this run sets your single max. It is ${single} now, and Finished me replaces it.\n\nIt slowly pushes until you orgasm. Tap the button labeled The app / Finished me.\n\nStart the primary run? Press play when you are ready.`
-        : 'Calibration matches the app to your body and your toys.\n\nUse your primary stimulation device alone and leave the secondary off. It slowly pushes until you orgasm. When you do, tap the button labeled The app / Finished me. That sets your single max.\n\nA later run with both devices on replaces the dual max. You can change either number by hand at any time.\n\nStart the primary run? Press play when you are ready.');
+        ? `Primary device only, so this run sets your single max. It is ${single} now.\n\nIt slowly pushes. Tap Edged when you are on the edge, before it finishes you. That replaces your single max and eases the toys down. If it does finish you, tap the button labeled The app / Finished me.\n\nStart the primary run? Press play when you are ready.`
+        : 'Calibration matches the app to your body and your toys.\n\nUse your primary stimulation device alone and leave the secondary off. It slowly pushes. Tap Edged when you are on the edge, before it finishes you. That saves this heart rate as your single max and eases the toys down. If it does finish you, tap the button labeled The app / Finished me.\n\nA later run with both devices on replaces the dual max. You can change either number by hand at any time.\n\nStart the primary run? Press play when you are ready.');
     if (!ok) return false;
     armCalibration('primary');
     return true;
 }
+
+iCameBtn?.addEventListener('click', () => reportOrgasm());
 
 cameEarlyBtn?.addEventListener('click', () => {
     // The learning profile and the typed max belong to the host.
@@ -2331,29 +3107,7 @@ cameEarlyBtn?.addEventListener('click', () => {
         }
         const hr = finishHr();
         if (hr === null) return;
-        const saved = calibrationReading(advancedSettings.calibrationPrimaryHr);
-        const pass = state.calibrationPass === 'dual' && saved ? 'dual' : 'primary';
-        const { dual } = stimulationRoles();
-        if (pass === 'dual' && !dual) {
-            const asPrimary = confirm(`The secondary is not on, so this reading is from the primary device alone. Save ${hr} as your primary max instead?`);
-            if (!asPrimary) return;
-            savePrimaryClimax(hr);
-            beginSettle({ endsSession: true, outcome: 'Calibration', voiceText: 'Saved. That heart rate is your max.' });
-            return;
-        }
-        if (pass === 'dual') {
-            const single = readHrLimits().maxHr;
-            const ok = confirm(`Set the dual max to ${hr}? Your primary max stays ${single}. The toys ease down, then stop. You can change this number by hand.`);
-            if (!ok) return;
-            saveDualClimax(hr);
-            beginSettle({ endsSession: true, outcome: 'Calibration', voiceText: 'Saved. That heart rate is your dual-stim max.' });
-            return;
-        }
-        const typed = readHrLimits().maxHr;
-        const ok = confirm(`Set the primary max to ${hr}? This was your primary device alone. Your typed max is ${typed}. The toys ease down, then stop. You can change this number by hand. After a rest, a run with both devices sets the dual max.`);
-        if (!ok) return;
-        savePrimaryClimax(hr);
-        beginSettle({ endsSession: true, outcome: 'Calibration', voiceText: 'Saved. That heart rate is your max.' });
+        commitCalibrationReading(hr, { edge: false });
         return;
     }
     if (state.activeMode === 'survival') {
@@ -2363,6 +3117,8 @@ cameEarlyBtn?.addEventListener('click', () => {
         }
         const typed = readHrLimits().maxHr;
         if (confirm(`Mark this orgasm? The toys ease down, then Survival starts again from a warm-up. The session timer keeps going. Your Climax HR stays ${typed}.`)) {
+            state.orgasmCount = (state.orgasmCount || 0) + 1;
+            state.lastOrgasmSeconds = state.sessionSeconds || 0;
             beginSettle({ restartSurvival: true });
         }
         return;
@@ -2468,48 +3224,151 @@ const GAME_CARD_MODES = ['oracle', 'survival', 'edgetrain', 'nnn'];
 const modeCards = document.querySelectorAll('.mode-card');
 
 const MODE_DETAILS = {
-    classic: 'Full strokes inside the travel range you set. Tempo and depth drift so the same pulse does not feel identical, then Crawl or Full Stop at the ceiling.',
-    finisher: 'Speed rises with your heart rate and stays at full speed on the mark, so it can carry you over. "At the ceiling" does not slow it down. Room noise does not speed it up either: the climb follows the pulse the sensor measured.',
-    milker: 'The stroker eases off as you climb and the internal toy takes over. Short bursts and the on-off pulse wait until your pulse is close to the heart rate you set.',
-    shortener: 'Full strokes until your pulse is close to the heart rate you set, then the stroke shortens to the base. It stays quicker than Classic. The secondary channel stays low.',
+    classic: 'Speed starts high and ramps down as your pulse climbs toward the heart rate you set. Strokes stay the full length. Close to that heart rate, it sometimes stops for a beat and then picks back up. Crawl or Full Stop still decides the ceiling.',
+    finisher: 'Works to hold you at the heart rate you set. Under that number the stroke pushes. As your pulse arrives it eases off, and on the mark it holds instead of sitting at full speed. "At the ceiling" does not replace that hold. Room noise does not speed it up: the climb follows the pulse the sensor measured.',
+    shortener: 'Full strokes until your pulse is close to the heart rate you set, then the stroke shortens to the base. It stays quicker than Simple Ramp. The secondary channel stays low.',
     headplay: 'Full strokes until your pulse is close to the heart rate you set, then the stroke climbs toward the head. Speed eases off with your pulse, and the stroke opens back up when your pulse drops.',
-    ultimate: 'The pattern changes with your pulse: long and steady, then long-slow against short-fast. Stops and short bursts wait until your pulse is close to the heart rate you set. The internal toy follows the same chapters.',
+    ultimate: 'The pattern changes with your pulse: long and steady, then long-slow against short-fast. Close to the heart rate you set, it runs a long fast stretch, stops for a beat, then climbs back up. The internal toy stays with you through the climb.',
+    bratty: 'Experimental. The climb matches Ultimate Milker until you are close. Then it stays up: a one-second dip, then the fast stroke again, several times, and a longer stretch that still dips after. At the ceiling that pattern keeps going instead of stopping.',
+    milker: 'The stroker eases off as you climb and the internal toy takes over. Close to the heart rate you set, the stroker runs a fast stretch, stops for a beat, and climbs back. The internal toy rests on its own timing.',
     ruin: 'The stroker keeps moving through the edge. After about 12 seconds on the mark it stops dead for 18 seconds and the other toy drops low, so it can leak without a full orgasm. "At the ceiling" does not govern the ride or that stop.',
     oracle: 'Pulls you up and holds the edge, then decides how the session ends. Climax and denial wait for your Mystery minimum. The stroke range is the tease mode you selected.',
-    survival: 'Each edge raises your max by 1 BPM and the speed a little. The climb takes about half an hour to get hard, and "At the ceiling" does not stop the toys or end the run. Tap Finished me when you come: the toys ease down, then the climb and the warm-up start again. The session timer keeps going. The stroke range is the tease mode you selected.',
-    calibrate: 'A climb of its own, separate from Survival. The first run is your primary stimulation device alone, and The app / Finished me saves that heart rate as the primary max. After a rest, a run with both devices saves the dual max. You can change either number by hand. "At the ceiling" does not stop the toys or end the run.',
+    survival: 'Each edge raises your max by 1 BPM and the speed a little. The climb takes about half an hour to get hard, and "At the ceiling" does not stop the toys or end the run. A session length does not end it either. Tap Finished me when you come: the toys ease down, then the climb and the warm-up start again. Press Stop when you are done. The pattern is the play style you picked.',
+    calibrate: 'A climb of its own, separate from Survival. Edged saves the heart rate you are on and eases the toys down, before an orgasm. The app / Finished me saves the orgasm. The first run is your primary stimulation device alone. After a rest, a run with both devices saves the dual max. You can change either number by hand. "At the ceiling" does not stop the toys or end the run.',
     edgetrain: 'Hold the edge for the time you set. Drop early and it does not count. After the set number of holds it offers to finish you. The stroke range is the tease mode you selected.',
-    nnn: 'A daily edge quota between the start and end dates on the card. The app counts the days you did not open it and adds those edges to today. Each missed day also asks you to hold the edge longer before it counts. At the quota it either finishes you or denies you.'
+    nnn: 'A daily edge quota between the start and end dates on the card. The app counts the days you did not open it and adds those edges to today. Each missed day also asks you to hold the edge longer before it counts. At the quota the toys ease down and the session ends. There is no orgasm.',
+    script: 'Your video and its funscript. The session warm-up does not apply, so the file plays at once. Shorten and skip: strokes get shorter as you climb, and the toy skips them at your edge. Keep the script: strokes stay the shape in the file, and your heart rate only turns them down. The primary meter is how much of the file is allowed, and 100% is the whole file inside your travel range.',
+    'goal-off': 'No game. The play style you picked runs on its own.'
 };
 
-// The paragraph above the cards follows the goal when one is on, including
-// Calibration, and the stroke otherwise.
+const MODE_NAMES = {
+    classic: 'Simple Ramp',
+    finisher: 'Finisher',
+    milker: 'Prostate Milker',
+    shortener: 'Glans Protector',
+    headplay: 'Head Play',
+    ultimate: 'Ultimate Milker',
+    bratty: 'Bratty Tease',
+    ruin: 'Ruin & Leak',
+    script: 'Funscript',
+    'goal-off': 'Tease',
+    survival: 'Survival',
+    edgetrain: 'Edge Training',
+    oracle: 'The Oracle',
+    nnn: 'No Nut November',
+    calibrate: 'Calibration'
+};
+
+const ENDING_NAMES = {
+    orgasm: 'Climax',
+    rampdown: 'Soft Landing',
+    denial: 'Strict Denial'
+};
+
+const ENDING_DETAILS = {
+    orgasm: 'When the timer runs out, the toys surge to 100%.',
+    rampdown: 'When the timer runs out, the toys ease down for 45 seconds.',
+    denial: 'When the timer runs out, everything stops.'
+};
+
 function renderModeDetail() {
-    const el = document.getElementById('modeDetail');
-    if (!el) return;
-    const mode = state.gameMode || state.teaseMode;
-    el.textContent = MODE_DETAILS[mode] || '';
+    const style = state.teaseMode || 'classic';
+    const goal = state.gameMode || '';
+    const styleName = document.getElementById('playStyleName');
+    const styleDetail = document.getElementById('playStyleDetail');
+    const goalName = document.getElementById('endgameName');
+    const goalDetail = document.getElementById('endgameDetail');
+    if (styleName) styleName.textContent = MODE_NAMES[style] || style;
+    if (styleDetail) styleDetail.textContent = MODE_DETAILS[style] || '';
+    if (!state.gameMode) {
+        const ending = state.endgameType || 'orgasm';
+        if (goalName) goalName.textContent = ENDING_NAMES[ending] || ENDING_NAMES.orgasm;
+        if (goalDetail) goalDetail.textContent = ENDING_DETAILS[ending] || '';
+    } else {
+        if (goalName) goalName.textContent = MODE_NAMES[goal] || goal;
+        if (goalDetail) goalDetail.textContent = MODE_DETAILS[goal] || '';
+    }
+    document.getElementById('trainSettings')?.classList.toggle('hidden', state.gameMode !== 'edgetrain');
+    document.getElementById('nnnSettings')?.classList.toggle('hidden', state.gameMode !== 'nnn');
+    const choosingStyle = document.getElementById('playStyleDrawer') && !document.getElementById('playStyleDrawer').classList.contains('hidden');
+    const choosingEnding = document.getElementById('endgameDrawer') && !document.getElementById('endgameDrawer').classList.contains('hidden');
+    document.getElementById('playStyleDetail')?.classList.toggle('hidden', Boolean(choosingStyle));
+    const extra = state.gameMode === 'nnn' || state.gameMode === 'edgetrain';
+    document.getElementById('endgameDetail')?.classList.toggle('hidden', Boolean(choosingEnding) || extra);
+    document.getElementById('endgameExtra')?.classList.toggle('hidden', Boolean(choosingEnding));
+    // Climax, Soft Landing, and Strict Denial are the ending when no game is
+    // on. Edge Training still uses them when the timer runs out. Survival
+    // keeps going until Stop. The Oracle decides its own finish. NNN uses
+    // the denial percent on its own card.
+    const timerMatters = state.gameMode === 'edgetrain';
+    document.getElementById('timerEnding')?.classList.toggle('hidden', Boolean(choosingEnding) || !timerMatters);
+}
+
+function setChoiceDrawer(drawerId, buttonId, open) {
+    const drawer = document.getElementById(drawerId);
+    const button = document.getElementById(buttonId);
+    const style = buttonId === 'playStyleToggle';
+    const prompt = document.getElementById(style ? 'playStylePrompt' : 'endgamePrompt');
+    const name = document.getElementById(style ? 'playStyleName' : 'endgameName');
+    const hint = document.getElementById(style ? 'playStyleHint' : 'endgameHint');
+    if (drawer) drawer.classList.toggle('hidden', !open);
+    if (button) button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    prompt?.classList.add('hidden');
+    name?.classList.remove('hidden');
+    if (hint) {
+        hint.classList.remove('hidden');
+        hint.textContent = open ? 'Tap to close' : 'Tap to change';
+    }
+    renderModeDetail();
+}
+
+// The two cards share a row. Opening one opens the other, so a short card
+// does not sit beside a tall list and leave a hole.
+function setBothChoiceDrawers(open) {
+    setChoiceDrawer('playStyleDrawer', 'playStyleToggle', open);
+    setChoiceDrawer('endgameDrawer', 'endgameToggle', open);
+}
+
+document.getElementById('playStyleSelected')?.addEventListener('click', () => {
+    const drawer = document.getElementById('playStyleDrawer');
+    setBothChoiceDrawers(Boolean(drawer && drawer.classList.contains('hidden')));
+});
+document.getElementById('endgameSelected')?.addEventListener('click', (event) => {
+    if (event.target.closest('#endgameExtra')) return;
+    const drawer = document.getElementById('endgameDrawer');
+    setBothChoiceDrawers(Boolean(drawer && drawer.classList.contains('hidden')));
+});
+
+let strokeBeforeScript = 'classic';
+
+function syncFollowScript() {
+    const row = document.getElementById('playerFollowRow');
+    const input = document.getElementById('playerFollowScript');
+    const has = Boolean(scriptFeed?.hasTrack());
+    if (row) row.classList.toggle('hidden', !has);
+    if (input) input.checked = has && state.teaseMode === 'script';
 }
 
 function highlightModeCard() {
     modeCards.forEach(c => {
         const mode = c.getAttribute('data-mode');
+        const ending = c.getAttribute('data-endgame');
         const on = mode === 'goal-off'
-            ? !state.gameMode
+            ? !state.gameMode && ending === (state.endgameType || 'orgasm')
             : (mode === state.teaseMode || mode === state.gameMode);
         const check = c.querySelector('.mode-check');
         const title = c.querySelector('.font-bold');
-        const wide = mode === 'nnn' ? ' sm:col-span-2' : '';
         if (on) {
-            c.className = `mode-card text-left p-2 rounded-xl bg-purple-950/20 border border-purple-800 hover:border-purple-600 transition cursor-pointer flex flex-col justify-between${wide}`;
+            c.className = 'mode-card h-full text-left p-2 rounded-xl bg-purple-950/20 border border-purple-800 hover:border-purple-600 transition cursor-pointer flex flex-col justify-between';
             if (title) title.className = "font-bold text-[11px] text-purple-300 flex justify-between items-center";
             check?.classList.remove('hidden');
         } else {
-            c.className = `mode-card text-left p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition cursor-pointer flex flex-col justify-between${wide}`;
+            c.className = 'mode-card h-full text-left p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition cursor-pointer flex flex-col justify-between';
             if (title) title.className = "font-bold text-[11px] text-slate-200 flex justify-between items-center";
             check?.classList.add('hidden');
         }
     });
+    syncFollowScript();
 }
 
 function applyModeSelection(mode, enabled) {
@@ -2517,6 +3376,9 @@ function applyModeSelection(mode, enabled) {
     // primary run and the later both-toys run. A mode command must not
     // skip that.
     if (mode === 'calibrate') return;
+    if (mode === 'script' && !scriptFeed?.hasTrack()) return;
+    if (mode === 'script') state.gameMode = null;
+    if (GAME_CARD_MODES.includes(mode) && state.teaseMode === 'script') return;
     // Tease clears the goal. It is not a stroke, so it must not land in the
     // tease-mode branch (that would store a mode the engine does not run).
     if (mode === 'goal-off') {
@@ -2575,15 +3437,28 @@ function saveNnn() {
     safeSet(NNN_STORAGE_KEY, JSON.stringify(nnnState));
 }
 
+// Midnight, or coming back to a tab that stayed open, starts the new day.
+// catchUpNnn is what a reload already did. Same-day calls leave the quota.
+function rollNnnDay() {
+    const next = catchUpNnn(nnnState);
+    if (next.lastOpened === nnnState.lastOpened
+        && next.edgesToday === nnnState.edgesToday
+        && next.quotaToday === nnnState.quotaToday
+        && next.finished === nnnState.finished
+        && next.holdSeconds === nnnState.holdSeconds
+        && next.outcome === nnnState.outcome) return;
+    nnnState = next;
+    saveNnn();
+    paintNnn();
+}
+
 function paintNnn() {
     const el = document.getElementById('nnnStatus');
     if (el) el.textContent = describeNnn(nnnState);
     const daily = document.getElementById('nnnDailyInput');
-    const denial = document.getElementById('nnnDenialInput');
     const start = document.getElementById('nnnStartInput');
     const end = document.getElementById('nnnEndInput');
     if (daily && document.activeElement !== daily) daily.value = String(nnnState.dailyEdges);
-    if (denial && document.activeElement !== denial) denial.value = String(nnnState.denialPercent);
     if (start && document.activeElement !== start) start.value = nnnState.startDate;
     if (end && document.activeElement !== end) end.value = nnnState.endDate;
 }
@@ -2593,17 +3468,14 @@ function noteNnnEdge() {
     const recorded = recordNnnEdge(nnnState);
     nnnState = recorded.state;
     if (recorded.justFinished && !nnnState.outcome) {
-        const outcome = rollNnnOutcome(nnnState.denialPercent);
-        nnnState = { ...nnnState, outcome };
-        if (outcome === 'permitted') setOrgasmMode(true, { voice: true });
-        else beginSettle({ endsSession: true, outcome: 'Denied', voiceText: 'Denied.' });
+        nnnState = { ...nnnState, outcome: 'denied' };
+        beginSettle({ endsSession: true, outcome: 'Denied', voiceText: 'Denied.' });
     }
     saveNnn();
     paintNnn();
 }
 
 document.getElementById('nnnDailyInput')?.addEventListener('click', (e) => e.stopPropagation());
-document.getElementById('nnnDenialInput')?.addEventListener('click', (e) => e.stopPropagation());
 document.getElementById('nnnStartInput')?.addEventListener('click', (e) => e.stopPropagation());
 document.getElementById('nnnEndInput')?.addEventListener('click', (e) => e.stopPropagation());
 document.getElementById('nnnDailyInput')?.addEventListener('change', (e) => {
@@ -2612,11 +3484,6 @@ document.getElementById('nnnDailyInput')?.addEventListener('change', (e) => {
     if (nnnState.lastOpened === nnnState.startDate || nnnState.edgesToday === 0) {
         nnnState = { ...nnnState, quotaToday: Math.max(nnnState.quotaToday, n) };
     }
-    saveNnn();
-    paintNnn();
-});
-document.getElementById('nnnDenialInput')?.addEventListener('change', (e) => {
-    nnnState = sanitizeNnn({ ...nnnState, denialPercent: parseInt(e.target.value, 10) });
     saveNnn();
     paintNnn();
 });
@@ -2653,7 +3520,10 @@ function runKeyAction(action) {
     else if (action === 'toggleSession') document.getElementById('sessionPlayPauseBtn')?.click();
     else if (action === 'stop') document.getElementById('sessionStopBtn')?.click();
     else if (action === 'cameEarly') document.getElementById('cameEarlyBtn')?.click();
+    else if (action === 'iCame') iCameBtn?.click();
     else if (action === 'forceOrgasm') document.getElementById('orgasmBtn')?.click();
+    else if (action === 'offsetEarlier') player?.nudgeOffset(-OFFSET_NUDGE_MS);
+    else if (action === 'offsetLater') player?.nudgeOffset(OFFSET_NUDGE_MS);
 }
 
 function paintKeybinds() {
@@ -2701,9 +3571,14 @@ document.addEventListener('keydown', (event) => {
         assignBind(bindFromKey(event.code));
         return;
     }
-    if (keyEventIsTyping(event.target)) return;
+    if (keyEventIsTyping(event.target, event.code)) return;
     if (event.code === 'Escape' && document.getElementById('modalOverlay') && !document.getElementById('modalOverlay').classList.contains('hidden')) {
         closeModal();
+        return;
+    }
+    if (event.code === 'Escape' && player && typeof player.immersive === 'function' && player.immersive()) {
+        event.preventDefault();
+        player.leaveImmersive();
         return;
     }
     const action = actionForKey(advancedSettings.keybinds, event.code);
@@ -2733,7 +3608,6 @@ function pollGamepads() {
 }
 
 const pipBtn = document.getElementById('pipBtn');
-if (pipBtn && window.documentPictureInPicture) pipBtn.classList.remove('hidden');
 pipBtn?.addEventListener('click', async () => {
     try {
         await openDocumentPip();
@@ -2774,7 +3648,10 @@ async function openDocumentPip() {
         const bar = pip.document.getElementById('pipBar');
         const play = pip.document.getElementById('pipPlay');
         const line = pip.document.getElementById('pipLine');
-        if (hr) hr.textContent = `${Math.round(state.hrCurrent || 0)} BPM`;
+        if (hr) {
+        const label = liveHrText();
+        hr.textContent = label === '--' ? '--' : `${label} BPM`;
+    }
         if (edges) edges.textContent = `${state.edges || 0} edges`;
         if (bar) bar.style.width = `${state.strokerSpeed || 0}%`;
         if (play) play.textContent = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN' ? 'Pause' : 'Start';
@@ -2822,11 +3699,24 @@ document.getElementById('calibrateBtn')?.addEventListener('click', () => {
 });
 
 modeCards.forEach(card => {
+    if (!card.querySelector('.use-style')) {
+        const use = document.createElement('span');
+        use.className = 'use-style mt-1 text-[9px] font-bold uppercase tracking-wider text-purple-300';
+        use.textContent = 'Use this';
+        card.appendChild(use);
+    }
     card.addEventListener('click', () => {
         if (isRemoteViewer) return;
         const mode = card.getAttribute('data-mode');
-        const enabled = GAME_CARD_MODES.includes(mode) ? state.gameMode !== mode : true;
+        const ending = card.getAttribute('data-endgame');
+        if (mode === 'goal-off' && ending) {
+            state.endgameType = ending;
+            highlightEndgameCard(state.endgameType);
+            persistSessionLimits(true);
+        }
+        const enabled = GAME_CARD_MODES.includes(mode) ? true : true;
         applyModeSelection(mode, enabled);
+        setBothChoiceDrawers(false);
         if (isRemoteController) sendPeerCommand({ type: 'MODE_CHANGE', mode, enabled });
         else syncTelemetry();
     });
@@ -3283,10 +4173,10 @@ bleTabSimBtn?.addEventListener('click', () => {
 
 // Session Setup Sub-Tabs (4 Tabs: duration, guards, audio, backup)
 const paramsTabMap = {
-    duration: { btn: document.getElementById('paramsTabDurationBtn'), sec: document.getElementById('paramsDurationSection') },
     guards: { btn: document.getElementById('paramsTabGuardsBtn'), sec: document.getElementById('paramsGuardsSection') },
     audio: { btn: document.getElementById('paramsTabAudioBtn'), sec: document.getElementById('paramsAudioSection') },
-    backup: { btn: document.getElementById('paramsTabBackupBtn'), sec: document.getElementById('paramsBackupSection') }
+    backup: { btn: document.getElementById('paramsTabBackupBtn'), sec: document.getElementById('paramsBackupSection') },
+    keys: { btn: document.getElementById('paramsTabKeysBtn'), sec: document.getElementById('paramsKeysSection') }
 };
 
 function setParamsTab(activeKey) {
@@ -3302,10 +4192,10 @@ function setParamsTab(activeKey) {
     });
 }
 
-paramsTabMap.duration.btn?.addEventListener('click', () => setParamsTab('duration'));
 paramsTabMap.guards.btn?.addEventListener('click', () => setParamsTab('guards'));
 paramsTabMap.audio.btn?.addEventListener('click', () => setParamsTab('audio'));
 paramsTabMap.backup.btn?.addEventListener('click', () => setParamsTab('backup'));
+paramsTabMap.keys.btn?.addEventListener('click', () => setParamsTab('keys'));
 
 // Duration Mode Switcher
 const durFixedBtn = document.getElementById('durFixedBtn');
@@ -3340,14 +4230,46 @@ durFixedBtn?.addEventListener('click', () => { setDurationMode('fixed'); persist
 durRangeBtn?.addEventListener('click', () => { setDurationMode('range'); persistSessionLimits(true); });
 durEndlessBtn?.addEventListener('click', () => { setDurationMode('endless'); persistSessionLimits(true); });
 
-// Warm-up Slider Listener
-const warmupInput = document.getElementById('warmupInput');
-const warmupDisplay = document.getElementById('warmupValDisplay');
-warmupInput?.addEventListener('input', (e) => {
-    const val = parseInt(e.target.value, 10);
-    if (warmupDisplay) {
-        warmupDisplay.textContent = (val === 0) ? "0 min (Instant)" : `${val} Minutes`;
+function effectiveWarmupMinutes() {
+    if (advancedSettings.warmupEnabled === false) return 0;
+    const minutes = Number(advancedSettings.warmupMinutes);
+    return Number.isFinite(minutes) && minutes > 0 ? minutes : 0;
+}
+
+function paintWarmup() {
+    const minutes = Math.max(0, Math.min(10, Number(advancedSettings.warmupMinutes) || 0));
+    const enabled = advancedSettings.warmupEnabled !== false && minutes > 0;
+    const toggle = document.getElementById('warmupToggle');
+    const input = document.getElementById('warmupInput');
+    if (toggle) toggle.checked = enabled;
+    if (input) {
+        if (document.activeElement !== input) input.value = String(minutes);
+        input.disabled = !enabled;
+        input.classList.toggle('opacity-40', !enabled);
     }
+}
+
+function commitWarmup() {
+    if (isRemotePage) return;
+    paintWarmup();
+    persistSettings();
+    updateEngine();
+    updateWarmupBadge();
+}
+
+document.getElementById('warmupToggle')?.addEventListener('change', (e) => {
+    if (isRemotePage) return;
+    const on = Boolean(e.target.checked);
+    advancedSettings.warmupEnabled = on;
+    if (on && !(Number(advancedSettings.warmupMinutes) > 0)) advancedSettings.warmupMinutes = 5;
+    commitWarmup();
+});
+document.getElementById('warmupInput')?.addEventListener('change', (e) => {
+    if (isRemotePage) return;
+    const minutes = Math.max(0, Math.min(10, parseInt(e.target.value, 10) || 0));
+    advancedSettings.warmupMinutes = minutes;
+    advancedSettings.warmupEnabled = minutes > 0;
+    commitWarmup();
 });
 
 function syncParamsUI() {
@@ -3382,6 +4304,8 @@ function syncParamsUI() {
         // values were stored at all.
         state.endgameType = advancedSettings.endgameType;
         highlightEndgameCard(state.endgameType);
+        renderModeDetail();
+        highlightModeCard();
         state.durationMode = advancedSettings.durationMode;
     }
     setDurationMode(state.durationMode);
@@ -3391,15 +4315,15 @@ function syncParamsUI() {
     const decayCount = document.getElementById('decayEdgeCountInput');
     const decayBpm = document.getElementById('decayBpmInput');
     const decayFloor = document.getElementById('decayFloorInput');
-    const warmup = document.getElementById('warmupInput');
-    const warmupDisp = document.getElementById('warmupValDisplay');
-
     if (stallToggle) stallToggle.checked = Boolean(advancedSettings.stallGuard);
     if (stallSec) stallSec.value = clampStallGuardSeconds(advancedSettings.stallGuardSeconds);
     const stallPause = document.getElementById('stallPauseSecondsInput');
     if (stallPause) stallPause.value = clampStallPauseSeconds(advancedSettings.stallPauseSeconds);
     const ceilingSelect = document.getElementById('ceilingBehaviourSelect');
     if (ceilingSelect) ceilingSelect.value = advancedSettings.ceilingBehaviour === 'stop' ? 'stop' : 'crawl';
+    const crawlInput = document.getElementById('crawlPercentInput');
+    if (crawlInput) crawlInput.value = isRemotePage ? '' : String(clampCrawlPercent(advancedSettings.crawlPercent));
+    if (isRemotePage && crawlInput) crawlInput.placeholder = '--';
     const settleInput = document.getElementById('orgasmSettleSecondsInput');
     if (settleInput) settleInput.value = isRemotePage ? '' : String(clampOrgasmSettleSeconds(advancedSettings.orgasmSettleSeconds));
     paintSpeedWindow();
@@ -3430,8 +4354,7 @@ function syncParamsUI() {
     if (staleInput) staleInput.value = clampStaleSeconds(advancedSettings.hrStaleSeconds);
     if (autoResumeToggle) autoResumeToggle.checked = advancedSettings.hrAutoResume !== false;
 
-    if (warmup) warmup.value = advancedSettings.warmupMinutes ?? 5;
-    if (warmupDisp) warmupDisp.textContent = (advancedSettings.warmupMinutes === 0) ? "0 min (Instant)" : `${advancedSettings.warmupMinutes ?? 5} Minutes`;
+    paintWarmup();
 
     const voiceToggle = document.getElementById('paramVoiceToggle');
     const micToggle = document.getElementById('paramMicToggle');
@@ -3632,11 +4555,11 @@ function highlightEndgameCard(type) {
     paramEndgameCards.forEach(c => {
         const bold = c.querySelector('.font-bold');
         if (c.getAttribute('data-endgame') === type) {
-            c.className = "param-endgame-card p-1.5 rounded-lg bg-purple-950/30 border border-purple-800 text-left transition cursor-pointer";
-            if (bold) bold.className = "font-bold text-[10px] text-purple-300";
+            c.className = "param-endgame-card h-full text-left p-2 rounded-xl bg-purple-950/20 border border-purple-800 hover:border-purple-600 transition cursor-pointer flex flex-col justify-between";
+            if (bold) bold.className = "font-bold text-[11px] text-purple-300";
         } else {
-            c.className = "param-endgame-card p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-left transition cursor-pointer";
-            if (bold) bold.className = "font-bold text-[10px] text-slate-300";
+            c.className = "param-endgame-card h-full text-left p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition cursor-pointer flex flex-col justify-between";
+            if (bold) bold.className = "font-bold text-[11px] text-slate-200";
         }
     });
 }
@@ -3859,6 +4782,7 @@ document.getElementById('applyParamsBtn')?.addEventListener('click', async () =>
     advancedSettings.stallGuardSeconds = clampStallGuardSeconds(document.getElementById('stallGuardSecondsInput')?.value);
     advancedSettings.stallPauseSeconds = clampStallPauseSeconds(document.getElementById('stallPauseSecondsInput')?.value);
     advancedSettings.ceilingBehaviour = document.getElementById('ceilingBehaviourSelect')?.value === 'stop' ? 'stop' : 'crawl';
+    advancedSettings.crawlPercent = clampCrawlPercent(document.getElementById('crawlPercentInput')?.value);
     advancedSettings.orgasmSettleSeconds = clampOrgasmSettleSeconds(document.getElementById('orgasmSettleSecondsInput')?.value);
     advancedSettings.edgeHoldPercent = clampEdgeHoldPercent(document.getElementById('edgeHoldPercentInput')?.value);
     advancedSettings.adaptiveDecay = document.getElementById('adaptiveDecayToggle')?.checked ?? true;
@@ -3870,6 +4794,7 @@ document.getElementById('applyParamsBtn')?.addEventListener('click', async () =>
     syncWatchdogSettings();
     const warmupParsed = parseInt(document.getElementById('warmupInput')?.value, 10);
     advancedSettings.warmupMinutes = Number.isFinite(warmupParsed) ? warmupParsed : 5;
+    advancedSettings.warmupEnabled = document.getElementById('warmupToggle')?.checked === true && advancedSettings.warmupMinutes > 0;
     advancedSettings.voiceEnabled = document.getElementById('paramVoiceToggle')?.checked ?? false;
     advancedSettings.voiceURI = document.getElementById('paramVoiceSelect')?.value || '';
     const voiceForm = currentVoiceCues();
@@ -4192,7 +5117,7 @@ document.getElementById('modalBleScanBtn')?.addEventListener('click', async () =
     if (warnBluetoothUnsupported()) return;
     try {
         setBadgeState('Ble', 'connecting', 'Scanning...');
-        setBleStatus('Pick your sensor in the browser chooser...', 'busy');
+        setBleStatus('Connecting. If the browser asks, pick the sensor that is advertising the Heart Rate service.', 'busy');
         const dev = await connectBleHeartRate({
             onHrMeasurement: (bpm, info) => {
                 recordHrReading(bpm, info ? info.sensorContact : null);
@@ -4226,13 +5151,17 @@ document.getElementById('modalBleScanBtn')?.addEventListener('click', async () =
                 if (devName) devName.textContent = 'No device paired';
                 document.getElementById('hrContactHint')?.classList.add('hidden');
                 state.hrNoContact = false;
-                if (!state.simEngaged) document.getElementById('hrWarningTag')?.classList.remove('hidden');
+                if (!state.simEngaged) {
+                    document.getElementById('hrWarningTag')?.classList.remove('hidden');
+                    state.hrReadingSeen = false;
+                    paintLiveHr();
+                }
                 const sessionLive = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN';
                 if (intentional) {
-                    if (sessionLive) triggerDisconnectAlert(`${name} (heart-rate monitor) was disconnected. Motors paused for safety.`);
+                    if (sessionLive) triggerDisconnectAlert(`${name} (heart-rate monitor) was disconnected. Motors paused for safety.`, 'hr-link');
                 } else {
                     const silentMs = Math.max(0, Date.now() - (hrWatchdog.lastValidAt || Date.now()));
-                    triggerDisconnectAlert(`${name} (heart-rate monitor) dropped and did not answer ${attempts} reconnect attempts; no reading for ${Math.round(silentMs / 1000)} s. Motors paused for safety. Turn the sensor off and on, or forget it in the computer's Bluetooth list and pair it again. A reboot is not required.`);
+                    triggerDisconnectAlert(`${name} (heart-rate monitor) dropped and did not answer ${attempts} reconnect attempts; no reading for ${Math.round(silentMs / 1000)} s. Motors paused for safety. Turn the sensor off and on, or forget it in the computer's Bluetooth list and pair it again. A reboot is not required.`, 'hr-link');
                     // A drop is a signal loss too: once the sensor is paired
                     // again and readings return, the session may auto-resume.
                     if (sessionLive && state.sessionStatus === 'PAUSED') {
@@ -4255,6 +5184,8 @@ document.getElementById('modalBleScanBtn')?.addEventListener('click', async () =
         document.getElementById('hrWarningTag')?.classList.add('hidden');
         document.getElementById('simActiveTag')?.classList.add('hidden');
         state.simEngaged = false;
+        state.hrReadingSeen = false;
+        paintLiveHr();
         // Fresh grace window: the first packet may take a few seconds.
         hrWatchdog.reset(Date.now());
         state.hrNoContact = false;
@@ -4281,8 +5212,10 @@ document.getElementById('modalBleScanBtn')?.addEventListener('click', async () =
             if (devName) devName.textContent = 'No device paired';
             if (!state.simEngaged) {
                 document.getElementById('hrWarningTag')?.classList.remove('hidden');
+                state.hrReadingSeen = false;
+                paintLiveHr();
                 if (state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN') {
-                    triggerDisconnectAlert(`${state.hrDeviceName || 'Heart-rate monitor'} was released for a new pairing that failed (${described.message}). Motors paused for safety.`);
+                    triggerDisconnectAlert(`${state.hrDeviceName || 'Heart-rate monitor'} was released for a new pairing that failed (${described.message}). Motors paused for safety.`, 'hr-link');
                 }
             }
             checkReadiness();
@@ -4362,7 +5295,7 @@ setHandyHandlers({
         setBadgeState('Handy', 'disconnected', 'Offline');
         document.getElementById('modalHandyDisconnectBtn')?.classList.add('hidden');
         // Pauses the session and issues a stop to every other toy.
-        triggerDisconnectAlert(reason || 'The Handy went offline. Motors paused for safety.');
+        triggerDisconnectAlert(reason || 'The Handy went offline. Motors paused for safety.', 'handy');
     },
     // Something the device told us that is worth reading and is not a fault.
     onNotice: (message) => {
@@ -4375,7 +5308,7 @@ setHandyHandlers({
     onStopUnconfirmed: (message) => {
         setHandyStatus(message, 'error');
         setBadgeState('Handy', handyConnected ? 'warning' : 'disconnected', 'Stop unconfirmed', handyConnected ? handyBatteryLabel() : null);
-        triggerDisconnectAlert(`The Handy did not confirm a stop and may still be moving: check the device. (${message})`);
+        triggerDisconnectAlert(`The Handy did not confirm a stop and may still be moving: check the device. (${message})`, 'handy-stop');
     }
 });
 
@@ -4418,7 +5351,7 @@ document.getElementById('modalHandyConnectBtn')?.addEventListener('click', async
             state.handyBattery = null;
             setHandyStatus(message, 'error');
             setBadgeState('Handy', 'disconnected', 'Offline');
-            if (wasConnected) triggerDisconnectAlert('The Handy connection was lost while reconnecting. Motors paused for safety.');
+            if (wasConnected) triggerDisconnectAlert('The Handy connection was lost while reconnecting. Motors paused for safety.', 'handy');
         }
     } finally {
         handyConnectInFlight = false;
@@ -4433,7 +5366,7 @@ document.getElementById('modalHandyDisconnectBtn')?.addEventListener('click', as
     setHandyStatus('Stopping the device...', 'busy');
     setBadgeState('Handy', 'disconnected', 'Stopping...');
     document.getElementById('modalHandyDisconnectBtn')?.classList.add('hidden');
-    triggerDisconnectAlert("The Handy disconnected.");
+    triggerDisconnectAlert("The Handy disconnected.", 'handy');
     const ok = await stopped.catch(() => false);
     // Reconnected meanwhile: the new link owns the modal and the badge.
     if (handyConnected) return;
@@ -4449,8 +5382,8 @@ document.getElementById('modalHandyDisconnectBtn')?.addEventListener('click', as
 // Best effort: a keepalive stop to The Handy when the page goes away or is
 // frozen. The motor is driven through the cloud and cannot notice that the
 // app is gone, so this is the only stop it would ever get.
-window.addEventListener('pagehide', () => { stopHandyOnUnload(); });
-document.addEventListener('freeze', () => { stopHandyOnUnload(); });
+window.addEventListener('pagehide', () => { stopHandyOnUnload(); handyHsp?.stopOnUnload(); });
+document.addEventListener('freeze', () => { stopHandyOnUnload(); handyHsp?.stopOnUnload(); });
 
 // Intiface Central WebSocket. The driver reports its state through
 // onStatus; the modal label, the summary badge and the buttons follow it.
@@ -4504,7 +5437,7 @@ document.getElementById('modalIntifaceConnectBtn')?.addEventListener('click', ()
             const toys = `${assignedDevices} assigned toy${assignedDevices === 1 ? '' : 's'}`;
             triggerDisconnectAlert(intentional
                 ? `Intiface Central disconnected with ${toys} in use. Motors paused for safety.`
-                : `Intiface Central connection lost: ${toys} unreachable. Motors paused for safety.`);
+                : `Intiface Central connection lost: ${toys} unreachable. Motors paused for safety.`, 'intiface');
         }
     });
 });
@@ -4635,7 +5568,7 @@ function renderIntifaceDevices() {
             <button onclick="setDeviceVibeMode(${devIdx}, ${aIdx}, 'pulsed')" class="flex-1 py-0.5 rounded ${pulsed ? 'bg-slate-700 text-amber-300 font-bold' : 'bg-slate-800 text-slate-400'} cursor-pointer">Pulsed</button>
             <select aria-label="Pulse period" onchange="setDevicePulsePeriod(${devIdx}, ${aIdx}, this.value)" ${pulsed ? '' : 'disabled'} class="bg-slate-800 border border-slate-700 rounded px-1 py-0.5 text-[9px] text-slate-200 ${pulsed ? 'cursor-pointer' : 'opacity-40'}">${periods}</select>
             </div>
-            ${pulsed ? '<p class="text-[9px] text-slate-500 leading-snug">On for half of each period, off for the other half. The intensity sets the peak, and it stays under the cap.</p>' : ''}
+            ${pulsed ? '<p class="text-[9px] text-slate-500 leading-snug">Ramps up and down a few times, then rests for a beat. The lengths change. Shorter spacing rests more often. The intensity sets the peak, and it stays under the cap.</p>' : ''}
             </div>`;
             })() : ''}
             ${invertRow}
@@ -4746,7 +5679,7 @@ setTCodeHandlers({
         const axes = `${assignedAxes} assigned ax${assignedAxes === 1 ? 'is' : 'es'}`;
         triggerDisconnectAlert(intentional
             ? `TCode Serial device disconnected with ${axes} in use. Motors paused for safety.`
-            : `TCode Serial device lost: ${axes} unreachable. Motors paused for safety.`);
+            : `TCode Serial device lost: ${axes} unreachable. Motors paused for safety.`, 'tcode');
     }
 });
 
@@ -4762,6 +5695,23 @@ document.getElementById('modalTCodeDisconnectBtn')?.addEventListener('click', ()
 
 // Best effort: rest every axis when the page goes away.
 window.addEventListener('pagehide', () => { stopTCode(); });
+
+// A refresh used to leave HeartCast connected to the dead page, and the next
+// visit could not pair until the computer's Bluetooth list forgot the device.
+bindBlePageLifecycle(window);
+window.addEventListener('pageshow', () => {
+    if (isBleConnected() || state.simEngaged) return;
+    if (!state.hrDeviceName) return;
+    state.hrDeviceName = '';
+    state.bleBattery = null;
+    setBadgeState('Ble', 'disconnected', 'Disconnected');
+    setBleStatus('The heart-rate link closed when the page was hidden. Scan and pair again.', 'idle');
+    document.getElementById('modalBleDisconnectBtn')?.classList.add('hidden');
+    document.getElementById('modalBleBatteryDisplay')?.classList.add('hidden');
+    const devName = document.getElementById('modalBleDeviceName');
+    if (devName) devName.textContent = 'No device paired';
+    if (!state.simEngaged) document.getElementById('hrWarningTag')?.classList.remove('hidden');
+});
 
 window.setTCodeRole = (axisIdx, role) => {
     setTCodeAxisRole(axisIdx, role);
@@ -4822,7 +5772,7 @@ function renderTCodeDevice() {
         </div>
         <div class="space-y-0.5 pt-1 border-t border-slate-800/60">
         <div class="flex justify-between text-[9px] text-slate-400">
-        <span>Max cap:</span>
+        <span>Max speed:</span>
         <span id="tcodeCapVal_${aIdx}" class="font-bold font-mono text-amber-400">${axis.maxCap ?? 100}%</span>
         </div>
         <input type="range" min="10" max="100" step="5" value="${axis.maxCap ?? 100}" oninput="setTCodeCap(${aIdx}, this.value)" class="w-full accent-amber-500 h-1 bg-slate-800 rounded cursor-pointer">
@@ -4851,13 +5801,82 @@ function renderTCodeSummaryBadge() {
     setBadgeState('TCode', 'connected', nameLabel, null);
 }
 
+function handyLogFields() {
+    const info = getHandyInfo();
+    const fw = info && (info.fwVersion ?? info.firmwareVersion ?? info.firmware);
+    const model = info && (info.model ?? info.hwVersion);
+    return {
+        connected: Boolean(handyConnected),
+        role: state.handyRole,
+        maxCap: state.handyMaxCap,
+        beatSync: Boolean(handyHsp && handyHsp.beatSync()),
+        firmware: fw ? String(fw) : '',
+        model: model ? String(model) : ''
+    };
+}
+
+function deviceLogSnapshot() {
+    const tcode = isTCodeConnected() ? getTCodeDevice() : null;
+    return {
+        handy: handyLogFields(),
+        heartRate: {
+            connected: isBleConnected(),
+            simulator: Boolean(state.simEngaged),
+            name: state.simEngaged ? 'Simulator' : (state.hrDeviceName || '')
+        },
+        intiface: isIntifaceConnected() ? Array.from(intifaceDevices.values()).map((dev) => ({
+            name: dev.displayName || dev.name || '',
+            axes: (dev.axes || []).filter((axis) => !axis.inert).map((axis) => ({
+                kind: axis.type || axis.kind || '',
+                role: axis.role,
+                maxCap: axis.maxCap,
+                vibeMode: axis.vibeMode,
+                pulsePeriodMs: axis.pulsePeriodMs
+            }))
+        })) : [],
+        vacuglide: {
+            connected: isVacuglideConnected(),
+            role: advancedSettings.vacuglideRole,
+            maxCap: advancedSettings.vacuglideMaxCap
+        },
+        tcode: {
+            connected: Boolean(tcode),
+            name: tcode ? tcode.name : '',
+            axes: tcode && Array.isArray(tcode.axes) ? tcode.axes.map((axis) => ({
+                id: axis.id,
+                role: axis.role,
+                maxCap: axis.maxCap
+            })) : []
+        }
+    };
+}
+
+function scriptLogSnapshot() {
+    const loaded = player && player.script ? player.script() : null;
+    const secondary = player && player.secondary ? player.secondary() : null;
+    return {
+        loaded: Boolean(loaded),
+        actions: loaded && loaded.meta ? loaded.meta.actions : 0,
+        durationMs: loaded && loaded.meta ? loaded.meta.durationMs : 0,
+        offsetMs: scriptFeed ? scriptFeed.offset() : 0,
+        hash: loaded && loaded.hash ? loaded.hash : '',
+        secondary: Boolean(secondary),
+        secondaryActions: secondary && secondary.meta ? secondary.meta.actions : 0,
+        secondaryDurationMs: secondary && secondary.meta ? secondary.meta.durationMs : 0,
+        climaxMarks: loadedClimaxMarks.slice(),
+        videoSeconds: player && player.hasVideo() ? player.duration() : 0,
+        strokeModel: advancedSettings.scriptStrokeModel
+    };
+}
+
 // Session History & Funscript Downloader Hook
 function saveSessionToHistory(outcome) {
     const history = safeParse('edgeloop_history', []);
+    // A user-reported completion saves early; the later stop replaces that same record.
     const sessionId = completionHistoryId ?? Date.now();
     const existing = history.findIndex(session => session.id === sessionId);
     if (existing >= 0) history.splice(existing, 1);
-    history.unshift({
+    const entry = {
         id: sessionId,
         date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         duration: state.sessionSeconds,
@@ -4868,9 +5887,32 @@ function saveSessionToHistory(outcome) {
         experience: state.teaseMode,
         goal: state.gameMode || 'tease',
         completion_status: state.completionReported ? 'user_reported' : 'unknown',
+        orgasms: state.orgasmCount || 0,
         // Raw 4 Hz timeline; both funscripts are built from it on download.
         samples: [...funscriptSamples]
-    });
+    };
+    if (sessionLogWanted()) {
+        entry.telemetry = buildSessionExport({
+            appVersion: APP_VERSION,
+            session: {
+                id: sessionId,
+                date: entry.date,
+                duration: state.sessionSeconds,
+                edges: state.edges,
+                pauses: state.pauses,
+                peakHr: state.peakHr,
+                outcome,
+                intensity: state.intensityValue,
+                targetSeconds: state.chosenTargetSeconds,
+                videoClock: state.scriptVideoClock
+            },
+            settings: advancedSettings,
+            devices: deviceLogSnapshot(),
+            script: scriptLogSnapshot(),
+            trace: sessionLog.snapshot()
+        });
+    }
+    history.unshift(entry);
     while (history.length > 10) history.pop();
     const result = saveHistoryTrimmed('edgeloop_history', history);
     if (!result.saved) {
@@ -4893,6 +5935,30 @@ function funscriptForSession(session, channel) {
     return toFunscript(Array.isArray(legacy) ? legacy : []);
 }
 
+window.downloadSessionTelemetry = (sessionId) => {
+    const history = safeParse('edgeloop_history', []);
+    const session = history.find(s => s.id === sessionId);
+    if (!session || !session.telemetry) return alert('This session has no session log.');
+    const stored = session.telemetry;
+    const clean = buildSessionExport({
+        appVersion: stored.appVersion,
+        session: stored.session,
+        settings: stored.settings,
+        devices: stored.devices,
+        script: stored.script,
+        trace: { series: stored.series, events: stored.events }
+    });
+    const blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `edgeloop_session_${sessionId}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+};
+
 window.downloadFunscript = (sessionId, channel) => {
     const history = safeParse('edgeloop_history', []);
     const session = history.find(s => s.id === sessionId);
@@ -4913,9 +5979,31 @@ window.downloadFunscript = (sessionId, channel) => {
     URL.revokeObjectURL(url);
 };
 
+function paintSessionLogOptIn() {
+    const panel = document.getElementById('sessionLogPanel');
+    if (panel) panel.classList.toggle('hidden', isRemotePage);
+    const box = document.getElementById('sessionLogOptIn');
+    if (box) box.checked = sessionLogOptIn;
+    const label = document.getElementById('sessionLogOptInState');
+    if (label) {
+        label.textContent = sessionLogOptIn ? 'On' : 'Off';
+        label.className = sessionLogOptIn
+            ? 'font-mono text-[10px] font-bold text-amber-300'
+            : 'font-mono text-[10px] font-bold text-slate-400';
+    }
+}
+
+window.setSessionLogOptIn = (on) => {
+    sessionLogOptIn = Boolean(on);
+    safeSet(SESSION_LOG_KEY, sessionLogOptIn);
+    if (!sessionLogOptIn) sessionLog.reset();
+    paintSessionLogOptIn();
+};
+
 function renderHistory() {
     const history = safeParse('edgeloop_history', []);
     const list = document.getElementById('historyList');
+    paintSessionLogOptIn();
     if (!list) return;
     if (history.length === 0) {
         list.innerHTML = `<div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-slate-500 text-xs text-center italic">No completed sessions recorded yet.</div>`;
@@ -4930,7 +6018,7 @@ function renderHistory() {
         item.innerHTML = `
         <div>
         <div class="font-bold text-slate-200">#${idx + 1} — ${s.date}</div>
-        <div class="text-[10px] text-slate-400 mt-0.5">⏱ ${mins}m ${secs}s &bull; ⚡ ${s.edges} Edges &bull; 🔥 ${s.peakHr} BPM &bull; <span class="text-purple-300 font-semibold">${s.outcome}</span></div>
+        <div class="text-[10px] text-slate-400 mt-0.5">⏱ ${mins}m ${secs}s &bull; ⚡ ${s.edges} Edges &bull; ${s.orgasms ? `💦 ${s.orgasms} Orgasm${s.orgasms === 1 ? '' : 's'} &bull; ` : ''}🔥 ${s.peakHr} BPM &bull; <span class="text-purple-300 font-semibold">${s.outcome}</span></div>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
         <button onclick="downloadFunscript(${s.id}, 'primary')" class="px-2 py-1 bg-purple-950 hover:bg-purple-800 border border-purple-700 text-purple-200 rounded text-[10px] font-mono transition cursor-pointer flex items-center gap-1" title="Download Primary Stroker Funscript">
@@ -4941,6 +6029,7 @@ function renderHistory() {
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
         .v0.funscript
         </button>
+        ${s.telemetry ? `<button onclick="downloadSessionTelemetry(${s.id})" class="px-2 py-1 bg-amber-950 hover:bg-amber-900 border border-amber-700 text-amber-200 rounded text-[10px] font-mono transition cursor-pointer" title="Download this session log. It stays on your device until you share it.">Session log</button>` : ''}
         </div>
         `;
         list.appendChild(item);
@@ -5032,7 +6121,10 @@ function setupPartnerHost() {
             if (cmd.type === 'SESSION_STATE') {
                 const hostActive = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN';
                 if (cmd.status === 'RUNNING' && !hostActive) playPauseBtn?.click();
-                else if (cmd.status === 'PAUSED' && hostActive) playPauseBtn?.click();
+                else if (cmd.status === 'PAUSED' && hostActive) {
+                    pendingPauseReason = 'remote';
+                    playPauseBtn?.click();
+                }
                 else if (cmd.status === 'IDLE') stopBtn?.click();
             } else if (cmd.type === 'SESSION_RESET') resetBtn?.click();
             else if (cmd.type === 'ORGASM_TOGGLE') orgasmBtn?.click();
@@ -5049,7 +6141,7 @@ function setupPartnerHost() {
 // A viewer page renders everything but can change nothing. Re-applied after
 // every telemetry frame because some renderers reset element classes.
 const VIEWER_LOCKED_IDS = [
-    'sessionPlayPauseBtn', 'sessionStopBtn', 'sessionResetBtn', 'cameEarlyBtn', 'orgasmBtn',
+    'sessionPlayPauseBtn', 'sessionStopBtn', 'sessionResetBtn', 'edgedBtn', 'cameEarlyBtn', 'orgasmBtn',
     'intensitySlider', 'speedSlowestInput', 'speedFastestInput', 'openParamsBtn', 'sessionParamsHeaderBtn',
     'partnerShareBtn', 'historyBtn', 'cardBle', 'cardHandy', 'cardIntiface', 'cardVacuglide', 'cardTCode',
     // Nested in the Edge Training card: a disabled ancestor does not stop a
@@ -5072,7 +6164,7 @@ function lockViewerControls() {
 // Everything else is host-only (its handlers return or its state never
 // leaves the page), so it is locked rather than left looking clickable.
 const CONTROLLER_LOCKED_IDS = [
-    'cameEarlyBtn', 'intensitySlider', 'speedSlowestInput', 'speedFastestInput', 'openParamsBtn', 'sessionParamsHeaderBtn',
+    'cameEarlyBtn', 'edgedBtn', 'intensitySlider', 'speedSlowestInput', 'speedFastestInput', 'openParamsBtn', 'sessionParamsHeaderBtn',
     'partnerShareBtn', 'cardBle', 'cardHandy', 'cardIntiface', 'cardVacuglide', 'cardTCode',
     // The mode cards stay live (MODE_CHANGE is a legal command), but the two
     // Edge Training numbers inside one of them are host-only settings.
@@ -5138,6 +6230,8 @@ function applyRemoteTelemetry(data) {
         hideAlertBanner('remote');
     }
     if (data.hr !== undefined) state.hrCurrent = data.hr;
+    if (data.hrSeen === true || data.hrSeen === false) state.hrReadingSeen = data.hrSeen;
+    else if (data.hr !== undefined) state.hrReadingSeen = true;
     if (data.seconds !== undefined) state.sessionSeconds = data.seconds;
     if (data.chosenTargetSeconds !== undefined) state.chosenTargetSeconds = data.chosenTargetSeconds;
     if (data.sessionStatus !== undefined) state.sessionStatus = data.sessionStatus;
@@ -5187,8 +6281,7 @@ function applyRemoteTelemetry(data) {
     }
     checkReadiness();
 
-    const hrDisplay = document.getElementById('hrDisplay');
-    if (hrDisplay) hrDisplay.textContent = state.hrCurrent;
+    paintLiveHr();
     const maxInput = document.getElementById('maxHr');
     if (maxInput) maxInput.value = state.effectiveMaxHr;
     const strokerVal = document.getElementById('strokerVal');
@@ -5218,6 +6311,59 @@ function renderRemoteHostSettings(data) {
     if (holdInput && data.edgeHoldPercent !== undefined) holdInput.value = data.edgeHoldPercent;
 }
 
+// AI Settings Control (docs/fork/dev/AI_SETTINGS_CONTROL.md). Off by default.
+// The gate in ./ai-settings decides; an accepted change goes through the same
+// handler as the on-page control, then is read back from state.
+function aiSettingsContext() {
+    const readiness = hardwareReadiness();
+    const signal = !readiness.hrReady ? 'missing' : state.simEngaged ? 'ok'
+        : state.hrNoContact ? 'no_contact' : (state.hrSignalState || 'ok');
+    return {
+        status: state.sessionStatus, signal, toyReady: readiness.toyReady,
+        // The gate opens one invited round decision per reported orgasm once the user's recovery time is over.
+        roundPending: (state.orgasmCount || 0) > (state.roundsGranted || 0),
+        sinceOrgasm: Number.isFinite(state.lastOrgasmSeconds) ? Math.max(0, (state.sessionSeconds || 0) - state.lastOrgasmSeconds) : null,
+        current: { play_style: state.teaseMode, game: state.gameMode || 'off', endgame: state.endgameType || 'orgasm',
+            orgasm: Boolean(state.orgasmMode), intensity: state.intensityValue }
+    };
+}
+function applyAiSettingsChange(change) {
+    if (change.trigger === 'round') state.roundsGranted = state.orgasmCount || 0;
+    if (change.setting === 'play_style') applyModeSelection(change.to);
+    else if (change.setting === 'game') applyModeSelection(change.to === 'off' ? 'goal-off' : change.to, true);
+    else if (change.setting === 'endgame') {
+        state.endgameType = change.to;
+        highlightEndgameCard(state.endgameType);
+        persistSessionLimits(true);
+        renderModeDetail();
+    } else if (change.setting === 'orgasm') {
+        if (Boolean(state.orgasmMode) !== change.to) orgasmBtn?.click();
+        return;
+    } else if (change.setting === 'intensity') {
+        if (!intensitySlider) return;
+        intensitySlider.value = String(change.to);
+        intensitySlider.dispatchEvent(new Event('input'));
+        return;
+    } else if (change.setting === 'pause') {
+        pendingPauseReason = 'ai';
+        playPauseBtn?.click();
+        pendingPauseReason = '';
+        return;
+    } else if (change.setting === 'stop') {
+        stopBtn?.click();
+        return;
+    }
+    syncTelemetry();
+    updateEngine();
+}
+const aiSettingsControl = isRemotePage ? null : createAiSettingsControl({
+    // A Character Builder persona keeps its own setting under a suffixed key; built-ins use the original key.
+    load: (profile) => safeParse(profile ? AI_SETTINGS_STORAGE_KEY + ':' + profile : AI_SETTINGS_STORAGE_KEY, null),
+    save: (value, profile) => safeSet(profile ? AI_SETTINGS_STORAGE_KEY + ':' + profile : AI_SETTINGS_STORAGE_KEY, value),
+    context: aiSettingsContext,
+    apply: applyAiSettingsChange
+});
+
 function syncAiObservation(readiness = null, terminalOutcome = null) {
     if (isRemotePage) return;
     // Optional observation only; failure never changes the original control path.
@@ -5234,7 +6380,11 @@ function syncAiObservation(readiness = null, terminalOutcome = null) {
             dual_max_bpm: Number.isFinite(dual) && dual > limits.minHr && dual <= 250 ? dual : null,
             warmup_minutes: advancedSettings.warmupMinutes, hr_live: pulseIsLive(),
             completion_reported: Boolean(state.completionReported),
-            learning_release_count: advancedSettings.learningProfile?.breakthroughEvents ?? 0, terminal_outcome: terminalOutcome });
+            orgasm_count: state.orgasmCount || 0,
+            last_orgasm_seconds: Number.isFinite(state.lastOrgasmSeconds) ? state.lastOrgasmSeconds : null,
+            learning_release_count: advancedSettings.learningProfile?.breakthroughEvents ?? 0, terminal_outcome: terminalOutcome,
+            endgame: state.endgameType || 'orgasm', orgasm_mode: Boolean(state.orgasmMode),
+            ai_settings: aiSettingsControl?.snapshot() ?? null });
     } catch { /* AI is optional; the original session continues independently. */ }
 }
 
@@ -5245,6 +6395,7 @@ function syncTelemetry() {
     broadcastPeerTelemetry({
         type: 'TELEMETRY',
         hr: state.hrCurrent,
+        hrSeen: Boolean(state.hrReadingSeen),
         seconds: state.sessionSeconds,
         chosenTargetSeconds: state.chosenTargetSeconds,
         sessionStatus: state.sessionStatus,
@@ -5326,6 +6477,440 @@ document.getElementById('copyGroupUrlBtn')?.addEventListener('click', () => {
     copyLinkFrom('groupShareUrl', 'copyGroupUrlBtn').catch(() => {});
 });
 
+let loadedScriptHash = '';
+function storedScriptOffsets() {
+    try {
+        return readOffsets(JSON.parse(safeGet(SCRIPT_OFFSETS_STORAGE_KEY, '') || 'null'));
+    } catch (e) {
+        return {};
+    }
+}
+function storedClimaxMarks() {
+    try {
+        return readClimaxMarks(JSON.parse(safeGet(SCRIPT_CLIMAX_STORAGE_KEY, '') || 'null'));
+    } catch (e) {
+        return {};
+    }
+}
+if (!isRemotePage && scriptFeed && document.getElementById('playerVideo')) {
+    const byId = (id) => document.getElementById(id);
+    player = createPlayer({
+        feed: scriptFeed,
+        els: {
+            video: byId('playerVideo'),
+            stage: byId('playerStage'),
+            stageEmpty: byId('playerStageEmpty'),
+            hud: byId('playerHud'),
+            hudHr: byId('hudHr'),
+            hudMark: byId('hudMark'),
+            hudPhase: byId('hudPhase'),
+            hudEdges: byId('hudEdges'),
+            hudTimer: byId('hudTimer'),
+            hudPrimary: byId('hudPrimary'),
+            hudSecondary: byId('hudSecondary'),
+            hudNotice: byId('hudNotice'),
+            hudBar: byId('hudBar'),
+            hudPause: byId('hudPauseBtn'),
+            hudStop: byId('hudStopBtn'),
+            hudExit: byId('hudExitBtn'),
+            hudSeek: byId('hudSeek'),
+            hudVolume: byId('hudVolume'),
+            hudMute: byId('hudMuteBtn'),
+            climaxList: byId('playerClimaxList'),
+            fileInput: byId('playerFileInput'),
+            chooseBtn: byId('playerChooseBtn'),
+            primaryBtn: byId('playerPrimaryBtn'),
+            primaryInput: byId('playerPrimaryInput'),
+            secondaryBtn: byId('playerSecondaryBtn'),
+            secondaryInput: byId('playerSecondaryInput'),
+            bothBtn: byId('playerBothBtn'),
+            clearScriptsBtn: byId('playerClearScriptsBtn'),
+            heatmap: byId('playerHeatmap'),
+            heatmapHint: byId('playerHeatmapHint'),
+            clearBtn: byId('playerClearBtn'),
+            dropZone: byId('playerDrop'),
+            packRow: byId('playerPackRow'),
+            packSelect: byId('playerPackSelect'),
+            pairList: byId('playerPairList'),
+            error: byId('playerError'),
+            playBtn: byId('playerPlayBtn'),
+            muteBtn: byId('playerMuteBtn'),
+            seek: byId('playerSeek'),
+            scrub: byId('playerScrub'),
+            seekThumb: byId('playerSeekThumb'),
+            seekHeat: byId('playerSeekHeat'),
+            markBtn: byId('playerMarkBtn'),
+            time: byId('playerTime'),
+            offsetMinus: byId('playerOffsetMinus'),
+            offsetPlus: byId('playerOffsetPlus'),
+            offsetValue: byId('playerOffsetValue'),
+            theaterBtn: byId('playerTheaterBtn'),
+            fullscreenBtn: byId('playerFullscreenBtn'),
+            formatHint: byId('playerFormatHint'),
+            videoUrl: byId('playerVideoUrl'),
+            videoUrlBtn: byId('playerVideoUrlBtn')
+        },
+        handlers: {
+            transport: () => ({
+                coupled: videoCoupled({
+                    activeMode: state.activeMode,
+                    hasTrack: Boolean(scriptFeed?.hasTrack()),
+                    hasVideo: Boolean(player?.hasVideo())
+                }),
+                sessionStatus: state.sessionStatus
+            }),
+            canChangeFiles: () => (state.activeMode === 'script' && (state.sessionStatus === 'RUNNING' || state.sessionStatus === 'PAUSED' || state.sessionStatus === 'RAMPDOWN')
+                ? 'Press STOP before changing the files.'
+                : null),
+            onScript: (script) => {
+                loadedScriptHash = script.hash || '';
+                scriptFeed.setTrack(script.track, script.meta);
+                player?.setOffset(offsetFor(storedScriptOffsets(), script.hash));
+                loadedClimaxMarks = climaxMarksFor(storedClimaxMarks(), script.hash);
+                player?.setClimaxMarks(loadedClimaxMarks);
+                if (state.teaseMode !== 'script') strokeBeforeScript = state.teaseMode || 'classic';
+                // Fork (AI observation only): this switch comes from loading a funscript, not a selection.
+                state.mediaSelection = { experience: 'script', goal: 'tease' };
+                applyModeSelection('script');
+                channelConfig = 'primary';
+                paintPlayerChannels();
+                checkReadiness();
+            },
+            onSecondary: (script) => {
+                secondaryTrack = script.track || null;
+                channelConfig = 'secondary';
+                paintPlayerChannels();
+            },
+            onSecondaryCleared: () => {
+                secondaryTrack = null;
+                paintPlayerChannels();
+            },
+            onClimax: (marks) => {
+                loadedClimaxMarks = Array.isArray(marks) ? marks.slice() : [];
+                if (!loadedScriptHash) return;
+                const next = rememberClimaxMarks(storedClimaxMarks(), loadedScriptHash, loadedClimaxMarks, Date.now());
+                safeSet(SCRIPT_CLIMAX_STORAGE_KEY, JSON.stringify(next));
+            },
+            onScriptCleared: () => {
+                loadedScriptHash = '';
+                loadedClimaxMarks = [];
+                scriptFeed.setTrack(null);
+                if (state.teaseMode === 'script') {
+                    const restored = strokeBeforeScript && strokeBeforeScript !== 'script' ? strokeBeforeScript : 'classic';
+                    // Fork (AI observation only): clearing the funscript restores the play style by itself.
+                    state.mediaSelection = { experience: restored, goal: state.gameMode || 'tease' };
+                    applyModeSelection(restored);
+                } else syncFollowScript();
+                paintPlayerChannels();
+                checkReadiness();
+            },
+            onImmersive: (on) => placeSessionControls(Boolean(on)),
+            onControlActivity: () => syncSessionControlChrome(),
+            onPlayRequest: () => playPauseBtn?.click(),
+            onPauseRequest: () => {
+                if (state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN') pauseSession('Paused.', 'player');
+            },
+            onEnded: () => {
+                const live = state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN' || state.sessionStatus === 'PAUSED';
+                if (!live) return;
+                if (advancedSettings.scriptContinueAfterVideo) {
+                    continueAfterVideo();
+                    return;
+                }
+                if (state.activeMode === 'survival') return;
+                if (state.sessionStatus === 'RUNNING' && !state.endgameFired) {
+                    state.scriptVideoClock = true;
+                    state.chosenTargetSeconds = Math.max(1, state.sessionSeconds);
+                    state.endgameFired = true;
+                    handleTargetTimeReached();
+                }
+            },
+            onDuration: () => {
+                if (state.sessionStatus !== 'RUNNING' || state.endgameFired) return;
+                if (advancedSettings.scriptContinueAfterVideo) return;
+                if (!(state.activeMode === 'script' || state.teaseMode === 'script')) return;
+                applyVideoSessionLength();
+                updateTimerDisplay();
+            },
+            onStall: (seconds) => {
+                if (state.activeMode === 'script' && state.sessionStatus === 'RUNNING') triggerDisconnectAlert(describeVideoStall(seconds), 'video');
+            },
+            onMediaError: (message) => {
+                if (state.activeMode === 'script' && state.sessionStatus !== 'IDLE') triggerDisconnectAlert(`${message} Every toy was stopped and the session paused.`, 'video');
+            },
+            onOffset: (ms) => {
+                if (!loadedScriptHash) return;
+                const next = rememberOffset(storedScriptOffsets(), loadedScriptHash, ms, Date.now());
+                safeSet(SCRIPT_OFFSETS_STORAGE_KEY, JSON.stringify(next));
+            },
+            onHudPause: () => { if (state.sessionStatus === 'RUNNING' || state.sessionStatus === 'RAMPDOWN') playPauseBtn?.click(); },
+            onHudStop: () => stopBtn?.click(),
+            onInteraction: value => { state.playerObservation = value; },
+            onVideo: () => renderPlayerHardwareNotice(),
+            onPlayButton: () => playPauseBtn?.click()
+        }
+    });
+    state.playerObservation = player.interactionState();
+    const STROKE_MODEL_DETAILS = {
+        cactus: 'Strokes get shorter as your heart rate climbs. At your edge, the toy skips strokes and the video keeps going.',
+        keep: 'Strokes stay the shape in the file. Your heart rate only turns them down. A pause in the file is a real stop.'
+    };
+    function renderStrokeModel() {
+        const model = advancedSettings.scriptStrokeModel === 'keep' ? 'keep' : 'cactus';
+        document.querySelectorAll('.stroke-model-card').forEach((card) => {
+            const on = card.getAttribute('data-stroke-model') === model;
+            const check = card.querySelector('.stroke-model-check');
+            const title = card.querySelector('.font-bold');
+            if (on) {
+                card.className = 'stroke-model-card text-left p-2 rounded-xl bg-purple-950/20 border border-purple-800 hover:border-purple-600 transition cursor-pointer flex flex-col justify-between';
+                if (title) title.className = 'font-bold text-[11px] text-purple-300 flex justify-between items-center gap-1';
+                check?.classList.remove('hidden');
+            } else {
+                card.className = 'stroke-model-card text-left p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition cursor-pointer flex flex-col justify-between';
+                if (title) title.className = 'font-bold text-[11px] text-slate-200 flex justify-between items-center gap-1';
+                check?.classList.add('hidden');
+            }
+        });
+        const detail = document.getElementById('strokeModelDetail');
+        if (detail) detail.textContent = STROKE_MODEL_DETAILS[model];
+    }
+    document.querySelectorAll('.stroke-model-card').forEach((card) => {
+        card.addEventListener('click', () => {
+            const next = card.getAttribute('data-stroke-model') === 'keep' ? 'keep' : 'cactus';
+            advancedSettings.scriptStrokeModel = next;
+            persistSettings();
+            renderStrokeModel();
+            updateEngine();
+        });
+    });
+    renderStrokeModel();
+    document.getElementById('playerFollowScript')?.addEventListener('change', () => {
+        if (isRemoteViewer) {
+            syncFollowScript();
+            return;
+        }
+        const on = document.getElementById('playerFollowScript').checked;
+        if (on) {
+            if (state.teaseMode !== 'script') strokeBeforeScript = state.teaseMode || 'classic';
+            applyModeSelection('script');
+        } else if (state.teaseMode === 'script') {
+            applyModeSelection(strokeBeforeScript && strokeBeforeScript !== 'script' ? strokeBeforeScript : 'classic');
+        }
+        syncFollowScript();
+        if (isRemoteController) sendPeerCommand({ type: 'MODE_CHANGE', mode: state.teaseMode, enabled: true });
+        else syncTelemetry();
+    });
+    function togglePlayer(force, byUser = false) {
+        const section = document.getElementById('playerSection');
+        const body = document.getElementById('playerBody');
+        const header = document.getElementById('playerHeaderBtn');
+        if (!section || !body) return;
+        const open = typeof force === 'boolean' ? force : body.dataset.player !== 'on';
+        section.classList.remove('hidden');
+        body.classList.remove('hidden');
+        if (!open && player && typeof player.leaveImmersive === 'function') player.leaveImmersive();
+        header?.setAttribute('aria-expanded', open ? 'true' : 'false');
+        placeSessionSetup(open);
+        player?.workspaceChanged(open, byUser);
+        if (!open) channelConfig = null;
+        paintPlayerChannels();
+    }
+    document.getElementById('playerHeaderBtn')?.addEventListener('click', event => togglePlayer(undefined, event.isTrusted));
+    document.getElementById('playerToggleBtn')?.addEventListener('click', event => togglePlayer(undefined, event.isTrusted));
+    document.getElementById('playerPrimaryConfigBtn')?.addEventListener('click', () => {
+        channelConfig = channelConfig === 'primary' ? null : 'primary';
+        paintPlayerChannels();
+    });
+    document.getElementById('playerSecondaryConfigBtn')?.addEventListener('click', () => {
+        channelConfig = channelConfig === 'secondary' ? null : 'secondary';
+        paintPlayerChannels();
+    });
+    document.getElementById('playerPrimaryEdgeBtn')?.addEventListener('click', () => {
+        if (player?.script()) player.clearPrimary();
+        else paintPlayerChannels();
+    });
+    document.getElementById('playerSecondaryEdgeBtn')?.addEventListener('click', () => {
+        if (player?.secondary()) player.clearSecondaryScript();
+        else paintPlayerChannels();
+    });
+    document.getElementById('playerClearPrimaryBtn')?.addEventListener('click', () => player?.clearPrimary());
+    document.getElementById('playerClearSecondaryBtn')?.addEventListener('click', () => player?.clearSecondaryScript());
+    function bindClimaxSeconds(id, read, write) {
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.value = String(read());
+        input.addEventListener('change', () => {
+            const next = write(input.value);
+            input.value = String(next);
+            persistSettings();
+        });
+    }
+    bindClimaxSeconds(
+        'scriptClimaxRampSeconds',
+        () => clampClimaxPhaseSeconds(advancedSettings.scriptClimaxRampSeconds, DEFAULT_CLIMAX_RAMP_SECONDS),
+        (value) => { advancedSettings.scriptClimaxRampSeconds = clampClimaxPhaseSeconds(value, DEFAULT_CLIMAX_RAMP_SECONDS); return advancedSettings.scriptClimaxRampSeconds; }
+    );
+    bindClimaxSeconds(
+        'scriptClimaxSeconds',
+        () => clampClimaxSeconds(advancedSettings.scriptClimaxSeconds),
+        (value) => { advancedSettings.scriptClimaxSeconds = clampClimaxSeconds(value); return advancedSettings.scriptClimaxSeconds; }
+    );
+    bindClimaxSeconds(
+        'scriptClimaxEaseSeconds',
+        () => clampClimaxPhaseSeconds(advancedSettings.scriptClimaxEaseSeconds, DEFAULT_CLIMAX_EASE_SECONDS),
+        (value) => { advancedSettings.scriptClimaxEaseSeconds = clampClimaxPhaseSeconds(value, DEFAULT_CLIMAX_EASE_SECONDS); return advancedSettings.scriptClimaxEaseSeconds; }
+    );
+    const continueAfter = document.getElementById('scriptContinueAfterVideo');
+    if (continueAfter) {
+        continueAfter.checked = Boolean(advancedSettings.scriptContinueAfterVideo);
+        continueAfter.addEventListener('change', () => {
+            advancedSettings.scriptContinueAfterVideo = continueAfter.checked;
+            persistSettings();
+            if (state.sessionStatus === 'RUNNING' && !state.endgameFired) {
+                if (!continueAfter.checked) applyVideoSessionLength();
+                else {
+                    state.scriptVideoClock = false;
+                    if (Number.isFinite(state.configuredTargetSeconds)) state.chosenTargetSeconds = state.configuredTargetSeconds;
+                }
+                updateTimerDisplay();
+            }
+        });
+    }
+    const beatToggle = document.getElementById('beatSyncToggle');
+    if (beatToggle && handyHsp) {
+        const savedOn = safeGet(BEAT_SYNC_CONSENT_KEY, '') === 'yes' && safeGet(BEAT_SYNC_STORAGE_KEY, '') === 'on';
+        beatToggle.checked = savedOn;
+        if (savedOn) handyHsp.setBeatSync(true);
+        beatToggle.addEventListener('change', () => {
+            if (beatToggle.checked && safeGet(BEAT_SYNC_CONSENT_KEY, '') !== 'yes') {
+                if (!window.confirm(BEAT_SYNC_CONSENT_TEXT)) {
+                    beatToggle.checked = false;
+                    return;
+                }
+                safeSet(BEAT_SYNC_CONSENT_KEY, 'yes');
+            }
+            handyHsp.setBeatSync(beatToggle.checked);
+            safeSet(BEAT_SYNC_STORAGE_KEY, beatToggle.checked ? 'on' : 'off');
+            const line = document.getElementById('beatSyncRoute');
+            if (line) {
+                line.textContent = beatToggle.checked
+                    ? 'On. With a funscript, the next few seconds of stroke positions go to The Handy. Firmware 4 or later.'
+                    : 'Off. The Handy follows speed and depth. It does not chase each stroke in a file.';
+            }
+        });
+        beatToggle.dispatchEvent(new Event('change'));
+    }
+    startLocalApp();
+}
+
+const loadedAppScripts = { stroke: '', vib: '' };
+
+async function loadAppScript(which, file) {
+    if (!file || !file.id || !player) return;
+    if (loadedAppScripts[which] === file.id) return;
+    const response = await fetch(`/app/script?id=${encodeURIComponent(file.id)}`);
+    if (!response.ok) return;
+    const body = await response.json();
+    if (!body || typeof body.text !== 'string' || !body.name) return;
+    const blob = new File([body.text], body.name, { type: 'application/json' });
+    const ok = which === 'vib' ? await player.chooseSecondary(blob) : await player.choosePrimary(blob);
+    if (ok) loadedAppScripts[which] = file.id;
+}
+
+function startLocalApp() {
+    const card = document.getElementById('appSyncCard');
+    if (!card || !player) return;
+    fetch('/edgeloop-app.json', { cache: 'no-store' }).then((response) => {
+        if (!response.ok) return null;
+        return response.json();
+    }).then((info) => {
+        if (!info || info.app !== true) return;
+        card.classList.remove('hidden');
+        const hostInput = document.getElementById('appHeadsetHost');
+        const portInput = document.getElementById('appHeadsetPort');
+        const kindInput = document.getElementById('appSyncKind');
+        const passwordInput = document.getElementById('appVlcPassword');
+        const help = document.getElementById('appSyncHelp');
+        const libraryInput = document.getElementById('appLibraryPath');
+        const status = document.getElementById('appSyncStatus');
+        const VLC_HELP = 'VLC plays the video on this computer. In VLC: Preferences, Show All, Interface, Main interfaces, turn on Web. Then Interface, Main interfaces, Lua, and set the HTTP password if you want one. Leave the password here empty when VLC has none. Port 8080 is the usual one. Play a file whose name matches a script in the folder.';
+        const HEADSET_HELP = 'HereSphere or DeoVR plays the video. This app follows its clock and runs the toys. In the headset, turn on the timestamp server and put that address here. Port 23554 is the usual one. To test without a headset, choose VLC.';
+        function applyKind() {
+            const vlc = kindInput && kindInput.value === 'vlc';
+            passwordInput?.classList.toggle('hidden', !vlc);
+            if (help) help.textContent = vlc ? VLC_HELP : HEADSET_HELP;
+            if (hostInput && !hostInput.value) hostInput.placeholder = vlc ? '127.0.0.1' : '192.168.1.20';
+            if (portInput && document.activeElement !== portInput) {
+                const current = Number(portInput.value);
+                if (!current || current === 23554 || current === 8080) portInput.value = vlc ? '8080' : '23554';
+            }
+        }
+        kindInput?.addEventListener('change', applyKind);
+        const source = new EventSource('/app/events');
+        source.onmessage = (event) => {
+            let data = null;
+            try { data = JSON.parse(event.data); } catch (e) { return; }
+            if (!data || data.type !== 'sync') return;
+            if (kindInput && data.source && document.activeElement !== kindInput && kindInput.value !== data.source) {
+                kindInput.value = data.source === 'vlc' ? 'vlc' : 'headset';
+                applyKind();
+            }
+            if (hostInput && data.host && document.activeElement !== hostInput) hostInput.value = data.host;
+            if (portInput && data.port && document.activeElement !== portInput) portInput.value = String(data.port);
+            if (libraryInput && data.library && document.activeElement !== libraryInput) libraryInput.value = data.library;
+            if (player.usingExternalClock() || data.connected) {
+                player.followExternal({
+                    state: data.state === 'playing' ? 'playing' : 'paused',
+                    mediaMs: data.mediaMs,
+                    rate: data.rate
+                });
+            }
+            const video = data.name ? `Video: ${data.name}. ` : '';
+            const script = data.stroke ? `Script: ${data.stroke.name}. ` : (data.name ? 'No script with that name in the folder. ' : '');
+            const who = data.source === 'vlc' ? 'VLC' : 'Headset';
+            const link = data.connected ? `${who} connected. ` : (data.error || 'Not connected. ');
+            const count = data.libraryCount ? `${data.libraryCount} scripts in the folder. ` : '';
+            if (status) status.textContent = `${link}${count}${video}${script}Start the session here once a heart-rate monitor and a toy are connected. The player only supplies the time.`;
+            if (data.scriptChanged) {
+                loadAppScript('stroke', data.stroke).catch(() => {});
+                loadAppScript('vib', data.vib).catch(() => {});
+            }
+        };
+        document.getElementById('appConnectBtn')?.addEventListener('click', () => {
+            fetch('/app/connect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-EdgeLoop-App': '1' },
+                body: JSON.stringify({
+                    kind: kindInput ? kindInput.value : 'headset',
+                    host: hostInput ? hostInput.value : '',
+                    port: portInput ? portInput.value : 23554,
+                    password: passwordInput ? passwordInput.value : ''
+                })
+            }).then((response) => response.json()).then((body) => {
+                if (status && body && body.error) status.textContent = body.error;
+            }).catch(() => {
+                if (status) status.textContent = 'Could not reach the local app.';
+            });
+        });
+        document.getElementById('appQuitBtn')?.addEventListener('click', () => {
+            if (status) status.textContent = 'EdgeLoop is closing. The player connection closes with it.';
+            fetch('/app/quit', { method: 'POST', headers: { 'X-EdgeLoop-App': '1' } }).catch(() => {});
+        });
+        document.getElementById('appLibraryBtn')?.addEventListener('click', () => {
+            fetch('/app/library', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-EdgeLoop-App': '1' },
+                body: JSON.stringify({ path: libraryInput ? libraryInput.value : '' })
+            }).then((response) => response.json()).then((body) => {
+                if (status && body && body.error) status.textContent = body.error;
+                else if (status && body && body.ok) status.textContent = `${body.count} videos and scripts in that folder.`;
+            }).catch(() => {
+                if (status) status.textContent = 'Could not read that folder.';
+            });
+        });
+    }).catch(() => {});
+}
+
 // Boot Initialization
 initHandyRoleUI();
 renderLearningStatus();
@@ -5373,6 +6958,6 @@ if (!isRemotePage) maybeShowFirstRunWizard();
 // F2 extension is loaded independently; backend absence cannot block app boot.
 var aiObservation = null;
 if (!isRemotePage) import('./ai/companion.js').then(({ mountCompanion }) => {
-    aiObservation = mountCompanion({refreshObservation: syncAiObservation});
+    aiObservation = mountCompanion({refreshObservation: syncAiObservation, settingsControl: withAiSettingsPanel(aiSettingsControl)});
     syncTelemetry();
-}).catch(() => {});
+}).catch((error) => console.warn('AI companion unavailable; the session runs without it.', error));

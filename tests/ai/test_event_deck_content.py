@@ -42,23 +42,26 @@ def drawn(target,ctx,limit=120):
 # Inventory
 
 def test_the_shipped_library_is_valid_and_has_a_new_revision():
- assert ERROR is None and DEFINITION.revision==2 and RAW['schema_version']==1
+ assert ERROR is None and DEFINITION.revision==5 and RAW['schema_version']==1
 
-@pytest.mark.parametrize('intent,count',[('edge_commentary',2),('session_duration',2),('hr_trend',3),('encouragement',2),('performance_observation',2),('playful_challenge',2),('recovery',2),('general_conversation',4)])
+@pytest.mark.parametrize('intent,count',[('edge_commentary',2),('session_duration',2),('hr_trend',3),('encouragement',2),('performance_observation',2),('playful_challenge',2),('recovery',2),('general_conversation',4),('finish_encouragement',2)])
 def test_every_shared_category_is_present(intent,count):
  assert len([c for c in DEFINITION.normal if c.intent==intent and c.audience=='shared'])==count
 
 @pytest.mark.parametrize('audience,intents',[('nova',{'character_curiosity_nova','character_challenge_nova'}),('evelyn',{'scientific_observation'}),('daisy',{'cloverfield_production','cloverfield_encouragement'}),('celeste',{'diplomatic_evaluation','personal_observation'})])
 def test_every_companion_has_its_requested_themes(audience,intents):
  cards=[c for c in DEFINITION.normal if c.audience==audience]
- assert len(cards)==2 and {c.intent for c in cards}==intents
+ assert len(cards)==15 and intents<={c.intent for c in cards}
+ assert [c.id for c in cards if c.eligibility.phases==['finishing']]==[audience+'-finish']
+ assert [c.id for c in cards if c.eligibility.phases==['recovery']]==[audience+'-another-load']
+ assert len([c for c in cards if c.intent=='orgasm_count' and c.eligibility.min_orgasms==1])==1
 
 def test_opening_and_closing_are_single_shared_cards():
  assert [(c.id,c.audience) for c in DEFINITION.session_start]==[('opening','shared')]
  assert [(c.id,c.audience) for c in DEFINITION.session_end]==[('closing','shared')]
 
-def test_the_mission_pack_is_three_counter_milestones():
- assert {k:(v.lane,v.audience,v.trigger.min_edges,v.trigger.min_seconds,v.trigger.event_kinds,len(v.steps)) for k,v in missions().items()}=={f'edges-{n}':('mission','shared',n,None,[],1) for n in (3,7,10)}
+def test_the_mission_pack_is_three_counter_milestones_and_a_repeatable_orgasm_reaction():
+ assert {k:(v.lane,v.audience,v.trigger.min_edges,v.trigger.min_seconds,v.trigger.event_kinds,len(v.steps),v.repeat) for k,v in missions().items()}=={f'edges-{n}':('mission','shared',n,None,[],1,False) for n in (3,7,10)}|{'orgasm-reported':('mission','shared',None,None,['orgasm_reported'],1,True),'next-round':('mission','shared',None,None,['round_ready'],1,True)}
 
 
 # Cards are intentions, within the existing boundaries
@@ -96,8 +99,9 @@ def test_each_companion_sees_only_shared_and_its_own_cards(identity):
  ctx=context(edges=5,seconds=1300,hr_current=True,hr_trend='falling')
  seen=drawn(deck(identity),ctx)
  foreign={c.id for c in DEFINITION.normal if c.audience not in {'shared',identity}}
- own={c.id for c in DEFINITION.normal if c.audience==identity}
+ own={c.id for c in DEFINITION.normal if c.audience==identity and not c.eligibility.phases and not c.eligibility.min_orgasms}
  assert not foreign&set(seen) and own<=set(seen) and seen
+ assert not {c.id for c in DEFINITION.normal if c.eligibility.phases or c.eligibility.min_orgasms or c.eligibility.min_total_orgasms}&set(seen)
 
 @pytest.mark.parametrize('identity',COMPANIONS)
 def test_every_companions_current_model_resolves_to_its_cards(identity):
@@ -198,9 +202,11 @@ async def connect(r,identity='nova',reply='A clear line of thought.',wire=None,t
  s.deck_settings=DeckSettings(enabled=True,countdown_seconds=0);s.deck_identity=identity;s.deck_definition=DEFINITION
  return s,frames
 
-async def service(identity='nova',reply='A clear line of thought.',edges=0,seconds=0,trend=None,status='RUNNING',transport=None,wire=None):
+async def service(identity='nova',reply='A clear line of thought.',edges=0,seconds=0,trend=None,status='RUNNING',transport=None,wire=None,orgasm_mode=None,orgasms=0,last_orgasm=None):
  r=Replay();r.state['devices'].update(toy_ready=True,handy=True);r.state['safety']['fault']='none'
  r.state.update(edges=edges,seconds=seconds,status=status)
+ if orgasm_mode is not None:r.state['details']['orgasm_mode']=orgasm_mode
+ if orgasms:r.state['details'].update(orgasm_count=orgasms,last_orgasm_seconds=last_orgasm)
  if trend:
   for bpm in TRENDS[trend]:r.step(bpm,seconds=1)
  else:
@@ -301,12 +307,17 @@ async def test_a_correct_count_is_delivered():
 def state_for(card):
  rule=card.eligibility
  return {'edges':rule.max_edges if rule.max_edges is not None else rule.min_edges or 0,'seconds':rule.min_seconds or 0,
-  'trend':(rule.hr_trends or [None])[0],'status':rule.statuses[0]}
+  'trend':(rule.hr_trends or [None])[0],'status':rule.statuses[0],'orgasm_mode':(rule.phases or ['building'])[0]=='finishing',
+  # Recovery: an orgasm a moment ago. Count cards: one earlier this session, past the recovery window.
+  'orgasms':1 if rule.phases==['recovery'] or rule.min_orgasms else 0,
+  'last_orgasm':max(0,(rule.min_seconds or 0)-10) if rule.phases==['recovery'] else 0 if rule.min_orgasms else None}
 
 @pytest.mark.parametrize('card',[c for c in DEFINITION.normal],ids=lambda c:c.id)
 async def test_every_normal_card_is_drawable_and_compiles_for_its_companion(card):
  identity=card.audience if card.audience!='shared' else 'nova'
  r,s,wire,frames=await service(identity=identity,**state_for(card));play_only(s,card.id)
+ if card.eligibility.min_total_orgasms:s.orgasm_counts=lambda report=None:{'orgasms':0,'total_orgasms':card.eligibility.min_total_orgasms,'total_known':True}
+ if card.eligibility.min_orgasms:r.state['seconds']=max(r.state['seconds'],200);r.step(None,seconds=0)
  if card.eligibility.requires_conversation:s.history.append({'role':'user','content':'I like quiet mornings.','session_id':r.state['session_id']})
  s.pump();assert s.task and not s.task.done(),s.director.last_reason
  await s.task;await asyncio.sleep(0)

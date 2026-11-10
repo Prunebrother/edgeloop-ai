@@ -1,0 +1,28 @@
+EdgeLoop AI - Windows test build
+
+ADULTS ONLY. EdgeLoop AI is adult software for use by consenting adults (18+).
+
+This is an experimental Windows build. It has been tested on Windows without a GPU and without
+toys, but not yet on real hardware. Keep your toy's own stop button or switch within reach, and
+use EdgeLoop's Stop control to end a session. Never rely on the companion to stop a device.
+
+What setup does:
+- Downloads about 9 GB (all companions, the AI model, Ollama and Python), checks every part
+  against checksums built into this setup program, then installs. Keep about 25 GB free.
+  Interrupted downloads resume when you run setup again.
+- Installs for your Windows user only. No administrator rights are needed.
+- Adds "EdgeLoop AI" and "Stop EdgeLoop AI" to the Start menu.
+- Keeps your settings and history in %LOCALAPPDATA%\EdgeLoop AI\data, also when you uninstall.
+
+Everything runs on this computer. The AI services listen only on 127.0.0.1 (ports 11435, 8768
+and 8770). A recent NVIDIA GPU with 8 GB or more is recommended; without one, replies are slow.
+
+Use Google Chrome or Microsoft Edge: toy and heart-rate connections need Web Bluetooth or Web
+Serial, which Firefox does not offer.
+
+Windows may warn that this setup program is from an unknown publisher, because it is not
+code-signed yet. Choose "More info", then "Run anyway", only if you downloaded it from
+https://github.com/Prunebrother/edgeloop-ai/releases
+
+EdgeLoop AI is free software under the GNU AGPL version 3. It is a fork of EdgeLoop by its
+original authors, who do not endorse it.

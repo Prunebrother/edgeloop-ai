@@ -68,14 +68,15 @@ def import_models(source, stage, inputs):
         shutil.copyfile(manifest, out)
 
 
-def create_characters(stage, inputs, log):
+def create_characters(stage, inputs, log, binary=None):
     # This daemon owns an isolated model store and a dynamically allocated port.
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0))
         port = sock.getsockname()[1]
     endpoint = f'http://127.0.0.1:{port}'
     env = dict(os.environ, OLLAMA_HOST=endpoint, OLLAMA_MODELS=str(stage / 'models'), OLLAMA_NO_CLOUD='1')
-    binary = stage / 'runtime/ollama/bin/ollama'
+    # The Windows build creates its (platform-neutral) model store with the Linux build host's Ollama.
+    binary = binary or stage / 'runtime/ollama/bin/ollama'
     with log.open('w') as stream:
         process = subprocess.Popen([str(binary), 'serve'], env=env, stdout=stream, stderr=stream)
         try:

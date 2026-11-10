@@ -134,6 +134,10 @@ class OllamaProvider:
         self.lock = asyncio.Lock()
         self.embedded_system = None
         self.thinking_controls = None
+        # A Character Builder persona. When set it REPLACES the Modelfile SYSTEM: Ollama only
+        # applies a model's own SYSTEM when the request has no system message, and with a persona
+        # every request carries one, so the built-in identity and canon never reach the model.
+        self.persona_system = None
 
     def client(self, timeout=5):
         return httpx.AsyncClient(base_url=self.base_url, timeout=timeout, trust_env=False, transport=self.transport)
@@ -186,13 +190,17 @@ class OllamaProvider:
         if not self.thinking_controls['can_disable']:
             raise InferenceCompatibilityError('Selected model cannot comply with think:false; select a compatible model')
         messages = [m.for_ollama() for m in request.messages]
+        if self.persona_system is not None:
+            self.embedded_system = self.persona_system
+            if not any(m['role'] == 'system' for m in messages):
+                messages = [{'role': 'system', 'content': ''}] + messages
         if any(m['role'] == 'system' for m in messages):
             if self.embedded_system is None:
                 await self.capabilities(config.model)
             # One SYSTEM works with templates rendering only .System. Keep the
             # Modelfile SYSTEM verbatim; the application contributes runtime rules only.
-            runtime = '\n'.join(m['content'] for m in messages if m['role'] == 'system')
-            system = self.embedded_system + '\n\n' + runtime if self.embedded_system else runtime
+            runtime = '\n'.join(m['content'] for m in messages if m['role'] == 'system' and m['content'])
+            system = (self.embedded_system + '\n\n' + runtime if runtime else self.embedded_system) if self.embedded_system else runtime
             messages = [{'role':'system', 'content':system}] + [m for m in messages if m['role'] != 'system']
             if sum(len(m['content']) + 80 for m in messages) + len(json.dumps([t.as_json() for t in request.tools])) > (config.context_length - config.max_tokens - 64) * 2.5:
                 raise ValueError('Embedded model instructions and runtime exceed estimated context budget; increase context length')

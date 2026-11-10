@@ -41,7 +41,7 @@ async def test_the_grounding_boundaries_still_reach_the_model():
  r,s,wire,frames=await service(edges=3);play_only(s,EDGE)
  await turn(s)
  system=messages(wire)[0]['content']
- assert 'Simulator values are not the user' in system and 'No hardware-control tools exist' in system and 'Never claim you will adjust' in system
+ assert 'A simulated heart rate is not the user\'s body' in system and 'You have no tools and cannot change the session' in system and 'Never say you changed, or will change' in system
 
 @pytest.mark.parametrize('lane_card,wanted',[(EDGE,'about 15 to 35 words'),('general-remark','about 15 to 35 words')])
 async def test_normal_cards_ask_for_short_form(lane_card,wanted):
@@ -81,9 +81,10 @@ async def test_only_the_latest_user_message_is_replayed_and_commentary_is_droppe
  s.history.append(monologue(r,'An unprompted aside about fences.'))
  await turn(s)
  # Companion lines are never replayed, and the latest user line is background, not an unanswered turn.
- assert [m['role'] for m in messages(wire)]==['system','user'] and '- "Tell me about barn 3."' in prompt(wire) and 'barn 2' not in prompt(wire)
+ assert [m['role'] for m in messages(wire)]==['system','assistant','user'] and '- "Tell me about barn 3."' in messages(wire)[1]['content'] and 'barn 2' not in json.dumps(messages(wire))
  assert 'fences' not in prompt(wire) and 'leans east' not in json.dumps(messages(wire))
- assert 'EARLIER, THE PARTICIPANT SAID (already answered' in prompt(wire) and 'What the participant said earlier, listed at the top, is real' in prompt(wire)
+ assert 'Tell me about barn' not in prompt(wire)
+ assert 'EARLIER, THE PARTICIPANT SAID (already answered' in messages(wire)[1]['content'] and 'What the participant said earlier, listed at the top, is real' in prompt(wire)
 
 async def test_another_sessions_conversation_is_not_continued():
  r,s,wire,frames=await service();play_only(s,'general-remark')
@@ -95,7 +96,7 @@ async def test_a_stale_count_from_the_companion_is_not_replayed_and_history_is_m
  r,s,wire,frames=await service(edges=3);play_only(s,EDGE)
  s.history+=[spoken(r,'user','How many edges so far?'),spoken(r,'assistant','The edge counter says 2 edges.')]
  await turn(s)
- assert 'How many edges so far?' in prompt(wire) and 'The edge counter says 2' not in json.dumps(messages(wire))  # Only the user's side is replayed...
+ assert 'How many edges so far?' in messages(wire)[1]['content'] and 'How many edges so far?' not in prompt(wire) and 'The edge counter says 2' not in json.dumps(messages(wire))  # Only the user's side is replayed, outside the current task...
  assert 'may be out of date, so only the values listed here are current' in prompt(wire) and 'Edges this session: 3' in prompt(wire)  # ...and labelled as possibly stale.
 
 async def test_the_transcript_itself_is_untouched():
@@ -282,6 +283,9 @@ def test_the_contract_still_offers_all_twelve_expressions():
  assert len(EXPRESSIONS)==12 and all(item in FORMAT_INSTRUCTION for item in EXPRESSIONS) and '[[expression:ID]]' in HEADER_REMINDER and not any(item in HEADER_REMINDER for item in EXPRESSIONS)
 
 MALFORMED=['[[happy:Daisy]]','[[happy:10]]','[[focused:ID]]','[[happy]]','[[HAPPY]]','[[ proud ]]','[[Expression:happy]]','[[expression: happy]]','[[expression:pride]]','[[expression]]','[expression:happy]','[happy:Daisy]','[happy]','[Proud]','[ expression : proud ]']
+# Recognisable double-bracket near misses now resolve to an allowed ID (expressions.ALIASES); the rest fall back.
+RESOLVED={'[[happy:Daisy]]':'happy','[[happy:10]]':'happy','[[focused:ID]]':'focused','[[happy]]':'happy','[[HAPPY]]':'happy',
+          '[[ proud ]]':'proud','[[Expression:happy]]':'happy','[[expression: happy]]':'happy','[[expression:pride]]':'proud'}
 MID_LINE_PROSE=('[[happy]]','[[HAPPY]]','[[ proud ]]','[happy]','[Proud]')
 def scan(chunks):
  stream=ExpressionStream(card=True)
@@ -289,9 +293,9 @@ def scan(chunks):
 
 @pytest.mark.parametrize('tag',MALFORMED)
 @pytest.mark.parametrize('split',[lambda text:[text],list],ids=['whole','per-character'])
-def test_a_malformed_tag_is_never_visible_and_falls_back(tag,split):
+def test_a_malformed_tag_is_never_visible_and_resolves_or_falls_back(tag,split):
  text,stream=scan(split(tag+'\nA quiet line.'))
- assert text=='A quiet line.' and stream.expression is None
+ assert text=='A quiet line.' and stream.expression==RESOLVED.get(tag)
 
 @pytest.mark.parametrize('tag',MALFORMED)
 def test_a_tag_after_a_valid_header_is_removed_and_mid_line_only_when_unmistakable(tag):
@@ -313,7 +317,7 @@ def test_a_truncated_tag_is_not_released(tag):
  assert scan(['Line. '+tag])[0]=='Line.'
 
 @pytest.mark.parametrize('reply,expression,source',[
- ('[[happy:Daisy]]\nA quiet line.',None,'fallback'),('[[happy]]\nA quiet line.',None,'fallback'),('[happy]\nA quiet line.',None,'fallback'),
+ ('[[happy:Daisy]]\nA quiet line.','happy','model'),('[[happy]]\nA quiet line.','happy','model'),('[[expression:curious]]\nA quiet line.','focused','model'),('[happy]\nA quiet line.',None,'fallback'),
  ('[[expression:proud]]\nA quiet line.','proud','model'),('[[expression:playful]]\nA quiet line.','playful','model')])
 async def test_delivered_commentary_is_clean_and_uses_the_existing_fallback(reply,expression,source):
  r,s,wire,frames=await service(reply=reply);play_only(s,'general-remark')
@@ -394,7 +398,7 @@ def test_mission_occasions_state_the_finished_result_with_no_ordinal(card_id,mil
  assert milestone in card.occasion and not re.search(r'\b(?:first|second|third|final)\b',card.occasion+card.brief,re.I)
 
 def test_the_shuffle_seed_input_is_unchanged():
- assert DEFINITION.revision==2
+ assert DEFINITION.revision==5
 
 @pytest.mark.parametrize('card',[c for c in ALL if c.eligibility.requires_hr],ids=lambda c:c.id)
 def test_a_heart_rate_brief_leaves_the_source_to_the_reading_itself(card):

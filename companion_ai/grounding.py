@@ -48,7 +48,7 @@ LABELS={
     'effective_max':'Engine working ceiling (not a measurement)', 'pullback':'Engine pullback threshold (not a measurement)',
     'status':'Session status', 'seconds':'Active running time (engine clock ticks; pauses excluded)', 'experience':'Selected experience',
     'active_mode':'Engine active mode', 'goal':'Selected goal', 'intensity':'Intensity setting',
-    'edges':'Engine edge counter', 'pauses':'Engine pause counter', 'trend':'HR trend (bounded sample evidence)',
+    'edges':'Engine edge counter', 'pauses':'Engine pause counter', 'pause_reason':'Why the engine is paused', 'trend':'HR trend (bounded sample evidence)',
     'primary':'Primary computed channel value (not motion feedback)', 'secondary':'Secondary computed channel value (not motion feedback)',
     'physical_motion':'Actual physical movement feedback', 'toy_ready':'Stimulation readiness',
     'ble':'BLE heart-rate sensor connection', 'handy':'Handy stimulation-device connection (not an HR sensor)', 'intiface':'Intiface stimulation transport connection',
@@ -57,8 +57,16 @@ LABELS={
     'warmup_remaining_seconds':'Warm-up remaining', 'ease_down_seconds':'Engine ease-down remaining',
     'rampdown_seconds':'Engine rampdown remaining',
 }
-MODE_NAMES={'classic':'Classic Tease','headplay':'Head Play','edgetrain':'Edge Training','calibrate':'Calibration','nnn':'NNN',
-            'tease':'Tease (no game selected)','oracle':'Oracle','survival':'Survival','finisher':'Finisher','milker':'Milker','shortener':'Shortener','ultimate':'Ultimate','ruin':'Ruin'}
+# Display names follow the upstream EdgeLoop 1.1.4 cards; ids are the engine's.
+MODE_NAMES={'classic':'Simple Ramp','finisher':'Finisher','milker':'Prostate Milker','shortener':'Glans Protector',
+            'headplay':'Head Play','ultimate':'Ultimate Milker','bratty':'Bratty Tease','ruin':'Ruin & Leak',
+            'script':'Script (video player)','tease':'Tease (no game selected)','oracle':'The Oracle','survival':'Survival',
+            'edgetrain':'Edge Training','calibrate':'Calibration','nnn':'No Nut November'}
+
+PAUSE_REASON_NAMES={'user':'Pause button','edged':'Edged button: the user marked an edge (not counted as a pause)',
+    'relube':'Relube break requested by the user (not counted as a pause)','player':'video player paused or stalled',
+    'remote':'remote controller','hr_signal':'heart-rate signal safety pause','device':'device safety pause',
+    'ai':'paused by the companion through AI Settings Control'}
 
 def render_facts(value, *, include_timing=True, include_events=True, include_boundaries=True):
     data=value if isinstance(value,SessionFacts) else SessionFacts.model_validate(value)
@@ -74,6 +82,7 @@ def render_facts(value, *, include_timing=True, include_events=True, include_bou
             elif isinstance(v,bool):rendered='yes' if v else 'no'
             else:rendered=str(v)
             if name in {'experience','active_mode','goal'}:rendered=MODE_NAMES.get(v,str(v))+' ['+str(v)+']'
+            if name=='pause_reason':rendered=PAUSE_REASON_NAMES.get(v,str(v))+' ['+str(v)+']'
             if fact.unit:rendered+=' '+fact.unit
             rendered+=' ('+fact.kind+')'
         if name=='trend' and data.current:

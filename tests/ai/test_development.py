@@ -46,3 +46,48 @@ def test_runtime_and_launcher_do_not_import_the_legacy_application():
     launch=(ROOT/'tools/serve-ai.sh').read_text()
     assert 'PYTHONPATH' not in launch and 'EDGELOOP_AI_SOURCE' not in launch and '-I -m ai_observer.server' in launch
     assert not any((ROOT/'companion_ai'/name).exists() for name in ['core.py','session.py','session_bridge.py','tools.py','app.py','audio.py'])
+
+
+def test_ui_server_makes_browsers_revalidate_static_files():
+    # A heuristically cached old companion.css next to a newer layout.js left the
+    # conversation unscrollable after the Player workspace update.
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1',0));port=probe.getsockname()[1]
+    server=subprocess.Popen([sys.executable,str(ROOT/'tools/serve_local.py'),str(port)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
+        env={k:v for k,v in os.environ.items() if k!='EDGELOOP_PAIRING_FILE'})
+    try:
+        import http.client,time
+        for _ in range(100):
+            try:
+                connection=http.client.HTTPConnection('127.0.0.1',port,timeout=2);connection.request('HEAD','/src/css/companion.css');response=connection.getresponse();break
+            except OSError:time.sleep(.05)
+        else:pytest.fail('UI server did not start')
+        assert response.status==200 and response.getheader('Cache-Control')=='no-cache'
+        modified=response.getheader('Last-Modified');connection.close()
+        connection=http.client.HTTPConnection('127.0.0.1',port,timeout=2)
+        connection.request('GET','/src/css/companion.css',headers={'If-Modified-Since':modified or 'Thu, 01 Jan 2099 00:00:00 GMT'});response=connection.getresponse()
+        assert response.status==304 and response.getheader('Cache-Control')=='no-cache';connection.close()
+        connection=http.client.HTTPConnection('127.0.0.1',port,timeout=2)
+        connection.request('POST','/ai/pair',headers={'X-EdgeLoop-Pair':'1','Host':f'127.0.0.1:{port}','Origin':f'http://127.0.0.1:{port}'});response=connection.getresponse()
+        assert response.status==503 and [h for h in response.getheaders() if h[0].lower()=='cache-control']==[('Cache-Control','no-cache')]
+    finally:
+        server.terminate();server.wait(5)
+
+
+def test_ui_pairing_reply_stays_no_store(tmp_path):
+    pairing=tmp_path/'pairing.json';pairing.write_text('{"token":"fixture"}')
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1',0));port=probe.getsockname()[1]
+    server=subprocess.Popen([sys.executable,str(ROOT/'tools/serve_local.py'),str(port)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
+        env=dict(os.environ,EDGELOOP_PAIRING_FILE=str(pairing)))
+    try:
+        import http.client,time
+        for _ in range(100):
+            try:
+                connection=http.client.HTTPConnection('127.0.0.1',port,timeout=2)
+                connection.request('POST','/ai/pair',headers={'X-EdgeLoop-Pair':'1','Host':f'127.0.0.1:{port}','Origin':f'http://127.0.0.1:{port}'});response=connection.getresponse();break
+            except OSError:time.sleep(.05)
+        else:pytest.fail('UI server did not start')
+        assert response.status==200 and [h for h in response.getheaders() if h[0].lower()=='cache-control']==[('Cache-Control','no-store')]
+    finally:
+        server.terminate();server.wait(5)

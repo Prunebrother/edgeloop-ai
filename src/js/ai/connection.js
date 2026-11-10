@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Client sends observations/chat only. Server replies never dispatch controls.
+// Client sends observations/chat and AI Settings outcomes. Server replies never dispatch controls:
+// a settings_request is handed, unparsed, to the engine-side gate passed in by app.js.
 export class ReadOnlyConnection {
     constructor({WebSocketImpl=globalThis.WebSocket,uuid=()=>crypto.randomUUID(),now=()=>Date.now(),
         schedule=(fn,ms)=>setTimeout(fn,ms),cancel=id=>clearTimeout(id),onMessage=()=>{},onStatus=()=>{}}={}) {
@@ -24,12 +25,12 @@ export class ReadOnlyConnection {
             let m;try{m=JSON.parse(e.data);}catch{return;}
             if(m.type==='ready'&&m.version===1&&m.read_only===true) {
                 this.epoch=m.epoch;this.retry=0;this.pendingEvents.clear();this.lastSent=-Infinity;
-                this.onStatus('Connected · read-only · no AI controls');this.flush();
+                this.onStatus('Connected · session controls stay with EdgeLoop');this.flush();
                 this.send({version:1,type:'list_models'});
             } else if(['ai_diagnostics','response_expression','models','model_selected','response_start','response_delta','speech','speech_cancel','conversation_error',
-                'session_journal','character_state','character_menu_error','narrative_reset','response_suppressed','response_cancel','observation_ack','telemetry_status','ai_error','protocol_error'].includes(m.type))this.onMessage(m);
+                'session_journal','character_state','character_menu_error','narrative_reset','response_suppressed','response_cancel','observation_ack','telemetry_status','ai_error','protocol_error','settings_request','character_builder'].includes(m.type))this.onMessage(m);
             else if(m.type==='resync_required')socket.close();
-            // Unrecognized output, including command/action objects, is ignored.
+            // Unrecognized output, including engine command objects, is ignored.
         };
         socket.onerror=()=>this.onStatus('AI unavailable; EdgeLoop continues');
         socket.onclose=e=>{
@@ -46,8 +47,15 @@ export class ReadOnlyConnection {
         this.completionReported=this.latest?.session_id===snapshot.session_id&&this.latest?.details?.completion_reported;
         this.latest=snapshot;
         if(!this.enabled||!this.epoch)return;
-        for(const e of events){this.pendingEvents.set(e.kind,e);if(this.pendingEvents.size>16)this.pendingEvents.delete(this.pendingEvents.keys().next().value);}
-        if(followsTerminal||snapshot.details?.terminal_outcome||snapshot.details?.completion_reported&&!this.completionReported||events.some(e=>['stop','pause','signal_lost','came_early','completion_accepted'].includes(e.kind)))this.flush(true);
+        for(const e of events){
+            this.pendingEvents.set(e.kind,e);
+            if(this.pendingEvents.size>16){
+                // Optional Player notifications never evict an engine/safety event.
+                const player=[...this.pendingEvents.keys()].find(k=>['player_opened','video_selected','video_started'].includes(k));
+                this.pendingEvents.delete(player??this.pendingEvents.keys().next().value);
+            }
+        }
+        if(followsTerminal||snapshot.details?.terminal_outcome||snapshot.details?.completion_reported&&!this.completionReported||events.some(e=>['stop','pause','signal_lost','came_early','completion_accepted','orgasm_reported'].includes(e.kind)))this.flush(true);
         else if(!this.flushTimer)this.flushTimer=this.schedule(()=>{this.flushTimer=null;this.flush();},Math.max(0,1000-(this.now()-this.lastSent)));
     }
     flush(urgent=false) {
@@ -59,7 +67,8 @@ export class ReadOnlyConnection {
     }
     send(message) {
         if(!this.epoch||!this.socket||this.socket.readyState!==1)return false;
-        const raw=JSON.stringify(message);if(raw.length>16384)return false;
+        // The observer limit is 16 KiB of UTF-8, so count bytes: accented text or emoji take more than one.
+        const raw=JSON.stringify(message);if(messageBytes(raw)>16384)return false;
         this.socket.send(raw);return true;
     }
     disconnect() {
@@ -70,6 +79,10 @@ export class ReadOnlyConnection {
         this.onStatus('AI disabled; EdgeLoop controls remain independent');
     }
 }
+
+export const MESSAGE_LIMIT_BYTES=16384;
+const encoder=new TextEncoder();
+export function messageBytes(raw){return encoder.encode(raw).length;}
 
 // Presentation freshness only; source is the existing original-engine projection.
 export function reactionMatchesLatest(scope,snapshot){

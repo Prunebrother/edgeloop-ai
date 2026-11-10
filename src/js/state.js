@@ -18,6 +18,11 @@ export const state = {
     endgameType: 'orgasm',
     rampdownSecondsLeft: 45,
     hrCurrent: 70,
+    // True once a monitor or the simulator has delivered a usable reading.
+    // The cockpit stays "--" until then, so the resting default is not a pulse.
+    hrReadingSeen: false,
+    // Short reason for the pause in progress. Empty while the session runs.
+    pauseReason: '',
     edges: 0,
     pauses: 0,
     peakHr: 70,
@@ -37,6 +42,10 @@ export const state = {
     settleSecondsLeft: 0,
     settleSpan: 45,
     settleRestartsSurvival: false,
+    settleRestartsWarmup: false,
+    orgasmCount: 0,
+    lastOrgasmSeconds: null,
+    roundsGranted: 0,
     // Seconds already on the session clock when warm-up last started. Survival
     // sets this after an orgasm so the warm-up runs again without zeroing the timer.
     warmupOriginSeconds: 0,
@@ -74,6 +83,9 @@ export const state = {
     // The tease mode owns the stroke. A game, when set, owns the speeds
     // and borrows this stroke. Neither is restored on reload on purpose.
     teaseMode: 'classic',
+    scriptReleasedAt: null,
+    scriptVideoClock: false,
+    configuredTargetSeconds: 0,
     gameMode: null,
     lastHrTimestamp: Date.now(),
     // Heart-rate watchdog (hr-watchdog.js): last verdict, whether packets
@@ -98,7 +110,7 @@ export const state = {
     stallPauseElapsed: 0,
     stallGuardEngaged: false,
     intensityValue: 50,
-    history: [70],
+    history: [],
     bleBattery: null,
     handyBattery: null,
     intifaceBattery: null,
@@ -172,6 +184,7 @@ export const advancedSettings = {
     endgameType: 'orgasm',
     gammaCurve: 2.0,
     warmupMinutes: 5,
+    warmupEnabled: true,
     orgasmSettleSeconds: 45,
     edgeStrokeDepth: 100,
     cadenceBreathing: true,
@@ -191,8 +204,11 @@ export const advancedSettings = {
     stallGuardSeconds: 20,
     stallPauseSeconds: 8,
     // What the primary does while parked at the pullback trigger: 'stop'
-    // (0%) or 'crawl' (CRAWL_PERCENT). The stall guard only matters in crawl.
+    // (0%) or 'crawl' (crawlPercent). The stall guard only matters in crawl.
     ceilingBehaviour: 'crawl',
+    // Speed parked at the ceiling while Crawl is selected, 1-30. 10 is the
+    // factory micro-motion. The intensity slider still scales it.
+    crawlPercent: 10,
     // Pullback as a percent of typed Climax HR (90-100, default 100).
     edgeHoldPercent: 100,
     trainHoldSeconds: 15,
@@ -209,14 +225,34 @@ export const advancedSettings = {
         toggleSession: { kind: 'key', code: 'Space' },
         stop: { kind: 'key', code: 'Escape' },
         cameEarly: { kind: 'key', code: 'ArrowLeft' },
+        iCame: { kind: 'key', code: 'KeyC' },
         forceOrgasm: { kind: 'key', code: 'ArrowRight' },
         valvePlus: { kind: 'key', code: 'ArrowUp' },
-        valveMinus: { kind: 'key', code: 'ArrowDown' }
+        valveMinus: { kind: 'key', code: 'ArrowDown' },
+        offsetEarlier: { kind: 'key', code: 'BracketLeft' },
+        offsetLater: { kind: 'key', code: 'BracketRight' }
     },
     // Session speed window. 0 and 100 leave the pattern alone. A stop is
     // still 0; everything above 0 is scaled into this pair.
     speedSlowest: 0,
     speedFastest: 100,
+    scriptStrokeModel: 'cactus',
+    scriptReactBpm: 10,
+    scriptFloorPercent: 30,
+    scriptApproach: 'shorten',
+    scriptEdgeAction: 'skip',
+    scriptRejoinSeconds: 8,
+    scriptMaxSpeed: 300,
+    scriptInvert: false,
+    scriptSecondChannel: 'hr',
+    scriptVideoEnd: 'stop',
+    scriptContinueAfterVideo: false,
+    // Theater and fullscreen: the top readout stays while the bottom bar hides.
+    playerHudPin: true,
+    // A marked climax: climb into the dot, hold at full, then ease back into the script.
+    scriptClimaxRampSeconds: 45,
+    scriptClimaxSeconds: 20,
+    scriptClimaxEaseSeconds: 15,
     // Autoblow VacuGlide 2. Speed only. The token lives in its own store.
     vacuglideRole: 'primary',
     vacuglideMaxCap: 100,

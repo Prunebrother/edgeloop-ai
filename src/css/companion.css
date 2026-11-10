@@ -34,7 +34,7 @@ body.companion-app {margin:0;padding:0;display:block;height:100dvh;min-height:0;
 .companion-app [hidden] {display:none!important}
 @media(min-width:1500px){.companion-nav [data-view=character] {display:none}}
 @media(max-width:1499px){.companion-columns {grid-template-columns:minmax(340px,38%) minmax(0,1fr)}#character-panel {display:none}.companion-nav .column-width {display:none}#companion-dashboard[data-view=character] #character-panel {display:flex;position:absolute;right:12px;top:66px;bottom:12px;width:min(46vw,500px);z-index:25;box-shadow:-20px 0 60px #0009}.companion-nav [aria-pressed=true] {background:#342747;border-color:#8b6fb3}}
-@media(max-width:760px){#companion-dashboard {padding:8px;gap:8px}.companion-nav {flex-wrap:wrap;gap:6px}.companion-brand {font-size:15px;flex:1}.companion-brand small {font-size:8px;margin-left:6px}.companion-nav [role=group] {order:3;width:100%}.companion-nav [data-view=session],.companion-nav [data-view=chat] {display:block}.companion-nav [role=group]>button {flex:1}.companion-nav .emergency {font-size:10px;padding:8px}.companion-columns {display:block;position:relative}.companion-columns> #session-panel,.companion-columns> #ai-companion,.companion-columns> #character-panel {display:none;height:100%;width:100%}#companion-dashboard[data-view=session] #session-panel,#companion-dashboard[data-view=chat] #ai-companion,#companion-dashboard[data-view=character] #character-panel {display:flex;position:static;box-shadow:none;width:100%;height:100%}.companion-heading {padding:16px}.companion-heading h2 {font-size:19px}.connection-strip {margin:0 16px}.connection-setup {margin:12px 16px;padding:12px}.model-picker {padding:10px 16px 8px}.ai-health {padding:0 16px 10px}.conversation-scroll {padding:16px}.chat-composer {margin:0 10px}.composer-actions {flex-wrap:wrap}.composer-actions>span {width:100%}.session-scroll {padding:8px}.portrait-stage {min-height:180px}}
+@media(max-width:760px){#companion-dashboard {padding:8px;gap:8px}.companion-nav {flex-wrap:wrap;gap:6px}.companion-brand {font-size:15px;flex:1}.companion-brand small {font-size:8px;margin-left:6px}.companion-nav [role=group] {order:3;width:100%}.companion-nav [data-view=session],.companion-nav [data-view=chat] {display:block}.companion-nav [role=group]>button {flex:1}.companion-nav .emergency {font-size:10px;padding:8px}.companion-columns {display:block;position:relative}.companion-columns> #session-panel,.companion-columns> #companion-center,.companion-columns> #character-panel {display:none;height:100%;width:100%}#companion-dashboard[data-view=session] #session-panel,#companion-dashboard[data-view=chat] #companion-center,#companion-dashboard[data-view=character] #character-panel {display:flex;position:static;box-shadow:none;width:100%;height:100%}.companion-heading {padding:16px}.companion-heading h2 {font-size:19px}.connection-strip {margin:0 16px}.connection-setup {margin:12px 16px;padding:12px}.model-picker {padding:10px 16px 8px}.ai-health {padding:0 16px 10px}.conversation-scroll {padding:16px}.chat-composer {margin:0 10px}.composer-actions {flex-wrap:wrap}.composer-actions>span {width:100%}.session-scroll {padding:8px}.portrait-stage {min-height:180px}}
 @media(prefers-reduced-motion:reduce){.character-art {transition:none}}
 
 @media(max-width:760px){
@@ -200,3 +200,125 @@ body.companion-app {margin:0;padding:0;display:block;height:100dvh;min-height:0;
  #character-director .director-number,#character-director [data-context-inputs] label {grid-template-columns:minmax(0,1fr);gap:6px}
  #character-director .director-number input,#character-director [data-context-inputs] input {width:100%}
 }
+
+/* Player workspace: the upstream video stage, moved once into the conversation column.
+   Open only while upstream's Player toggle is on (#companion-dashboard[data-player=on]). */
+#companion-center {display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
+#companion-center>#ai-companion {flex:1 1 auto}
+.player-workspace {flex-shrink:0;display:flex;flex-direction:column;gap:8px;padding:10px 12px 12px;border:1px solid #2d2a48;border-radius:18px;background:linear-gradient(160deg,#141a2e,#0b1120 60%);box-shadow:0 0 0 1px #a78bfa0d}
+.player-workspace-bar {display:flex;align-items:center;gap:12px;min-height:34px;padding:0 4px}
+.player-workspace-bar .eyebrow {color:#c4b5fd}
+.player-workspace-hint {font-size:11px;color:#7c8ca4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.player-workspace [data-close-player] {font:inherit;font-size:12px;border:1px solid #6d5a91;border-radius:9px;padding:8px 12px;min-height:36px;cursor:pointer;margin-left:auto;flex-shrink:0;background:#231a33;border-color:#6d5a91;color:#e9ddff;font-weight:600}
+.player-workspace [data-close-player]:hover {background:#2f2345;border-color:#a78bfa}
+.player-workspace #playerColumn {display:flex;flex-direction:column;min-width:0;min-height:0}
+.player-workspace #playerStage {border-color:#3b3456;border-radius:14px;box-shadow:0 0 0 1px #a78bfa14,0 12px 30px #0006}
+/* Normal (non-immersive) view only; Theater and Fullscreen keep upstream's sizing. */
+/* The picture gives way first: the conversation below keeps about 300px at any window height. */
+.player-workspace #playerStage[data-immersive=off] #playerPicture {flex:none;width:100%;aspect-ratio:16/9;max-height:max(140px,min(46dvh,calc(100dvh - var(--player-reserve,545px))));min-height:0}
+.player-workspace #playerStage[data-immersive=off][data-empty=on] #playerPicture {max-height:clamp(120px,22dvh,220px)}
+.player-workspace #playerDock {padding:6px 8px;gap:4px 10px;background:#0b1120}
+.player-workspace #playerStage[data-immersive=off] #playerDock {flex-direction:row;flex-wrap:wrap;align-items:center}
+.player-workspace #playerStage[data-immersive=off] #playerDock>* {flex:1 1 100%;min-width:0}
+.player-workspace #playerStage[data-immersive=off] #playerDock>#playerChrome {flex:1 1 380px}
+.player-workspace #playerStage[data-immersive=off] #playerDock>#playerOffsetRow {flex:0 0 auto}
+.player-workspace #playerChrome {border-color:#2b3450;background:#111a2b}
+.player-workspace #playerHeatmapHint {display:none}
+.player-workspace #playerOffsetRow {gap:6px;font-size:11px}
+.player-workspace #playerOffsetRow>span:last-child {display:none}
+.player-workspace #playerOffsetRow button {min-height:30px;height:30px;padding:0 10px;font-size:13px}
+/* The upstream two-column player row now holds only the file panel. */
+.companion-app #session-panel #playerBody {grid-template-columns:minmax(0,1fr)!important}
+/* Conversation under the video: compact chrome, the same readable bubbles. */
+#companion-dashboard[data-player=on] #ai-companion .companion-heading {padding:10px 18px 6px}
+#companion-dashboard[data-player=on] #ai-companion .companion-heading h2 {font-size:18px;margin-top:2px}
+#companion-dashboard[data-player=on] #ai-companion .companion-heading .eyebrow {display:none}
+#companion-dashboard[data-player=on] #ai-companion .connection-strip {margin:0 18px 4px}
+#companion-dashboard[data-player=on] #ai-companion[data-paired=true] .model-picker,
+#companion-dashboard[data-player=on] #ai-companion[data-paired=true] .ai-health,
+#companion-dashboard[data-player=on] #ai-companion .model-controls {display:none}
+#companion-dashboard[data-player=on] #ai-companion .conversation-scroll {min-height:96px;padding:12px 18px;border-top:1px solid #1d2638}
+#companion-dashboard[data-player=on] #ai-companion .message {margin-bottom:14px;font-size:14px;line-height:1.6}
+#companion-dashboard[data-player=on] #ai-companion .chat-composer {margin:0 12px;padding:8px 10px}
+#companion-dashboard[data-player=on] #ai-companion .chat-composer {display:flex;align-items:flex-end;gap:10px}
+#companion-dashboard[data-player=on] #ai-companion .chat-composer textarea {height:44px;flex:1 1 auto;min-width:0}
+#companion-dashboard[data-player=on] #ai-companion .composer-actions {flex:0 0 auto;padding-bottom:4px}
+#companion-dashboard[data-player=on] #ai-companion .composer-actions>span {display:none}
+/* Visually hidden, still the textarea's accessible name. */
+#companion-dashboard[data-player=on] #ai-companion .chat-composer label {position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#companion-dashboard[data-player=on] #ai-companion .read-only-note {margin:6px 8px 8px}
+#companion-dashboard[data-player=on] #ai-companion .jump-latest {bottom:110px}
+#companion-dashboard[data-player=on] #companion-center>#ai-companion {min-height:260px}
+
+/* Theater: the stage covers the three columns under the dashboard header, which keeps
+   Emergency stop visible. It overrides upstream's in-flow 100vw sizing, which a column clips. */
+.companion-app #playerStage[data-theater=on] {position:fixed!important;top:var(--companion-nav-bottom,66px);left:12px;right:12px;bottom:12px;
+  width:auto!important;height:auto!important;margin:0!important;z-index:60;border:1px solid #3b3456;border-radius:14px}
+#companion-dashboard>#disconnectBanner {z-index:70}
+
+/* In-stage Emergency stop: the stage is the only thing rendered in browser fullscreen. */
+.stage-emergency {display:none;position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:80;min-height:40px;padding:8px 14px;border-radius:10px;
+  border:1px solid #e1567c;background:#5a1328ee;color:#ffe4ec;font:700 13px/1 Inter,ui-sans-serif,system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 18px #000a}
+.stage-emergency:hover {background:#7a1834}
+.stage-emergency:focus-visible {outline:2px solid #fecdd3;outline-offset:3px}
+#playerStage[data-immersive=on] .stage-emergency {display:block}
+
+@media(max-width:760px){
+ .player-workspace {padding:8px}
+ #companion-center {gap:8px}
+ .player-workspace-hint {display:none}
+ .companion-app #playerStage[data-theater=on] {left:4px;right:4px;bottom:4px}
+ #companion-dashboard {--player-reserve:600px}
+ #companion-dashboard[data-player=on] #ai-companion .conversation-scroll {min-height:110px}
+ .player-workspace #playerOffsetRow {flex-wrap:wrap}
+}
+
+/* AI Settings Control (fork): compact panel under the model health strip, and change chips in the conversation. */
+#ai-companion[data-paired=false] .ai-settings-panel {display:none}
+.ai-settings-panel {margin:0 22px;padding:8px 0 10px;border-bottom:1px solid #253043;font-size:11px;color:#b7c2d6;flex-shrink:0}
+.ai-settings-panel summary {cursor:pointer;font-size:11px;font-weight:700;color:#c4b5fd;list-style-position:inside}
+.ai-settings-panel[data-state=on] summary::after {content:' · on';color:#6ee7b7;font-weight:600}
+.ai-settings-panel[data-state=revoked] summary::after {content:' · paused after emergency stop';color:#fda4af;font-weight:600}
+.ai-settings-note {font-size:10px;line-height:1.45;color:#8393ab;margin:6px 0}
+.ai-settings-row {display:flex;align-items:center;gap:6px;margin:5px 0;font-size:11px;color:#b7c2d6}
+.ai-settings-panel input[type=checkbox] {width:auto!important;margin:0!important}
+.ai-settings-panel input[type=number] {width:58px!important;padding:3px 6px!important;margin:0!important;font-size:11px!important}
+.ai-settings-panel select {width:auto!important;padding:3px 6px!important;margin:0!important;font-size:11px!important}
+.ai-settings-status {font-size:10px;color:#8393ab;margin:4px 0 0}
+.ai-settings-after {border:1px solid #253043;border-radius:8px;margin:8px 0 4px;padding:6px 10px 8px;display:grid;gap:8px;min-width:0}
+.ai-settings-after legend {padding:0 4px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fda4af}
+.ai-settings-slider {display:grid;gap:3px;font-size:11px;color:#b7c2d6}
+.ai-settings-slider-head {display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ai-settings-slider-value {font-weight:700;color:#f1f5f9;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ai-settings-panel input[type=range] {width:100%!important;margin:0!important;padding:0!important;height:18px;accent-color:#f472b6;background:transparent!important;border:0!important;box-shadow:none!important}
+.ai-settings-panel input[type=range]:focus-visible {outline:2px solid #c4b5fd;outline-offset:2px}
+.ai-settings-hint {font-size:10px;line-height:1.4;color:#8393ab}
+.ai-settings-chip {display:flex;align-items:center;gap:10px;align-self:center;margin:6px auto;padding:6px 12px;border:1px solid #4c3d7a;background:#1b1530;border-radius:999px;font-size:11px;color:#ddd6fe;max-width:92%}
+.ai-settings-chip-actions {display:flex;gap:6px;font-size:10px;color:#a3a9c2}
+.ai-settings-chip button {padding:2px 10px;font-size:10px;border-radius:999px}
+/* Character Builder workspace: replaces the conversation in the centre column while open.
+   The conversation panel is hidden, not removed, so its history and state are untouched. */
+.companion-center[data-builder=on] > :not(.builder-workspace),#ai-companion[data-builder=on] > :not(.builder-workspace) {display:none!important}
+.builder-workspace {flex:1;min-height:0;display:flex;flex-direction:column;border:1px solid #2d2a48;border-radius:18px;background:linear-gradient(160deg,#141a2e,#0b1120 60%);font-size:12px}
+.builder-workspace[hidden] {display:none}
+.builder-bar {display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #253043}
+.builder-bar-hint {flex:1;color:#8393ab;font-size:11px}
+.builder-scroll {flex:1;min-height:0;overflow:auto;padding:4px 16px 16px}
+.builder-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 12px}
+.builder-workspace fieldset {border:1px solid #253043;border-radius:8px;margin:10px 0;padding:8px 10px;display:grid;gap:6px;align-content:start}
+.builder-workspace legend {color:#cbd5e1;padding:0 4px}
+.builder-workspace label {display:grid;gap:3px;color:#94a3b8}
+.builder-workspace textarea,.builder-workspace input:not([type=checkbox]),.builder-workspace select {width:100%;box-sizing:border-box}
+.builder-workspace .builder-card {grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.builder-workspace .builder-card label:has(textarea),.builder-workspace .builder-kept {grid-column:1/-1}
+.builder-workspace .builder-row,.builder-workspace .builder-actions {display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:8px 0}
+.builder-workspace .builder-row label {flex:1}
+.builder-workspace .builder-note,.builder-workspace .builder-hint,.builder-workspace .builder-meter {color:#8393ab;font-size:11px;margin:6px 0;overflow-wrap:anywhere}
+.builder-workspace .builder-meter[data-over=true] {color:#fca5a5}
+.builder-workspace .builder-errors {color:#fca5a5;margin:6px 0;padding-left:18px}
+.builder-workspace .builder-preview table {width:100%;border-collapse:collapse;font-size:11px}
+.builder-workspace .builder-preview td {border-top:1px solid #253043;padding:4px;vertical-align:top}
+.builder-workspace .builder-preview pre {white-space:pre-wrap;font-size:11px;max-height:240px;overflow:auto}
+.builder-workspace .builder-portrait {max-width:160px;max-height:200px;border-radius:8px;display:block;margin:6px 0}
+#ai-companion[data-paired=false] [data-open-builder] {display:none}
+@media(max-width:760px){.builder-scroll {padding:4px 10px 12px}.builder-bar-hint {display:none}}

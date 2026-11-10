@@ -56,7 +56,8 @@ def test_installed_observer_is_independent_of_legacy_checkout(tmp_path):
     env=dict(os.environ,PYTHONPATH='/nonexistent/legacy',PYTHONDONTWRITEBYTECODE='1')
     result=subprocess.run([sys.executable,'-I','-c',code],cwd=tmp_path,env=env,capture_output=True,text=True)
     assert result.returncode==0,result.stderr
-    assert 'edgeloop-ai-fork/companion_ai' in result.stdout
+    expected=Path(__file__).resolve().parents[2]/'companion_ai'/'__init__.py'
+    assert Path(result.stdout.strip()).resolve()==expected
 
 async def test_selection_and_shutdown_do_not_unload_unrelated_external_models():
     seen=[]

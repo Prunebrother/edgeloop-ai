@@ -7,7 +7,7 @@ F2.10.1 regenerates runtime bytecode with neutral filenames and preserves the in
 Supported target: Linux x86_64, a working systemd user session, glibc Linux (not Alpine/musl), and an installed current Chromium browser. The browser and hardware drivers remain system requirements. Plan for approximately 25 GB free during download/extraction. Model inference needs enough RAM/VRAM for a 9B model plus context (a 10 GB GPU is sufficient); CPU execution may be slow. No sudo or system-wide Ollama service is required.
 
 ```bash
-curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.4.0/install.sh
+curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.8.0-rc1/install.sh
 bash install.sh
 ```
 
@@ -15,11 +15,24 @@ The installer downloads all release parts with resume support, checks SHA-256 su
 
 The bundle includes the base-model weights, four character models (Nova, Evelyn, Daisy and Celeste) already registered with Ollama, 48 expression portraits, portable Python, Ollama, Python wheels and browser libraries. No package manager, Git, Node, model pull or manual token is required. The small downloader needs standard `bash`, `curl`, `tar`, `gzip`, `sha256sum` and `flock` tools.
 
-Installation location: `~/.local/share/edgeloop-ai/releases/v0.4.0`. Model weights live inside that version's `models/`; this avoids changing a separate Ollama installation. User settings/history live at `~/.local/share/edgeloop-ai/data`. Downloads are cached under `${XDG_CACHE_HOME:-~/.cache}/edgeloop-ai/v0.4.0`; remove that cache after successful installation to reclaim disk space. Rerunning installation preserves user settings. It does not enable login startup.
+Installation location: `~/.local/share/edgeloop-ai/releases/v0.8.0-rc1`. Model weights live inside that version's `models/`; this avoids changing a separate Ollama installation. User settings/history live at `~/.local/share/edgeloop-ai/data`. Downloads are cached under `${XDG_CACHE_HOME:-~/.cache}/edgeloop-ai/v0.8.0-rc1`; remove that cache after successful installation to reclaim disk space. Rerunning installation preserves user settings. It does not enable login startup.
 
 Use **EdgeLoop AI** to start and **Stop EdgeLoop AI** to stop. The command `~/.local/bin/edgeloop-ai status` reports service status. End hardware sessions in the browser before stopping services. Services use loopback ports 11435 (Ollama), 8768 (observer) and 8770 (web). An occupied port produces an error; unrelated processes are never killed. Stop an existing EdgeLoop installation before replacing its user service definitions.
 
 `bash install.sh --no-start` installs without launching. `--no-desktop` prepares the environment without installing services; it is intended for validation/custom integration, not the normal desktop experience.
+
+## Windows (experimental)
+
+Windows 10 (1809 or later) or Windows 11, x86_64. Download `EdgeLoop-AI-Setup-v0.8.0-rc1.exe` from the [release page](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.8.0-rc1) and run it. Setup downloads about 9 GB, checks every part against SHA-256 sums built into the setup program, installs for your Windows user only (no administrator rights) and adds **EdgeLoop AI** and **Stop EdgeLoop AI** to the Start menu. Keep about 25 GB free. An interrupted download resumes when you run setup again.
+
+The setup program is not code-signed yet, so Windows SmartScreen may say it is from an unknown publisher. Choose **More info**, then **Run anyway**, only for a file downloaded from the release page above.
+
+The Windows build has been tested on Windows without a GPU and without toys, not yet on real hardware. Use Google Chrome or Microsoft Edge: device and heart-rate connections need Web Bluetooth or Web Serial. A recent NVIDIA GPU with 8 GB or more is recommended.
+
+- Program: `%LOCALAPPDATA%\Programs\EdgeLoop AI\v0.8.0-rc1`. Settings and history: `%LOCALAPPDATA%\EdgeLoop AI\data` (kept when you uninstall). Logs: `%LOCALAPPDATA%\EdgeLoop AI\logs`, including `setup.log`.
+- Offline install: put all `edgeloop-ai-windows-x86_64.tar.gz.partNN` files from the release in the same folder as the setup program; setup uses them instead of downloading.
+- The services listen only on 127.0.0.1 ports 11435 (Ollama), 8768 (observer) and 8770 (web). If one of these ports is in use, EdgeLoop AI says so and stops nothing else.
+- Uninstall from Windows Settings → Apps. It stops EdgeLoop AI first and keeps your data folder.
 
 ## Offline transfer
 

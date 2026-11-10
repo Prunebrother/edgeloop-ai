@@ -5,18 +5,24 @@ export const KEYBIND_ACTIONS = Object.freeze([
     'toggleSession',
     'stop',
     'cameEarly',
+    'iCame',
     'forceOrgasm',
     'valvePlus',
-    'valveMinus'
+    'valveMinus',
+    'offsetEarlier',
+    'offsetLater'
 ]);
 
 export const KEYBIND_LABELS = Object.freeze({
     toggleSession: 'Start / Pause',
     stop: 'Stop',
     cameEarly: 'Came Early',
+    iCame: 'I came',
     forceOrgasm: 'Force Orgasm',
     valvePlus: 'VacuGlide valve +',
-    valveMinus: 'VacuGlide valve −'
+    valveMinus: 'VacuGlide valve −',
+    offsetEarlier: 'Strokes earlier',
+    offsetLater: 'Strokes later'
 });
 
 const KEY_NAMES = Object.freeze({
@@ -25,7 +31,9 @@ const KEY_NAMES = Object.freeze({
     ArrowLeft: 'Left',
     ArrowRight: 'Right',
     ArrowUp: 'Up',
-    ArrowDown: 'Down'
+    ArrowDown: 'Down',
+    BracketLeft: '[',
+    BracketRight: ']'
 });
 
 export function defaultKeybinds() {
@@ -33,9 +41,12 @@ export function defaultKeybinds() {
         toggleSession: { kind: 'key', code: 'Space' },
         stop: { kind: 'key', code: 'Escape' },
         cameEarly: { kind: 'key', code: 'ArrowLeft' },
+        iCame: { kind: 'key', code: 'KeyC' },
         forceOrgasm: { kind: 'key', code: 'ArrowRight' },
         valvePlus: { kind: 'key', code: 'ArrowUp' },
-        valveMinus: { kind: 'key', code: 'ArrowDown' }
+        valveMinus: { kind: 'key', code: 'ArrowDown' },
+        offsetEarlier: { kind: 'key', code: 'BracketLeft' },
+        offsetLater: { kind: 'key', code: 'BracketRight' }
     };
 }
 
@@ -90,9 +101,17 @@ export function actionForPad(binds, button) {
 }
 
 // A field the wearer is typing in must not start a session or pulse a valve.
-export function keyEventIsTyping(target) {
+// Space still pauses when the field is a number: that key is the session
+// key, and a number box has nowhere to put a space.
+export function keyEventIsTyping(target, code) {
     if (!target || typeof target !== 'object') return false;
     const tag = String(target.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+    if (tag === 'textarea' || tag === 'select') return true;
+    if (tag === 'input') {
+        const type = String(target.type || 'text').toLowerCase();
+        const space = code === 'Space' || code === ' ';
+        if (space && (type === 'number' || type === 'range')) return false;
+        return true;
+    }
     return target.isContentEditable === true;
 }

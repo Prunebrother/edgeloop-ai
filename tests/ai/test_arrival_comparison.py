@@ -46,7 +46,7 @@ PRIOR={'edges':7,'seconds':720,'experience':'classic','goal':'tease','outcome':'
 
 def test_arrival_cards_ship_without_story_memory_or_scheduling_rules_and_leave_the_deck_alone():
  assert {c.id for c in DEFINITION.arrival}=={'arrival-returning','arrival-first','arrival-greeting'}
- assert all(c.kind=='arrival' and c.memory=='none' for c in DEFINITION.arrival) and RAW['revision']==2
+ assert all(c.kind=='arrival' and c.memory=='none' for c in DEFINITION.arrival) and RAW['revision']==5
  assert not {c.id for c in DEFINITION.arrival}&{c.id for c in DEFINITION.normal}
 
 def test_an_arrival_card_cannot_write_story_memory():
@@ -104,7 +104,7 @@ def test_the_newest_earlier_record_is_chosen_by_time_and_stable_identity_exclude
 def test_only_the_projection_leaves_a_record():
  scope='ollama:http://127.0.0.1:11434:daisy:latest'
  found=previous_session(journal([record(scope)]),scope)
- assert set(found['prior'])=={'edges','seconds','experience','goal','outcome','comparable'}
+ assert set(found['prior'])=={'edges','seconds','experience','goal','outcome','comparable','orgasms'}
  assert not {'earlier','171','resting_bpm','companions'}&set(json.dumps(found).replace('"',' ').split())
 
 @pytest.mark.parametrize('values,outcome',[({'completion_status':'user_reported'},'user_reported'),({'completion_status':'accepted_application_event'},'application_event'),({'termination':'manual_stop'},'stopped'),({'termination':'other_stop'},'unknown')])

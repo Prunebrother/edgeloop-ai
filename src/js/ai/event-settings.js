@@ -4,7 +4,10 @@ import {CHARACTERS} from './artwork-manifest.js';
 const PHYS=['rapid_rise','rapid_fall','sustained_elevation','recovery','fluctuations','stable'];
 const human=s=>String(s||'Not available').replaceAll('_',' ').replace(/^./,c=>c.toUpperCase());
 // A reloaded UI may still be connected to an older running observer.
-export const relevanceIdentities=config=>['generic',...Object.keys(CHARACTERS)].filter(id=>Object.hasOwn(config?.preferences||{},id));
+// Character Builder personas have their own entry (custom.<id>), never their model's companion entry.
+export const relevanceIdentities=config=>[...['generic',...Object.keys(CHARACTERS)].filter(id=>Object.hasOwn(config?.preferences||{},id)),
+    ...Object.keys(config?.preferences||{}).filter(id=>/^custom\.[a-z0-9][a-z0-9-]{0,23}$/.test(id)).sort()];
+const identityLabel=id=>id.startsWith('custom.')?'Custom character: '+id.slice(7):human(id);
 const spec={threshold_bpm:['Change / range (BPM)',2,60,.5],window_seconds:['Window (seconds)',5,120,1],duration_seconds:['Minimum duration (seconds)',3,120,1],min_samples:['Minimum distinct samples',5,128,1],cooldown_seconds:['Cooldown (seconds)',5,1800,1],hysteresis_bpm:['Hysteresis (BPM)',1,15,.5],reference_bpm:['Narrative reference (BPM)',35,220,.5],reversals:['Minimum reversals',2,6,1]};
 export function mountEventSettings(dialog,{send}) {
  const host=document.createElement('section');host.className='event-intelligence';
@@ -26,17 +29,27 @@ export function mountEventSettings(dialog,{send}) {
    if(detector.id==='fluctuations')number(d,detector.id+'.reversals',...spec.reversals);
    host.querySelector('[data-detector-controls]').append(d);
   }
-  for(const identity of relevanceIdentities(snapshot.config)){
-   const section=document.createElement('details'),title=document.createElement('summary');title.textContent=human(identity);section.append(title);
-   for(const category of ['physiology','session','configuration','story'])select(section,'preferences.'+identity+'.'+category,human(category),category==='story'?[['0','Context only'],['1','Eligible for initiative']]:[['0','Context only'],['1','Normal'],['2','Greater relevance']]);
-   host.querySelector('[data-event-preferences]').append(section);
-  }
+  buildPreferences();
   built=true;
+ }
+ let identities='';
+ function buildPreferences(){
+  const list=relevanceIdentities(snapshot.config),key=list.join(',');if(key===identities)return;identities=key;
+  const box=host.querySelector('[data-event-preferences]');for(const old of box.querySelectorAll('details[data-identity]'))old.remove();
+  for(const identity of list){
+   const section=document.createElement('details'),title=document.createElement('summary');section.dataset.identity=identity;title.textContent=identityLabel(identity);section.append(title);
+   if(identity===snapshot.active_identity)section.open=true;
+   // Custom identities contain a dot (custom.<id>), so identity and category are kept in data
+   // attributes rather than parsed back out of the field name.
+   for(const category of ['physiology','session','configuration','story']){const input=select(section,'preferences.'+identity+'.'+category,human(category),category==='story'?[['0','Context only'],['1','Eligible for initiative']]:[['0','Context only'],['1','Normal'],['2','Greater relevance']]);
+    input.dataset.prefIdentity=identity;input.dataset.prefCategory=category;}
+   box.append(section);
+  }
  }
  function fill(){
   host.querySelector('[data-events-enabled]').checked=config.enabled;host.querySelector('[data-event-preset]').value=config.preset;
   for(const input of fields.querySelectorAll('[name]')){const path=input.name.split('.');let value;
-   if(path[0]==='preferences')value=config.preferences[path[1]][path[2]];
+   if(input.dataset.prefIdentity)value=config.preferences[input.dataset.prefIdentity]?.[input.dataset.prefCategory]??1;
    else if(path.length===2)value=config.detectors[path[0]][path[1]];else value=config[path[0]];
    if(input.type==='checkbox')input.checked=value;else input.value=value;
   }
@@ -44,7 +57,7 @@ export function mountEventSettings(dialog,{send}) {
  function read(){
   const next=structuredClone(config);next.preset='custom';next.enabled=host.querySelector('[data-events-enabled]').checked;
   for(const input of fields.querySelectorAll('[name]')){const path=input.name.split('.');const value=input.type==='checkbox'?input.checked:input.type==='number'?Number(input.value):input.value;
-   if(path[0]==='preferences')next.preferences[path[1]][path[2]]=Number(value);
+   if(input.dataset.prefIdentity)(next.preferences[input.dataset.prefIdentity]??={})[input.dataset.prefCategory]=Number(value);
    else if(path.length===2)next.detectors[path[0]][path[1]]=value;else next[path[0]]=value;
   }return next;
  }
@@ -71,7 +84,7 @@ export function mountEventSettings(dialog,{send}) {
  }
  return {update(data,saved=false){
    snapshot=data;if(!data){fields.disabled=true;status.textContent='Connect and select a model to configure events.';return;}
-   if(!built)build();
+   if(!built)build();else buildPreferences();
    if(saved){saving=dirty=false;status.textContent='Event settings saved locally. Future observations use the new rules.';}
    if(!dirty&&!saving){config=structuredClone(data.config);fill();}
    fields.disabled=saving;diagnostics(data);if(data.error)status.textContent=data.error;

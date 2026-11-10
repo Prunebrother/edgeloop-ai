@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Host acceptance: original UI/engine, fake Handy, real observer, mocked Ollama.
 import {chromium} from 'playwright';
-import {spawn} from 'node:child_process';
+import {spawn} from 'node:child_process';import {claimPorts,ownedReady,isolatedEnv,guardBrowser} from './fixture-isolation.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 const root=path.resolve(new URL('../..',import.meta.url).pathname);
 const output=process.env.FORK_BROWSER_REPORT||'/tmp/edgeloop-f21-browser';
 const python=process.env.EDGELOOP_TEST_PYTHON||path.join(root,'.venv/bin/python');
-const uiPort=process.env.FORK_BROWSER_PORT||'8770',observerPort=process.env.FORK_OBSERVER_PORT||'8768';
+const uiPort=process.env.FORK_BROWSER_PORT||'8783',observerPort=process.env.FORK_OBSERVER_PORT||'8793';
 const uiUrl='http://127.0.0.1:'+uiPort,observerUrl='http://127.0.0.1:'+observerPort;
 const token='browser-fixture-token-'+'x'.repeat(32);
 const report={passed:false,steps:[],fixture:'mocked Ollama and Handy; no real hardware'};
 const children=[];let browser,page;
 const assert=(x,m)=>{if(!x)throw new Error(m);};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function waitServer(url){for(let i=0;i<50;i++){try{if((await fetch(url)).ok)return;}catch{}await sleep(100);}throw new Error('Local fixture server unavailable: '+url);}
+async function waitServer(url){return ownedReady(url,children);}
 try {
     await mkdir(output,{recursive:true});
-    browser=await chromium.launch();
-    children.push(spawn('python3',['tools/serve_local.py',uiPort],{cwd:root,stdio:'ignore'}));
-    children.push(spawn(python,['tests/fork/browser_service.py'],{cwd:root,stdio:'ignore',env:{...process.env,EDGELOOP_FIXTURE_UI_PORT:uiPort,EDGELOOP_FIXTURE_OBSERVER_PORT:observerPort}}));
+    browser=guardBrowser(await chromium.launch(),[uiPort,observerPort]);
+    await claimPorts(uiPort,observerPort);children.push(spawn('python3',['tools/serve_local.py',uiPort],{cwd:root,stdio:'ignore',env:isolatedEnv()}));
+    children.push(spawn(python,['tests/fork/browser_service.py'],{cwd:root,stdio:'ignore',env:{...isolatedEnv(),EDGELOOP_FIXTURE_UI_PORT:uiPort,EDGELOOP_FIXTURE_OBSERVER_PORT:observerPort}}));
     await waitServer(uiUrl+'/');await waitServer(observerUrl+'/health');
     const ctx=await browser.newContext({viewport:{width:1920,height:1080}});
     await ctx.addInitScript(()=>{
@@ -48,11 +48,15 @@ try {
     assert(!missingIds.length,'Original elements lost during layout: '+missingIds.join(', '));
     assert(await page.locator('#disconnectBanner').count()===1,'Original safety banner missing');
     // All original mode/goal controls retain their original listeners after reparenting.
-    await page.locator('[data-mode="headplay"]').click();
+    // Upstream 1.1.4.30+: play styles sit in a drawer that a choice closes again.
+    // "goal-off" is now one of the Session Endgame cards; the Orgasm ending is the plain no-game choice.
+    const pick=async mode=>{const card=page.locator(mode==='goal-off'?'[data-mode="goal-off"][data-endgame="orgasm"]':`[data-mode="${mode}"]`);
+        if(await card.isHidden())await page.locator('#playStyleToggle').click();await card.click();};
+    await pick('headplay');
     assert(await page.evaluate(async()=>{const{state}=await import('/src/js/state.js');return state.teaseMode==='headplay';}),'Experience listener lost');
-    await page.locator('[data-mode="classic"]').click();
-    await page.locator('[data-mode="survival"]').click();
-    await page.locator('[data-mode="goal-off"]').click();
+    await pick('classic');
+    await pick('survival');
+    await pick('goal-off');
     await page.locator('#cardBle').click();await page.getByRole('button',{name:/manual simulator/i}).click();
     await page.locator('#modalSimHrSlider').evaluate(el=>{el.value='98';el.dispatchEvent(new Event('input',{bubbles:true}));});
     await page.locator('#modalEngageSimBtn').click();
@@ -103,19 +107,24 @@ try {
     await page.locator('[data-text]').fill('thinking cutoff test');await page.locator('[data-text]').press('Enter');
     await page.waitForFunction(()=>document.querySelector('[data-history]').textContent.includes('Finished after reasoning.')&&document.querySelector('[data-cancel]').hidden);
     assert(!(await page.locator('[data-history]').textContent()).includes('UNFINISHED_DRAFT'),'Budget retry retained partial draft');
-    assert(await page.locator('.message-assistant').count()===2,'Budget retry duplicated assistant bubbles');
+    // Count by content: an unsolicited Director line may land in between (timing-dependent).
+    assert(await page.locator('.message-assistant',{hasText:'Finished after reasoning.'}).count()===1,'Budget retry duplicated assistant bubbles');
     report.steps.push('Thinking budget retry replaces incomplete draft with one finished reply');
     await page.locator('[data-text]').fill('grounding conflict test');await page.locator('[data-text]').press('Enter');
     await page.waitForFunction(()=>document.querySelector('[data-error]').textContent.includes('conflicted'));
     assert(!(await page.locator('[data-history]').textContent()).includes('210 BPM'),'Conflicting draft remained visible');
-    assert(await page.locator('.message-assistant').count()===2,'Rejected reply was committed as a bubble');
+    assert(await page.locator('.message-assistant',{hasText:'210'}).count()===0,'Rejected reply was committed as a bubble');
+    assert(await page.locator('.message-assistant',{hasText:'Finished after reasoning.'}).count()===1,'Rejected retry replaced an earlier reply');
     assert(await page.evaluate(async()=>{const{state}=await import('/src/js/state.js');return state.sessionStatus==='RUNNING';}),'Factual guard changed session');
     report.steps.push('Factual guard retries once and removes conflicting draft without changing session');
     // Exercise real streamed chunks and scroll anchoring using the local fixture transport.
     await page.locator('[data-text]').fill('long streaming response');
     await page.locator('[data-text]').press('Enter');
-    await page.waitForFunction(()=>document.querySelector('[data-history]').scrollHeight>document.querySelector('[data-history]').clientHeight+200);
-    assert(await page.locator('[data-activity-label]').textContent()==='Responding','Streaming activity not visible');
+    // Wait for the stream itself: earlier Director lines can already make the history scrollable.
+    const streaming=await page.waitForFunction(()=>document.querySelector('[data-activity-label]').textContent==='Responding'&&
+        document.querySelector('[data-history]').lastElementChild?.textContent.includes('A streamed companion message')&&
+        document.querySelector('[data-history]').scrollHeight>document.querySelector('[data-history]').clientHeight+200,null,{timeout:8000}).then(()=>true,()=>false);
+    assert(streaming,'Streaming activity not visible: '+await page.locator('[data-activity-label]').textContent());
     assert(await page.locator('[data-thinking]').isDisabled(),'Thinking changed during generation');
     await page.screenshot({path:path.join(output,'responding-1920.png')});
     await page.locator('[data-history]').evaluate(el=>{el.scrollTop=0;el.dispatchEvent(new Event('scroll'));});
@@ -157,7 +166,10 @@ try {
     await page.locator('[data-model]').selectOption('evelyn:latest');await page.locator('[data-select]').click();
     await page.waitForFunction(()=>document.querySelector('[data-selected]').textContent.includes('Active: evelyn:latest'));
     assert(await page.evaluate(async()=>{const{state}=await import('/src/js/state.js');return state.sessionStatus==='RUNNING';}),'Model selection changed original session');
-    assert(await page.locator('[data-history] .message').count()===0,'Model history leaked across models');
+    // The previous model's conversation must not carry over. A Director line from the
+    // newly selected model may legitimately arrive here (unsolicited replies are on).
+    assert(await page.locator('[data-history] .message-user').count()===0,'Model history leaked across models');
+    assert(!(await page.locator('[data-history]').textContent()).includes('evelyn-lite-v1:latest reports'),'Model history leaked across models');
     await page.locator('[data-model]').selectOption('evelyn-lite-v1:latest');await page.locator('[data-select]').click();
     await page.waitForFunction(()=>document.querySelector('[data-selected]').textContent.includes('Active: evelyn-lite-v1:latest'));
     assert((await page.locator('[data-history]').textContent()).includes('98 BPM'),'Conversation memory not restored');

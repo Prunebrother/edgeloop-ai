@@ -18,6 +18,9 @@ def model_name(scope):
 
 def companion(scope):
     model = model_name(scope)
+    # Character Builder scopes end in '#character=<id>'; the companion is that character.
+    if '#character=' in model:
+        return 'custom.' + model.rsplit('#character=', 1)[1]
     return model.split('-narrative')[0] or 'unknown'
 
 class SessionJournal:
@@ -67,14 +70,14 @@ class SessionJournal:
         if not data['recording']: self.active = None
 
     def snapshot(self, offset=0, sort='date', descending=True, session_id=None):
-        keys={'date':'first_observed_at','duration':'active_running_seconds','edges':'edges','companion':'companion','completion':'completion_status','experience':'experience','goal':'goal','hr':'hr'}
+        keys={'date':'first_observed_at','duration':'active_running_seconds','edges':'edges','companion':'companion','completion':'completion_status','orgasms':'orgasms','experience':'experience','goal':'goal','hr':'hr'}
         def value(r):
             if sort=='companion': return r['companions'][-1]['companion'] if r['companions'] else ''
             if sort=='hr': return min((h['minimum'] for h in r['heart_rate'].values()),default=-1)
             v=r.get(keys.get(sort,'first_observed_at'))
-            return v if v is not None else -1 if sort in {'duration','edges'} else ''
+            return v if v is not None else -1 if sort in {'duration','edges','orgasms'} else ''
         records=sorted(self.data['records'],key=value,reverse=descending)
-        fields={'session_id','start_at','first_observed_at','active_running_seconds','edges','completion_status','heart_rate','experience','goal'}
+        fields={'session_id','start_at','first_observed_at','active_running_seconds','edges','orgasms','completion_status','heart_rate','experience','goal'}
         rows=[{k:deepcopy(v) for k,v in r.items() if k in fields}|{'companion':', '.join(dict.fromkeys(c['companion'] for c in r['companions']))} for r in records[offset:offset+10]]
         detail=next((deepcopy(r) for r in records if r['session_id']==session_id),None)
         return {'recording':self.data['recording'],'ai_access':self.data['ai_access'],'nova_cross_companion':self.data.get('nova_cross_companion',False),'records':rows,'detail':detail,'total':len(records),'offset':offset,'error':self.error,'limit':MAX_RECORDS}
@@ -94,7 +97,7 @@ class SessionJournal:
                 'first_observed_at': iso(d.get('captured_at_ms')), 'start_source': 'observed_engine_start' if known_start else 'start_unavailable',
                 'companions': [], 'settings': {}, 'setting_changes': [], 'setting_changes_truncated': False,
                 'heart_rate': {}, 'quality': {'incomplete_start': not known_start, 'telemetry_gap': False, 'sensor_unavailable': False},
-                'completion_status': 'unknown', 'completion_source': None, 'events': [], '_last_sample': None}
+                'completion_status': 'unknown', 'completion_source': None, 'orgasms': 0, 'events': [], '_last_sample': None}
         a = self.active
         if a is None: return
         identity = {'model_scope': scope, 'model': model_name(scope) or None, 'companion': companion(scope)}
@@ -136,8 +139,12 @@ class SessionJournal:
                     a['events'] = (a['events'] + [{k: e.get(k) for k in ('event_id', 'kind', 'at_ms')}])[-32:]
                 if e['kind'] == 'completion_accepted' and a['completion_status'] == 'unknown':
                     a['completion_status'] = 'accepted_application_event'; a['completion_source'] = 'validated original engine action; not physiological proof'
+                elif e['kind'] == 'orgasm_reported' and a['completion_status'] == 'unknown':
+                    a['completion_status'] = 'user_reported'; a['completion_source'] = 'I came: participant-reported orgasm; not sensor evidence'
                 elif e['kind'] == 'came_early' and a['completion_status'] == 'unknown':
                     a['completion_status'] = 'user_reported'; a['completion_source'] = 'validated user early-release action; not sensor evidence'
+        # Orgasms only ever count up within a session; an IDLE reset reports 0 and must not erase them.
+        a['orgasms'] = max(a.get('orgasms') or 0, d.get('orgasm_count') or 0)
         reported = d.get('completion_reported') and a['completion_status'] != 'user_reported'
         if reported:
             a['completion_status'] = 'user_reported'
@@ -154,6 +161,7 @@ class SessionJournal:
         if final['session_id'] != sid: return
         record = {k: deepcopy(v) for k, v in a.items() if not k.startswith('_')}
         record.update({k: deepcopy(final.get(k)) for k in ('active_running_seconds', 'last_verified_running_ticks', 'edges', 'experience', 'goal', 'termination', 'final_verified_at_ms', 'completeness', 'confidence', 'sensor_available', 'measurement_source')})
+        record['orgasms'] = max(record.get('orgasms') or 0, final.get('orgasms') or 0)
         record['historical'] = True
         record['stop_reason'] = 'safety' if final['protection_observed'] else 'completion' if final['termination'] == 'calibration_completed' else 'normal' if final['termination'] == 'manual_stop' else 'unknown'
         record['settings_authority'] = 'selected/applied engine configuration only; physical device actions unverified'
@@ -201,7 +209,7 @@ class SessionJournal:
                            and c.get('model_scope') == scope
                            for c in r['companions'])]
         selected = records[-(2 if re.search(r'compar', prompt, re.I) else 1):]
-        fields = {'session_id', 'start_at', 'first_observed_at', 'companions', 'historical', 'completion_status', 'stop_reason', 'quality', 'active_running_seconds', 'edges', 'experience', 'goal', 'completeness'}
+        fields = {'session_id', 'start_at', 'first_observed_at', 'companions', 'historical', 'completion_status', 'stop_reason', 'quality', 'active_running_seconds', 'edges', 'orgasms', 'experience', 'goal', 'completeness'}
         if re.search(r'\b(HR|heart|bpm|pulse)\b', prompt, re.I): fields.add('heart_rate')
         if re.search(r'\b(settings?|configuration|compare|compared)\b', prompt, re.I): fields |= {'settings', 'setting_changes'}
         result=[]

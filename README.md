@@ -1,6 +1,10 @@
 # EdgeLoop AI
 
-EdgeLoop AI adds local AI companions to [EdgeLoop by marshallmims](https://github.com/marshallmims/edgeloop), based on version 1.1.3, upstream commit `d351e011249079b368ebdc8d46f83b260be7d2a5`. Maintained by Prunebrother. Experimental software for adults; physical safety has not been verified.
+EdgeLoop AI adds local AI companions to [EdgeLoop by marshallmims](https://github.com/marshallmims/edgeloop), based on version 1.1.4.33, upstream commit `d3c5df33834f6106796e3768ad283d0eb5ab1ef9`. Maintained by Prunebrother. Experimental software for adults; physical safety has not been verified.
+
+## Test build: v0.8.0-rc1 (Linux and Windows)
+
+[v0.8.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.8.0-rc1) is a pre-release for testers: the Character Builder, several orgasms per session with an **I came** button, companions that run the next round on their own, and an experimental Windows installer. It has not been hardware tested on Windows yet. The stable release below is still recommended for everyone else. Install instructions for both platforms are in [INSTALL.md](INSTALL.md) and on the release page.
 
 ## Install the complete Linux release
 
@@ -21,7 +25,7 @@ Inference runs locally. A CPU can run the models slowly; compatible NVIDIA hardw
 
 ## What it does
 
-The browser engine controls biofeedback sessions and hardware. The AI receives read-only observations, provides local dialogue and uses a bounded Conversation Director. It cannot send device commands. Story Memory is isolated by character/model. Session Journal recording and historical AI access require separate opt-ins. Experimental Director initiative is off by default. Use the [simulation-first instructions](INSTALL.md) before considering hardware.
+The browser engine controls biofeedback sessions and hardware. The AI receives read-only observations, provides local dialogue and uses a bounded Conversation Director. It cannot send device commands. Optional AI Settings Control (off by default) lets a companion request a small set of session-setting changes through a local engine gate; see [SAFETY.md](SAFETY.md). Story Memory is isolated by character/model. Session Journal recording and historical AI access require separate opt-ins. Experimental Director initiative is off by default. Use the [simulation-first instructions](INSTALL.md) before considering hardware.
 
 No automatic session upload is added. Browser libraries are served locally. Optional peer signaling, device cloud APIs and external links can still use the network; see [privacy](PRIVACY.md), [safety](SAFETY.md) and [known issues](KNOWN_ISSUES.md).
 

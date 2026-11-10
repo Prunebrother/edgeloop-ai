@@ -35,7 +35,7 @@ def test_every_chunk_boundary(expression):
     ('[[expression=happy]]Hello','Hello',None),
     ('[[ordinary','[[ordinary',None),
     ('[['+'prose '*100+']]','[['+'prose '*100+']]',None),
-    ('[[happy:98]]Hello','Hello',None),
+    ('[[happy:98]]Hello','Hello','happy'),
     ('[[expression:unknown]]Hello','Hello',None),
     ('[[expression:happy]][[expression:proud]]Hello','Hello','happy'),
     ('Hello [[expression:proud]]there','Hello there',None),

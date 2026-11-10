@@ -8,7 +8,12 @@
     "characters/models/*/character.REVIEW.yaml": "Unapproved character review draft awaiting author sign-off",
     "characters/models/*/SYSTEM.CANDIDATE.txt": "Unapproved character review draft awaiting author sign-off",
     "characters/EVELYN_LITE_HISTORY.md": "Development history notes",
-    ".claude/**": "Local assistant workspace"
+    ".claude/**": "Local assistant workspace",
+    "app/**": "Upstream local headset/VLC app alpha (Node host); not part of this Linux bundle",
+    "packaging/**": "Upstream Flatpak/portable packaging; this fork ships its own installer",
+    "manifest-dev.json": "Upstream dev-site install manifest; this build uses the live manifest",
+    "icon-dev*": "Upstream dev-site artwork; this build uses the live icon",
+    "src/js/session-telemetry.test.js": "Upstream redaction test embeds a synthetic device MAC; the release privacy scan admits no MAC-shaped strings"
   },
   "keep": [
     "docs/fork/f2-changes.json",

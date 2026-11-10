@@ -20,7 +20,7 @@ from tests.fork.grounding_cases import Clock,snapshot as detailed_snapshot
 from tests.fork.test_observer import TOKEN,ORIGIN,auth,frame,snapshot,until
 
 MODEL='nova-narrative-v1:latest'
-RESULT={'active_running_seconds':600,'last_verified_running_ticks':600,'edges':4,'experience':'classic','goal':'tease','termination':'manual_stop','completion_status':'unknown','completion_source':None,'completeness':'final_counter_captured'}
+RESULT={'active_running_seconds':600,'last_verified_running_ticks':600,'edges':4,'experience':'classic','goal':'tease','termination':'manual_stop','completion_status':'unknown','completion_source':None,'completeness':'final_counter_captured','orgasms':None}
 TEXTS=['A folded map offers a path through the garden.','The library keeps its riddle behind a painted screen.','An unexpected connection makes the discovery worth considering.','There is room for a different question about what matters.','The promised atlas belongs at the centre of the next decision.','I wonder which unexplored direction you would choose.','Copper kettles sing differently on rainy mornings.','Old lighthouses keep better secrets than most archives.','Nobody warned me that orchids hold grudges this long.','A careful experiment can still surprise its author.','Winter markets smell of cloves and unfinished plans.','Every good notebook hides one page it regrets.']
 
 def card(id,kind='normal',**values):return Card(id=id,kind=kind,intent=values.pop('intent','comment'),brief='Brief '+id,**values)

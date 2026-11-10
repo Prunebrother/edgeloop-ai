@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Real high-resolution originals, isolated observer, mocked Ollama/Handy only.
 import {chromium} from 'playwright';
-import {spawn} from 'node:child_process';
+import {spawn} from 'node:child_process';import {claimPorts,ownedReady,isolatedEnv,guardBrowser} from './fixture-isolation.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 const root=path.resolve(new URL('../..',import.meta.url).pathname),output=process.env.CHARACTER_BROWSER_REPORT||'/tmp/edgeloop-f24-character-browser';
@@ -9,7 +9,7 @@ const uiPort=8810,aiPort=8818,ui=`http://127.0.0.1:${uiPort}`,ai=`http://127.0.0
 const report={passed:false,steps:[],rendered_portraits:[],art_requests:[],max_image_layers:0,physical_devices:'Denied; Handy HTTP intercepted',screenshots:[]};
 const children=[];let browser,page;const errors=[];
 const assert=(v,m)=>{if(!v)throw Error(m);},sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function wait(url){for(let i=0;i<70;i++){try{if((await fetch(url)).ok)return;}catch{}await sleep(100);}throw Error('Fixture did not start');}
+async function wait(url){return ownedReady(url,children);}
 async function boot(p,url,knownProfile=false){await p.goto(url);if(!knownProfile){await p.locator('#ageConfirmBtn').click();await p.locator('#wizardOverlay').waitFor({state:'visible'});await p.locator('#wizardSkipBtn').click();}await p.locator('#companion-dashboard').waitFor();}
 async function select(model){await page.locator('[data-model]').selectOption(model);await page.locator('[data-select]').click();await page.waitForFunction(m=>document.querySelector('[data-selected]').textContent==='Active: '+m,model);}
 async function portrait(p,id,expression){await p.waitForFunction(({id,expression})=>{const h=document.querySelector('#character-panel');return h.dataset.character===id&&(!expression||h.dataset.expression===expression)&&!h.querySelector('[data-art-status]').textContent.includes('Loading')&&h.querySelector('img:last-child.visible')?.naturalWidth>0;},{id,expression});}
@@ -17,8 +17,8 @@ async function chat(text){await page.locator('[data-text]').fill(text);await pag
 async function capture(p,name){await p.waitForFunction(()=>{const h=document.querySelector('#character-panel');const images=h.querySelectorAll('img');return images.length===0||images.length===1&&getComputedStyle(images[0]).opacity==='1';});await p.screenshot({path:path.join(output,name)});report.screenshots.push(name);}
 try{
  await mkdir(output,{recursive:true});
- for(const [command,args,env]of [['python3',['tools/serve_local.py',String(uiPort)],{}],[path.join(root,'.venv/bin/python'),['tests/fork/browser_service.py'],{EDGELOOP_FIXTURE_UI_PORT:String(uiPort),EDGELOOP_FIXTURE_OBSERVER_PORT:String(aiPort)}]])children.push(spawn(command,args,{cwd:root,env:{...process.env,...env},stdio:'ignore'}));
- await wait(ui+'/?characterPreview=1');await wait(ai+'/health');browser=await chromium.launch();const context=await browser.newContext({viewport:{width:1920,height:1080}});
+ await claimPorts(uiPort,aiPort);for(const [command,args,env]of [['python3',['tools/serve_local.py',String(uiPort)],{}],[path.join(root,'.venv/bin/python'),['tests/fork/browser_service.py'],{EDGELOOP_FIXTURE_UI_PORT:String(uiPort),EDGELOOP_FIXTURE_OBSERVER_PORT:String(aiPort)}]])children.push(spawn(command,args,{cwd:root,env:{...isolatedEnv(),...env},stdio:'ignore'}));
+ await wait(ui+'/?characterPreview=1');await wait(ai+'/health');browser=guardBrowser(await chromium.launch(),[uiPort,aiPort]);const context=await browser.newContext({viewport:{width:1920,height:1080}});
  await context.addInitScript(()=>{const no=()=>Promise.reject(new DOMException('Mocked-device test','NotFoundError'));Object.defineProperty(navigator,'bluetooth',{value:{requestDevice:no},configurable:true});Object.defineProperty(navigator,'serial',{value:{requestPort:no,getPorts:async()=>[]},configurable:true});if(navigator.mediaDevices)navigator.mediaDevices.getUserMedia=no;});
  await context.route('**/api/handy/v2/**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(route.request().url().endsWith('/connected')?{connected:true}:route.request().url().endsWith('/info')?{fwVersion:'3.2.3',model:'Handy 1.1'}:{result:0})}));
  page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/Character_Art/'))report.art_requests.push(r.url());});
@@ -38,10 +38,20 @@ try{
  await page.locator('[data-text]').fill('long streaming response');await page.locator('[data-text]').press('Enter');await page.waitForFunction(()=>document.querySelector('#character-panel').dataset.activity==='generating');await portrait(page,'evelyn','mischievous');assert(!(await page.locator('[data-history]').textContent()).includes('[[expression:'),'Metadata leaked during streaming');await capture(page,'expression-streaming.png');await page.locator('[data-cancel]').click();await sleep(600);assert(await page.locator('#character-panel').getAttribute('data-activity')==='idle','Cancelled generation still active');
  await fetch(ai+'/fixture/event-policy/fast',{method:'POST'});
  await page.evaluate(async()=>{const {state}=await import('/src/js/state.js');state.sessionSeconds=299;});
- await page.waitForFunction(()=>document.querySelector('[data-history]').textContent.includes('Five minutes are recorded'),null,{timeout:15000});
+ // Director 2.0 uses explicit mission cards, not the retired elapsed-time event.
+ // Exercise real user-marked edges and resumes against the mocked device.
+ for(let edge=0;edge<3;edge++){
+  await page.locator('#edgedBtn').evaluate(el=>el.click());
+  await page.waitForFunction(async()=>{const {state}=await import('/src/js/state.js');return state.sessionStatus==='PAUSED';});
+  await sleep(150);
+  await page.locator('#sessionPlayPauseBtn').evaluate(el=>el.click());
+  await page.waitForFunction(async()=>{const {state}=await import('/src/js/state.js');return state.sessionStatus==='RUNNING';});
+  await sleep(150);
+ }
+ await page.waitForFunction(()=>document.querySelector('[data-history]').textContent.includes('Three edges, and that objective is complete'),null,{timeout:15000});
  await portrait(page,'evelyn','proud');assert(!(await page.locator('[data-history]').textContent()).includes('[[expression:'),'Event metadata leaked');
  await page.getByText('Runtime diagnostics · development',{exact:true}).click();await capture(page,'verified-event-diagnostics.png');
- report.steps.push('Original simulated elapsed counter crosses milestone; validated event reaches Director and model expression');
+ report.steps.push('Three user-marked simulated edges trigger the Director mission card and model expression without ending the session');
  await fetch(ai+'/fixture/event-policy/normal',{method:'POST'});
  await select('daisy-qwen35:latest');await portrait(page,'daisy','neutral');await chat('portrait concerned test');await portrait(page,'daisy','concerned');
  await page.setViewportSize({width:2560,height:1440});await capture(page,'daisy-2560.png');

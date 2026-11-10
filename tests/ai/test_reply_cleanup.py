@@ -49,6 +49,42 @@ def test_answers_and_short_reactions_are_kept(user, reply):
 def test_a_reply_that_is_only_an_echo_is_kept_rather_than_emptied():
     assert clean_reply('Still with me?', echo='Still with me?') == 'Still with me?'
 
+HARDER = 'Make it harder, I can take more.'
+
+@pytest.mark.parametrize('echo,reply,expected', [
+    # Real replies from AutoMode_Simulation_20261110 (Nova, Evelyn, Celeste): the quote is an echo, the rest is the answer.
+    (HARDER, '"Make it harder, I can take more." You certainly have the confidence of a man who\'s never been tested. I\'ve raised the intensity.',
+     "You certainly have the confidence of a man who's never been tested. I've raised the intensity."),
+    (HARDER, '"Make it harder, I can take more."\n\nI like the confidence in that. I decided to ratchet the intensity up.',
+     'I like the confidence in that. I decided to ratchet the intensity up.'),
+    # Prompt v2 rerun (Daisy): the quote echoes the PREVIOUS message and opens a sentence ("…," you said, and …).
+    (['I want to finish now, please.', HARDER],
+     '"Make it harder, I can take more," you said, and I\'ll be damned if I let you talk me out of it. Since you\'re begging to finish, it\'s on now.',
+     "Since you're begging to finish, it's on now."),
+    # Codex review 2026-11-10: a comma-ended echo followed by the real answer, not an attribution, keeps the answer.
+    (HARDER, '"Make it harder, I can take more," I increased the intensity to 70. Tell me if you need a break.',
+     'I increased the intensity to 70. Tell me if you need a break.'),
+    (HARDER, '"Make it harder, I can take more," you asked. Done.', 'Done.'),
+    (HARDER, '"Make it harder, I can take more," begged the brave one. Done.', 'Done.'),
+    # Inner quotes after a dropped echo are ordinary text.
+    (HARDER, '"Make it harder, I can take more." I like that. "Go on," I said.', 'I like that. "Go on," I said.'),
+])
+def test_an_opening_quote_that_echoes_the_participant_is_dropped_not_kept(echo, reply, expected):
+    assert clean_reply(reply, echo=echo) == expected
+    assert streamed(reply, echo, None, 3) == expected
+
+@pytest.mark.parametrize('reply,expected', [
+    ('"Tired? Rest now." She smiles. "Go on."', 'Tired? Rest now. Go on.'),            # real speech is still unwrapped
+    ('"Make it harder, I can take more."', HARDER),                                   # never emptied
+    ('"Harder, you say? Then I\'ll oblige." She leans in.', "Harder, you say? Then I'll oblige."),  # not an echo
+])
+def test_non_echo_quotes_are_still_unwrapped(reply, expected):
+    assert clean_reply(reply, echo=HARDER) == expected
+
+def test_long_opening_quote_streams_before_it_closes():
+    cleaner = ReplyCleaner(HARDER)
+    assert cleaner.feed('"' + 'I will keep talking for quite a while longer than you did. ' * 3) != ''
+
 def test_length_cap_finishes_the_sentence_that_crosses_it():
     text = 'One short line here. ' + 'This sentence crosses the limit and keeps going a while. ' + 'This one is cut. And this.'
     assert clean_reply(text, max_characters=30) == 'One short line here. This sentence crosses the limit and keeps going a while.'
@@ -65,6 +101,9 @@ def test_disabled_cleanup_passes_text_through():
     (None, NARRATED, None),
     ('Still with me?', 'Still with you? Well, I reckon I\'m still standing. Mr. Barnaby agrees... mostly. Holler if you need me!', 60),
     ('Okay, I\'m going to concentrate for a while now.', '"Right, you\'re going to concentrate for a while now. I like that." I wiped my hands. "Go on."', 600),
+    (['I want to finish now, please.', 'Make it harder, I can take more.'], '"Make it harder, I can take more," you said. Fine. It\'s on now, so "go" when ready!', 40),
+    (HARDER, '"Make it harder, I can take more," I increased the intensity to 70. Tell me if you need a break.', None),
+    (HARDER, '"Make it harder, I can take more," I did', None),
 ])
 def test_stream_equals_batch_for_any_chunking(seed, echo, text, limit):
     assert streamed(text, echo, limit, seed) == clean_reply(text, echo, limit)

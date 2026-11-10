@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Isolated automatic pairing acceptance. Mocked Ollama; no hardware or inference.
 import {chromium} from 'playwright';
-import {spawn} from 'node:child_process';
+import {spawn} from 'node:child_process';import {claimPorts,ownedReady,isolatedEnv,guardBrowser} from './fixture-isolation.mjs';
 import {mkdtemp,writeFile,rm} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
 import path from 'node:path';
@@ -9,16 +9,16 @@ const root=path.resolve(new URL('../..',import.meta.url).pathname);
 const temp=await mkdtemp('/tmp/edgeloop-launcher-browser-');
 const credentials={token:'browser-fixture-token-'+'x'.repeat(32),url:'ws://127.0.0.1:8788/observe',browser_id:randomUUID()};
 const file=path.join(temp,'pairing.json');await writeFile(file,JSON.stringify(credentials),{mode:0o600});
-const env={...process.env,EDGELOOP_PAIRING_FILE:file,EDGELOOP_FIXTURE_UI_PORT:'8780',EDGELOOP_FIXTURE_OBSERVER_PORT:'8788'};
+const env={...isolatedEnv(),EDGELOOP_PAIRING_FILE:file,EDGELOOP_FIXTURE_UI_PORT:'8780',EDGELOOP_FIXTURE_OBSERVER_PORT:'8788'};
 const processes=[];let browser;
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 const assert=(v,m)=>{if(!v)throw Error(m);};
-async function ready(url){for(let n=0;n<60;n++){try{if((await fetch(url)).ok)return;}catch{}await pause(100);}throw Error('Fixture unavailable: '+url);}
+async function ready(url){return ownedReady(url,processes);}
 try {
- processes.push(spawn('python3',['tools/serve_local.py','8780'],{cwd:root,env,stdio:'ignore'}));
+ await claimPorts(8780,8788);processes.push(spawn('python3',['tools/serve_local.py','8780'],{cwd:root,env,stdio:'ignore'}));
  processes.push(spawn(path.join(root,'.venv/bin/python'),['tests/fork/browser_service.py'],{cwd:root,env,stdio:'ignore'}));
  await ready('http://127.0.0.1:8780');await ready('http://127.0.0.1:8788/health');
- browser=await chromium.launch();const context=await browser.newContext({serviceWorkers:'block'});
+ browser=guardBrowser(await chromium.launch(),[8780,8788]);const context=await browser.newContext({serviceWorkers:'block'});
  await context.addInitScript(()=>{
   const denied=()=>Promise.reject(Error('Hardware disabled in acceptance'));
   Object.defineProperty(navigator,'bluetooth',{value:{requestDevice:denied},configurable:true});

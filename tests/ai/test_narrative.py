@@ -58,7 +58,7 @@ def test_context_separates_fiction_from_current_facts_and_budget():
     messages,warnings=compose_messages(summary,'What is current BPM?',[],AIConfig())
     text=messages[-1]['content'];assert 'PRIMARY FOCUS' in text and 'CURRENT SESSION' in text
     assert 'NARRATIVE CONTEXT' not in text and '98' in text
-    assert 'never override CURRENT SESSION' in messages[0]['content']
+    assert 'Older dialogue, story memory and fiction never override it' in messages[0]['content']
 
 async def test_cancel_reset_switch_and_event_identity_do_not_save_partial_story():
     c,o,s=observation();gate=asyncio.Event()

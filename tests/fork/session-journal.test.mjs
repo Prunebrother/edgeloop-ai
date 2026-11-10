@@ -3,7 +3,8 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {journalCells} from '../../src/js/ai/session-journal.js';
 test('journal shows unknown duration separately from zero and labels simulated samples',()=>{
  const record={first_observed_at:'2026-10-29T15:00:00+00:00',completion_status:'unknown',heart_rate:{simulator:{minimum:80,maximum:100,samples:2}}};
- const cells=journalCells(record);assert.match(cells[0],/first observed/);assert.equal(cells[2],'Unknown');assert.match(cells[5],/simulator; n=2/);
+ const cells=journalCells(record);assert.match(cells[0],/first observed/);assert.equal(cells[2],'Unknown');assert.equal(cells[4],'Unknown');assert.match(cells[6],/simulator; n=2/);
+ assert.equal(journalCells({...record,orgasms:2})[4],2);  // the Orgasms column (multiple orgasms per session)
  assert.equal(journalCells({...record,active_running_seconds:0})[2],'0 s');
 });
 test('journal preserves literal untrusted text for textContent rendering',()=>{

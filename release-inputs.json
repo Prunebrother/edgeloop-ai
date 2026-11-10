@@ -1,5 +1,5 @@
 {
-  "version": "v0.4.0",
+  "version": "v0.8.0-rc1",
   "platform": "linux-x86_64",
   "ollama": {
     "version": "0.40.13",
@@ -46,5 +46,27 @@
       "recipe": "openmp-source-export-v1",
       "output_sha256": "bb93537fd2898581ec11a0040ca3ffd36fe6f99f1d899cc0b37411728eb1b0eb"
     }
-  ]
+  ],
+  "windows": {
+    "platform": "windows-x86_64",
+    "ollama": {
+      "version": "0.40.13",
+      "url": "https://github.com/ollama/ollama/releases/download/v0.40.13/ollama-windows-amd64.zip",
+      "sha256": "7afa38624fa62ee5d8293422d0ab084c1bb4603134c7f4dafce11a033b57cc19"
+    },
+    "python": {
+      "version": "3.12.16+20261026",
+      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261026/cpython-3.12.16%2B20261026-x86_64-pc-windows-msvc-install_only_stripped.tar.gz",
+      "sha256": "1f2ab53880fc67ea323398c6388e05af28addc99a8e389209f08a51fdff4b149"
+    },
+    "inno_setup": {
+      "version": "6.7.4",
+      "url": "https://github.com/jrsoftware/issrc/releases/download/is-6_7_4/innosetup-6.7.4.exe",
+      "sha256": "a549929319f9120716677c685535ca4671e4b937b5fdc87e2585f32d8eb30e8c"
+    },
+    "download_base": "https://github.com/Prunebrother/edgeloop-ai/releases/download",
+    "extra_requirements": [
+      "colorama==0.4.6"
+    ]
+  }
 }

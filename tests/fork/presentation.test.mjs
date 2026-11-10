@@ -10,7 +10,10 @@ test('canonical identities use exact aliases, not name prefixes or prototype pro
     for(const model of ['daisy-qwen35:latest','daisy-v11:latest','daisy-narrative-v1:latest'])assert.equal(resolveArtwork(model).id,'daisy');
     for(const model of ['celeste-narrative-v1:latest','celeste-narrative-v2:latest'])assert.equal(resolveArtwork(model).id,'celeste');
     for(const model of ['__proto__','celeste-unknown:latest','evelyn-some-new-model:latest','qwen3:8b',null])assert.equal(resolveArtwork(model).id,'generic');
-    assert.equal(Object.keys(MODEL_ARTWORK).length,25);
+    // The alias contract, not a total that changes whenever a model is added: every alias is an
+    // exact model name that resolves to a known character.
+    assert.ok(Object.keys(MODEL_ARTWORK).length>=25);
+    for(const [model,id] of Object.entries(MODEL_ARTWORK)){assert.match(model,/^[a-z0-9._-]+:[a-z0-9._-]+$/,model);assert.equal(resolveArtwork(model).id,id,model);assert.notEqual(id,'generic',model);}
 });
 test('all twelve prepared expressions have direct assets; missing custom states fall back to neutral',()=>{
     assert.deepEqual(EXPRESSIONS,['neutral','happy','playful','flirty','mischievous','focused','excited','surprised','disappointed','concerned','proud','comforting']);

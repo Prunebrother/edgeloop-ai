@@ -33,6 +33,22 @@ from pydantic import ConfigDict, Field, model_validator
 from .models import StrictModel
 
 Lane = Literal['session_start', 'normal', 'narrative', 'mission', 'session_end', 'arrival']
+# Where the session is in its arc. 'finishing': Force Orgasm is pushing the participant to finish now.
+# 'recovery': an orgasm was reported less than RECOVERY_SECONDS ago and the session kept running.
+Phase = Literal['building', 'finishing', 'recovery']
+PHASES = ('building', 'finishing', 'recovery')
+RECOVERY_SECONDS = 90
+RECOVERY_RANGE = (30, 300)
+
+
+def recovery_seconds(report):
+    """The user's recovery time from the AI Settings panel (After an orgasm), else the default."""
+    ai = (((report or {}).get('details') or {}).get('ai_settings') or {})
+    value = ai.get('recovery_seconds')
+    return value if isinstance(value, int) and not isinstance(value, bool) and RECOVERY_RANGE[0] <= value <= RECOVERY_RANGE[1] else RECOVERY_SECONDS
+# A card without a phase rule plays while building only, so ordinary chat, wagers and "how many more"
+# remarks never talk over a finish. Mission milestones keep playing; their prompt states the phase.
+DEFAULT_PHASES = frozenset({'building'})
 Status = Literal['proposed', 'accepted', 'generated', 'delivered', 'deferred', 'cancelled', 'suppressed', 'failed']
 
 CARD_ID = r'^[a-z0-9][a-z0-9_.-]{0,63}$'
@@ -75,12 +91,17 @@ class Eligibility(_Frozen):
     hr_trends: list[Literal['steady', 'rising', 'falling']] | None = Field(default=None, min_length=1)
     # Needs something the participant actually said this session, not earlier commentary.
     requires_conversation: bool = False
+    phases: list[Phase] | None = Field(default=None, min_length=1)
+    # Orgasms the participant reported: this session, and across all recorded sessions with this companion.
+    min_orgasms: int | None = Field(default=None, ge=0)
+    max_orgasms: int | None = Field(default=None, ge=0)
+    min_total_orgasms: int | None = Field(default=None, ge=0)
 
     @model_validator(mode='after')
     def ordered(self):
         if self.hr_trends and not self.requires_hr:
             raise ValueError('A heart-rate trend rule requires a current heart rate')
-        for low, high in ((self.min_seconds, self.max_seconds), (self.min_edges, self.max_edges)):
+        for low, high in ((self.min_seconds, self.max_seconds), (self.min_edges, self.max_edges), (self.min_orgasms, self.max_orgasms)):
             if low is not None and high is not None and low > high:
                 raise ValueError('Eligibility minimum exceeds maximum')
         return self
@@ -126,6 +147,8 @@ class Sequence(_Frozen):
     audience: str = Field(default=SHARED, pattern=CARD_ID)
     trigger: SequenceTrigger
     steps: list[Card] = Field(min_length=1, max_length=8)
+    # An event-triggered sequence that may play again for each new occurrence, once the previous run is done.
+    repeat: bool = False
 
     @model_validator(mode='after')
     def consistent(self):
@@ -133,6 +156,8 @@ class Sequence(_Frozen):
             raise ValueError('Sequence steps must match the sequence lane and audience')
         if self.lane == 'narrative' and not self.trigger.event_kinds:
             raise ValueError('Narrative sequences start only from verified events')
+        if self.repeat and not self.trigger.event_kinds:
+            raise ValueError('Only event-triggered sequences can repeat')
         return self
 
 
@@ -216,6 +241,23 @@ class DeckContext(_Frozen):
     has_conversation: bool = False
     proactive_enabled: bool = True
     event_reactions_enabled: bool = True
+    phase: Phase = 'building'
+    orgasms: int = Field(default=0, ge=0)
+    total_orgasms: int = Field(default=0, ge=0)
+
+
+def session_phase(report):
+    """The phase from the read-only snapshot: Force Orgasm on (by the user, the AI or a Climax endgame) is a finish."""
+    report = report or {}
+    details = report.get('details') or {}
+    if report.get('status') not in {'RUNNING', 'RAMPDOWN', 'PAUSED'}:
+        return 'building'
+    if details.get('orgasm_mode') is True:
+        return 'finishing'
+    last, seconds = details.get('last_orgasm_seconds'), report.get('seconds')
+    if (details.get('orgasm_count') or 0) > 0 and isinstance(last, int) and isinstance(seconds, int) and 0 <= seconds - last < recovery_seconds(report):
+        return 'recovery'
+    return 'building'
 
 
 class DeckModelSettings(_Frozen):
@@ -240,6 +282,7 @@ class SessionResult(_Frozen):
     completion_status: str | None = None
     completion_source: str | None = None
     completeness: str | None = None
+    orgasms: int | None = Field(default=None, ge=0)
 
 
 @dataclass(frozen=True)
@@ -383,8 +426,9 @@ class EventDeck:
         self._occurrences[occurrence_id] = True
         if len(self._occurrences) > 256:
             self._occurrences.popitem(last=False)
+        running = {run.sequence.id for run in self._runs}
         return [self._activate(s, occurrence_id, now) for s in self._sequences
-                if kind in s.trigger.event_kinds and s.id not in self._activated]
+                if kind in s.trigger.event_kinds and (s.id not in self._activated or s.repeat and s.id not in running)]
 
     def observe(self, context, now):
         """Counter-based missions, evaluated regardless of whether speech is allowed now."""
@@ -585,7 +629,9 @@ class EventDeck:
     def _reshuffle(self):
         self._cycle += 1
         order = shuffled(self._played, self._seed + '\0' + str(self._cycle))
-        if not self._queue and len(order) > 1 and order[0] == self._last_delivered:
+        # Cards left in the queue may all be ineligible now (another phase), so the new order's first card can
+        # still be the next one drawn: never let it be the card just delivered.
+        if len(order) > 1 and order[0] == self._last_delivered:
             order.append(order.pop(0))
         self._queue += order
         self._played = []
@@ -594,7 +640,9 @@ class EventDeck:
     @staticmethod
     def _eligible(card, context):
         rule = card.eligibility
-        return (context.status in rule.statuses
+        phases = rule.phases or (PHASES if card.kind == 'mission' else DEFAULT_PHASES)
+        return (context.phase in phases
+                and context.status in rule.statuses
                 and (rule.min_seconds is None or context.seconds >= rule.min_seconds)
                 and (rule.max_seconds is None or context.seconds <= rule.max_seconds)
                 and (rule.min_edges is None or context.edges >= rule.min_edges)
@@ -602,7 +650,10 @@ class EventDeck:
                 and (not rule.requires_story_welcome or context.story_welcome)
                 and (not rule.requires_hr or (context.fresh and context.hr_current))
                 and (rule.hr_trends is None or context.hr_trend in rule.hr_trends)
-                and (not rule.requires_conversation or context.has_conversation))
+                and (not rule.requires_conversation or context.has_conversation)
+                and (rule.min_orgasms is None or context.orgasms >= rule.min_orgasms)
+                and (rule.max_orgasms is None or context.orgasms <= rule.max_orgasms)
+                and (rule.min_total_orgasms is None or context.total_orgasms >= rule.min_total_orgasms))
 
     def _propose(self, card, lane, sequence_id=None, session_result=None):
         self._plays += 1

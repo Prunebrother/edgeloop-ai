@@ -100,7 +100,7 @@ async def run_session(root,deck):
   if second==450:r.state['experience']='headplay'
   if second in {400,430}:r.state['safety'].update(no_contact=second==400,fault='no_contact' if second==400 else 'none')
   if second==STOP:
-   result={'active_running_seconds':r.state['seconds'],'last_verified_running_ticks':r.state['seconds'],'edges':r.state['edges'],'experience':r.state['experience'],'goal':r.state['goal'],'termination':'manual_stop','completion_status':'unknown','completion_source':None,'completeness':'final_counter_captured'}
+   result={'active_running_seconds':r.state['seconds'],'last_verified_running_ticks':r.state['seconds'],'edges':r.state['edges'],'experience':r.state['experience'],'goal':r.state['goal'],'termination':'manual_stop','completion_status':'unknown','completion_source':None,'completeness':'final_counter_captured','orgasms':0}
   if second==STOP+1:r.state['seconds']=r.state['edges']=0
   rig.advance(status,whole)
   rig.d.session_status=r.state['status']

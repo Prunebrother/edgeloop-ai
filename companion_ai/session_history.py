@@ -17,7 +17,10 @@ LABEL = re.compile(r'^[A-Za-z0-9_ -]{1,40}$')
 
 def family(scope):
     """The character behind a model name, so that a new model version can't claim a first meeting."""
-    return companion(scope).split(':')[0].split('-')[0].casefold()
+    name = companion(scope)
+    # A custom character is one family under its full ID; editing it keeps the same history.
+    if name.startswith('custom.'):return name
+    return name.split(':')[0].split('-')[0].casefold()
 
 
 def number(value):
@@ -39,7 +42,21 @@ def outcome(record):
 def project(record):
     return {'edges': number(record.get('edges')), 'seconds': number(record.get('active_running_seconds')),
             'experience': label(record.get('experience')), 'goal': label(record.get('goal')),
-            'outcome': outcome(record), 'comparable': record.get('completeness') in COMPARABLE}
+            'outcome': outcome(record), 'comparable': record.get('completeness') in COMPARABLE,
+            'orgasms': number(record.get('orgasms'))}
+
+
+def earlier_orgasms(journal, scope, exclude=()):
+    """Orgasms the participant reported in this companion's other recorded sessions, or None when that
+    history may not be read. Only rows that belonged to this exact model scope alone are counted."""
+    if journal is None or journal.error or not journal.data.get('ai_access'): return None
+    total = 0
+    for record in journal.data.get('records', ()):
+        if not isinstance(record, dict) or record.get('session_id') in exclude: continue
+        companions = record.get('companions')
+        scopes = {c.get('model_scope') for c in companions if isinstance(c, dict)} if isinstance(companions, list) else set()
+        if scopes == {scope}: total += number(record.get('orgasms')) or 0
+    return total
 
 
 def previous_session(journal, scope, exclude=(), seen=()):

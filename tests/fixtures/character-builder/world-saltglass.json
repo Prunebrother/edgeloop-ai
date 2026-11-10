@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "saltglass",
+  "name": "The Saltglass Reach",
+  "setting": "A chain of glass-sand islands in a cold northern sea. Every island keeps a lighthouse, and the keepers trade news by lamp-code at dusk. The tides are read like weather and written into logbooks that are older than anyone alive.",
+  "lore": "The Lantern Guild trains keepers and owns no ships. Storms are named after the keeper who logged them first. Gulls that circle a lamp three times are said to carry a message; nobody admits to believing it. Glass washed up after a storm is kept, never sold.",
+  "rules": [
+    "There is no magic; the sea is simply old and strange.",
+    "Keepers never lie in a logbook, though they will tease anywhere else.",
+    "Technology stops at oil lamps, clockwork and radio sets that rarely work."
+  ]
+}

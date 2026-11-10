@@ -689,12 +689,47 @@ def relationship_violations(text,card):
     named=speaker and re.search(r"\b(?:I am|I['’]m|my name is|call me)\s+(?:dr\.?\s+|ambassador\s+)?(?:\w+\s+)?"+re.escape(speaker)+r"\b",text,re.I)
     return (['first_session_claim'] if FIRST_SESSION.search(text) else [])+(['reintroduction'] if named and relationship=='returning' else [])
 
+def settings_claims_allowed(codes,summary):
+    """AI Settings Control: a character that verifiably changed a setting itself may say so."""
+    card=summary.get('deck_card') or {}
+    if card.get('settings_change') or summary.get('ai_settings_recent'):
+        return [code for code in codes if code!='read_only_control_claim']
+    return codes
+
+SETTINGS_TOPIC={'play_style':r'style|mode|rhythm|classic|finisher|milk|glans|shortener|head ?play|ultimate|bratty|ruin',
+    'game':r'game|oracle|survival|edge training|training',
+    'endgame':r'endgame|ending|denial|deny|denied|climax|soft landing|landing|finish|orgasm|timer',
+    'orgasm':r'orgasm|finish|climax|cum|force|release',
+    'intensity':r'intensity|%|percent|harder|stronger|gentler|softer|pressure|dial|crank|turn(?:ed)? (?:it|things) (?:up|down)|notch|power',
+    'pause':r'pause|break|breath|rest|halt|still'}
+
+def settings_card_off_topic(text,card):
+    """A settings card must say what was changed; a generic line does not announce it."""
+    change=card.get('settings_change') or {}
+    pattern=SETTINGS_TOPIC.get(change.get('setting'))
+    return bool(pattern) and not re.search(r'\b(?:'+pattern+r')',text,re.I)
+
+def settings_reply_announced(text,user_text,setting):
+    """A chat reply that should announce a verified change: does it, beyond echoing the user's own words?"""
+    pattern=SETTINGS_TOPIC.get(setting)
+    if not pattern:return True
+    said=re.sub(r'\s+',' ',(text or '')).strip()
+    asked=re.sub(r'[^a-z0-9 ]','',re.sub(r'\s+',' ',(user_text or '')).lower()).strip()
+    words=said.split(' ')
+    # Drop a leading echo of the user's message, word by word.
+    i=0
+    for word in asked.split(' '):
+        if i<len(words) and re.sub(r'[^a-z0-9]','',words[i].lower())==word:i+=1
+        else:break
+    rest=' '.join(words[i:]) if i>=max(2,len(asked.split(' '))//2) else said
+    return len(rest.split())>=4 and bool(re.search(r'\b(?:'+pattern+r')',rest,re.I))
+
 def card_language_violations(text,summary):
     """Unsolicited card turns only: a person who asks about the session can still be answered plainly."""
     card=summary.get('deck_card')
     if not card:return []
     # A mission can't have a finalized result, which only the closing card receives.
-    return (['test_language'] if CARD_TEST_LANGUAGE.search(text) else [])+(['premature_session_end'] if card.get('lane')=='mission' and premature_session_end(text) else [])+(['addressed_by_own_name'] if addresses_by_own_name(text,card.get('speaker')) else [])+(['read_only_control_claim'] if SELECTED_SETTING.search(text) else [])+relationship_violations(text,card)+history_violations(text,summary)
+    return (['test_language'] if CARD_TEST_LANGUAGE.search(text) else [])+(['premature_session_end'] if card.get('lane')=='mission' and premature_session_end(text) else [])+(['addressed_by_own_name'] if addresses_by_own_name(text,card.get('speaker')) else [])+(['read_only_control_claim'] if SELECTED_SETTING.search(text) else [])+(['settings_card_off_topic'] if settings_card_off_topic(text,card) else [])+relationship_violations(text,card)+history_violations(text,summary)
 
 def violations(text,canonical,history=(),trigger=None,completed=(),journal=(),told=(),card=False):
     """`card` adds the Director's checks for turns it generated itself. A person's conversation, with

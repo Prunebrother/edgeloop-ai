@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Real original controls and source transitions; only simulator + intercepted Handy.
 import {chromium} from 'playwright';
-import {spawn} from 'node:child_process';
+import {spawn} from 'node:child_process';import {claimPorts,ownedReady,isolatedEnv,guardBrowser} from './fixture-isolation.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 const root=path.resolve(new URL('../..',import.meta.url).pathname),live=process.env.EDGELOOP_LIVE_ACCEPTANCE==='1';
@@ -11,7 +11,7 @@ const report={passed:false,live,steps:[],frames:[],actions:[],errors:[],hardware
 const children=[];let browser,page,dialogAccept=true;const assert=(ok,msg)=>{if(!ok)throw Error(msg);};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const fixture=async()=>await(await fetch(ai+'/fixture/state')).json();
-async function wait(url){for(let i=0;i<80;i++){try{if((await fetch(url)).ok)return;}catch{}await sleep(100);}throw Error('Fixture unavailable');}
+async function wait(url){return ownedReady(url,children);}
 async function source(){return page.evaluate(async()=>{const {state}=await import('/src/js/state.js');return {status:state.sessionStatus,experience:state.teaseMode,goal:state.gameMode||'tease',active_mode:state.activeMode,settle_outcome:state.settleOutcome,seconds:state.sessionSeconds};});}
 async function waitStatus(status){const deadline=Date.now()+45000;while((await source()).status!==status){if(Date.now()>deadline)throw Error('Engine did not reach '+status);await sleep(100);}assert((await source()).status===status,'Unconfirmed engine status');}
 async function select(model){await page.locator('[data-model]').selectOption(model);await page.locator('[data-select]').click();await page.waitForFunction(m=>document.querySelector('[data-selected]').textContent==='Active: '+m,model);}
@@ -43,9 +43,9 @@ async function action(label,fn,expectedKind){
 }
 try{
  await mkdir(out,{recursive:true});
- children.push(spawn('python3',['tools/serve_local.py',String(uiPort)],{cwd:root,stdio:'ignore'}));
- children.push(spawn(path.join(root,'.venv/bin/python'),['tests/fork/event_reliability_service.py'],{cwd:root,stdio:'ignore',env:{...process.env,EDGELOOP_FIXTURE_UI_PORT:String(uiPort),EDGELOOP_FIXTURE_OBSERVER_PORT:String(aiPort)}}));
- await wait(ui+'/');await wait(ai+'/health');browser=await chromium.launch();const context=await browser.newContext({viewport:{width:1920,height:1080}});
+ await claimPorts(uiPort,aiPort);children.push(spawn('python3',['tools/serve_local.py',String(uiPort)],{cwd:root,stdio:'ignore',env:isolatedEnv()}));
+ children.push(spawn(path.join(root,'.venv/bin/python'),['tests/fork/event_reliability_service.py'],{cwd:root,stdio:'ignore',env:{...isolatedEnv(),EDGELOOP_FIXTURE_UI_PORT:String(uiPort),EDGELOOP_FIXTURE_OBSERVER_PORT:String(aiPort)}}));
+ await wait(ui+'/');await wait(ai+'/health');browser=guardBrowser(await chromium.launch(),[uiPort,aiPort]);const context=await browser.newContext({viewport:{width:1920,height:1080}});
  await context.addInitScript(()=>{const no=()=>Promise.reject(new DOMException('No physical hardware','NotAllowedError'));Object.defineProperty(navigator,'bluetooth',{value:{requestDevice:no},configurable:true});Object.defineProperty(navigator,'serial',{value:{requestPort:no,getPorts:async()=>[]},configurable:true});if(navigator.mediaDevices)navigator.mediaDevices.getUserMedia=no;});
  await context.route('**/api/handy/v2/**',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(r.request().url().endsWith('/connected')?{connected:true}:r.request().url().endsWith('/info')?{fwVersion:'3.2.3',model:'Handy 1.1'}:{result:0})}));
  page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));page.on('dialog',d=>dialogAccept?d.accept():d.dismiss());

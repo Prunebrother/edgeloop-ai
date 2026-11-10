@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Authenticated validated replay and real presentation; no device APIs.
-import {chromium} from 'playwright';import {spawn} from 'node:child_process';import {mkdir,writeFile} from 'node:fs/promises';import path from 'node:path';
+import {chromium} from 'playwright';import {spawn} from 'node:child_process';import {claimPorts,ownedReady,isolatedEnv,guardBrowser} from './fixture-isolation.mjs';import {mkdir,writeFile} from 'node:fs/promises';import path from 'node:path';
 const root=path.resolve(new URL('../..',import.meta.url).pathname),out=process.env.EVENT_INTELLIGENCE_REPORT||'/tmp/f27-events-browser',ui='http://127.0.0.1:8860',ai='http://127.0.0.1:8868',children=[];
 const report={passed:false,physical_hardware:false,steps:[],screenshots:[]};let browser,page;
 const assert=(x,m)=>{if(!x)throw Error(m);},sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function wait(url){for(let i=0;i<100;i++){try{if((await fetch(url)).ok)return;}catch{}await sleep(100);}throw Error('Fixture unavailable');}
+async function wait(url){return ownedReady(url,children);}
 async function state(){return (await fetch(ai+'/fixture/state')).json();}
 async function shot(name,w,h){const director=await page.locator('#character-director').isVisible();await page.setViewportSize({width:w,height:h});if(w<1500&&(await page.locator('#companion-dashboard').getAttribute('data-view'))!=='character'){await page.locator('button[data-view=character]').click();if(director)await page.locator('[data-menu-director]').click();}if(name.startsWith('suppression'))await page.locator('[data-recent-events]').scrollIntoViewIfNeeded();await page.screenshot({path:path.join(out,name)});report.screenshots.push(name);}
 async function select(model){await page.locator('[data-model]').selectOption(model);await page.locator('[data-select]').click();await page.waitForFunction(m=>document.querySelector('[data-selected]').textContent==='Active: '+m,model);}
 async function replay(reset=false){for(let i=0;i<=25;i++){const frame=await(await fetch(ai+'/fixture/step/'+(85+i)+(reset&&i===0?'?reset=true':''),{method:'POST'})).json();await page.evaluate(frame=>{frame.epoch=window.__epoch;window.__observer.sendReplay(frame);},frame);await sleep(35);} }
 try{
- await mkdir(out,{recursive:true});children.push(spawn('python3',['tools/serve_local.py','8860'],{cwd:root,stdio:'ignore'}));children.push(spawn(path.join(root,'.venv/bin/python'),['-m','tests.fork.event_intelligence_service'],{cwd:root,stdio:'ignore'}));await wait(ui);await wait(ai+'/health');browser=await chromium.launch();const context=await browser.newContext({viewport:{width:1920,height:1080}});
+ await mkdir(out,{recursive:true});await claimPorts(8860,8868);children.push(spawn('python3',['tools/serve_local.py','8860'],{cwd:root,stdio:'ignore',env:isolatedEnv()}));children.push(spawn(path.join(root,'.venv/bin/python'),['-m','tests.fork.event_intelligence_service'],{cwd:root,stdio:'ignore',env:isolatedEnv()}));await wait(ui);await wait(ai+'/health');browser=guardBrowser(await chromium.launch(),[8860,8868]);const context=await browser.newContext({viewport:{width:1920,height:1080}});
  await context.addInitScript(()=>{
   const Native=WebSocket;window.WebSocket=class extends Native{constructor(...args){super(...args);window.__observer=this;this.addEventListener('message',e=>{const m=JSON.parse(e.data);if(m.type==='ready')window.__epoch=m.epoch;});}send(raw){const m=JSON.parse(raw);if(m.type!=='observation')super.send(raw);}sendReplay(m){super.send(JSON.stringify(m));}};
   const no=()=>Promise.reject(new DOMException('Replay only','NotFoundError'));Object.defineProperty(navigator,'bluetooth',{value:{requestDevice:no},configurable:true});Object.defineProperty(navigator,'serial',{value:{requestPort:no,getPorts:async()=>[]},configurable:true});if(navigator.mediaDevices)navigator.mediaDevices.getUserMedia=no;

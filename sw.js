@@ -6,7 +6,7 @@
 // offline once it has been visited. Bump CACHE_VERSION when the precache list
 // changes; old caches are removed on activate.
 
-const CACHE_VERSION = 'edgeloop-bundle-v040';
+const CACHE_VERSION = 'edgeloop-bundle-v040-u14';
 const PRECACHE = [
     './',
     './index.html',
@@ -36,14 +36,29 @@ const PRECACHE = [
     './src/js/ai/artwork-manifest.js',
     './src/js/ai/presentation-controller.js',
     './src/assets/characters/manifest.json',
+    './src/js/page-focus.js',
     './src/js/state.js',
     './src/js/engine.js',
     './src/js/patterns.js',
+    './src/js/player/script-governor.js',
+    './src/js/player/script-feed.js',
+    './src/js/player/media-clock.js',
+    './src/js/player/script-shaper.js',
+    './src/js/player/script-track.js',
+    './src/js/player/script-rhythm.js',
+    './src/js/player/player.js',
+    './src/js/player/player-rules.js',
+    './src/js/player/funscript-parse.js',
+    './src/js/player/script-pairing.js',
+    './src/js/hardware/handy-hsp.js',
+    './src/js/hardware/handy-hsp-protocol.js',
+    './src/js/hardware/script-planner.js',
     './src/js/keybinds.js',
     './src/js/nnn.js',
     './src/js/session-rules.js',
     './src/js/hr-watchdog.js',
     './src/js/funscript.js',
+    './src/js/session-telemetry.js',
     './src/js/storage.js',
     './src/js/chart.js',
     './src/js/voice.js',
@@ -97,8 +112,11 @@ self.addEventListener('fetch', (event) => {
     // Portraits use the browser HTTP cache; never accumulate the whole high-res archive in SW caches.
     if (url.origin === self.location.origin && url.pathname.startsWith('/Character_Art/')) return;
 
+    // Same-origin files always revalidate with the server, so a cached older stylesheet is
+    // never combined with newer scripts after an update. Navigations keep their own request.
+    const fresh = url.origin === self.location.origin && request.mode !== 'navigate' ? new Request(request, { cache: 'no-cache' }) : request;
     event.respondWith(
-        fetch(request)
+        fetch(fresh)
             .then((response) => {
                 // Same-origin and CORS replies are cached when ok; opaque replies (the CDN script tags) have no
                 // readable status, so they are cached as-is to keep the cockpit styled offline.

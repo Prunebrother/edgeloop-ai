@@ -12,6 +12,9 @@ import sys
 import tarfile
 import pytest
 
+# The Linux bundle (systemd units, bash installer, Linux runtimes); the Windows bundle has its own tests.
+linux_only = pytest.mark.skipif(sys.platform == 'win32', reason='Linux bundle')
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -58,6 +61,7 @@ def test_new_user_gets_the_release_default_and_existing_selection_is_preserved(t
     assert not (tmp_path / '.config/systemd').exists()
 
 
+@linux_only
 def test_bundled_desktop_uses_its_runtime_and_store(tmp_path):
     installer = load('install_desktop')
     root = tmp_path / 'app with spaces'
@@ -101,6 +105,7 @@ def test_release_art_and_model_inventory_is_complete():
             assert (ROOT / image.lstrip('/')).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
 
 
+@linux_only
 def test_seal_regenerates_canonical_hash_caches_on_repeated_pack_only_builds(tmp_path):
     builder = load('build-release')
     source = tmp_path / f'runtime/python/lib/python{sys.version_info.major}.{sys.version_info.minor}/probe.py'
@@ -162,6 +167,7 @@ def test_corresponding_source_export_omits_only_the_unrelated_core_fixture(tmp_p
             assert archive.extractfile(name).read() == data
 
 
+@linux_only
 @pytest.mark.parametrize('fixed', [False, True])
 def test_download_installer_preserves_sealed_bytecode_and_cached_parts(tmp_path, fixed):
     # A tiny offline release reproduces Python rewriting sealed bytecode after

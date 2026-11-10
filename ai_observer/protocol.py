@@ -5,9 +5,10 @@ from companion_ai.event_intelligence import EventConfig
 from companion_ai.context_compiler import ContextConfig
 from companion_ai.memory_curator import CuratorConfig
 from companion_ai.models import StrictModel, ModelSelection
+from companion_ai.player_events import PlayerFacts
 
 Identifier = Annotated[str, Field(pattern=r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')]
-Mode = Literal['classic','finisher','milker','shortener','headplay','ultimate','ruin']
+Mode = Literal['classic','finisher','milker','shortener','headplay','ultimate','bratty','ruin','script']
 Goal = Literal['tease','survival','edgetrain','oracle','calibrate','nnn']
 
 class Auth(StrictModel):
@@ -42,7 +43,21 @@ class Movement(StrictModel):
         if self.stroke_min>self.stroke_max: raise ValueError('Invalid stroke observation')
         return self
 
+class AiSettingsFacts(StrictModel):
+    enabled: bool
+    revoked: bool
+    applied: int = Field(ge=0,le=1000000)
+    last_id: str | None = Field(default=None,max_length=64)
+    last_setting: str | None = Field(default=None,max_length=32)
+    pacing: Literal['never','rarely','sometimes','often'] = 'sometimes'
+    # The engine-side gate's own answer: may the companion change something unprompted right now?
+    own_ready: bool = False
+    # The user's After an orgasm settings: recovery before a new round, and the block on an own Force Orgasm.
+    recovery_seconds: int = Field(default=90,ge=30,le=300)
+    round_rest_seconds: int = Field(default=180,ge=0,le=600)
+
 class ProjectionDetails(StrictModel):
+    player: PlayerFacts | None = None
     captured_at_ms: int = Field(ge=0,le=9007199254740991)
     hr_recorded_at_ms: int | None = Field(ge=0,le=9007199254740991)
     hr_live: bool | None = None
@@ -50,11 +65,22 @@ class ProjectionDetails(StrictModel):
     single_max_bpm: int | None = Field(ge=30,le=250)
     dual_max_bpm: int | None = Field(ge=30,le=250)
     pauses: int | None = Field(ge=0,le=1000000)
+    pause_reason: Literal['user','edged','relube','player','remote','hr_signal','device','ai'] | None = None
+    # What made the last play-style/goal transition: the participant's selection, or the player loading/clearing a funscript.
+    # 'ai' marks a change applied by AI Settings Control.
+    selection_source: Literal['selection','media','ai'] = 'selection'
+    intensity_source: Literal['user','ai'] = 'user'
+    endgame: Literal['orgasm','rampdown','denial'] | None = None
+    orgasm_mode: bool | None = None
+    ai_settings: AiSettingsFacts | None = None
     calibration_pass: Literal['none','primary','dual']
     warmup_active: bool | None
     warmup_remaining_seconds: int | None = Field(ge=0,le=86400)
     learning_release_count: int | None = Field(default=None,ge=0,le=1000000)
     completion_reported: bool = False
+    # Orgasms the participant reported this session (I came / Finished me); their own report, not a measurement.
+    orgasm_count: int = Field(default=0,ge=0,le=1000)
+    last_orgasm_seconds: int | None = Field(default=None,ge=0,le=31536000)
     settle_outcome: Literal['premature_release'] | None = None
     terminal_outcome: Literal['calibration_completed','premature_release','survival_restart','manual_stop','cancelled','other_stop','safety_stop'] | None = None
     ease_down_seconds: int | None = Field(ge=0,le=3600)
@@ -71,7 +97,7 @@ class Snapshot(StrictModel):
     status: Literal['IDLE','RUNNING','PAUSED','RAMPDOWN']
     seconds: int = Field(ge=0,le=31536000)
     experience: Mode
-    active_mode: Literal['classic','finisher','milker','shortener','headplay','ultimate','ruin','survival','oracle','edgetrain','calibrate']
+    active_mode: Literal['classic','finisher','milker','shortener','headplay','ultimate','bratty','ruin','script','survival','oracle','edgetrain','calibrate']
     goal: Goal
     hr: int | None = Field(ge=35,le=250)
     effective_max: int = Field(ge=30,le=400)
@@ -95,7 +121,7 @@ class Snapshot(StrictModel):
         return self
 
 EventKind = Literal['session_started','pause','stop','session_resumed','mode_changed','edge',
-                    'signal_lost','signal_restored','no_contact','device_changed','milestone','experience_changed','goal_changed','intensity_changed','threshold_changed','came_early','completion_accepted']
+                    'signal_lost','signal_restored','no_contact','device_changed','milestone','experience_changed','goal_changed','intensity_changed','threshold_changed','came_early','completion_accepted','orgasm_reported','player_opened','video_selected','video_started']
 class Event(StrictModel):
     id: Identifier
     kind: EventKind
@@ -115,6 +141,9 @@ class Select(StrictModel):
     type: Literal['select_model']
     selection: ModelSelection
     thinking: bool | None = None
+    # Re-selecting the model an active custom character runs on keeps that character only when
+    # asked (desktop auto-select after a restart); a normal switch returns to the built-in.
+    keep_character: bool = False
 
 class Chat(StrictModel):
     version: Literal[1]
@@ -184,10 +213,44 @@ class ConversationActivity(StrictModel):
     model: str = Field(min_length=1,max_length=120)
     typing: bool
 
+SettingValue = Annotated[str,Field(max_length=32)] | int | bool | None
+
+class SettingsOutcome(StrictModel):
+    """The engine-side gate's answer to a settings_request. It reports; it never commands."""
+    version: Literal[1]
+    type: Literal['settings_outcome']
+    id: str | None = Field(min_length=1,max_length=64)
+    status: Literal['applied','rejected','pending']
+    reason: str | None = Field(default=None,max_length=240)
+    setting: str | None = Field(default=None,max_length=32)
+    from_: SettingValue = Field(default=None,alias='from')
+    to: SettingValue = None
+    clamped: bool | None = None
+    undoable: bool | None = None
+    trigger: Literal['own','user','round'] | None = None
+
 class ConfigureCurator(StrictModel):
     version: Literal[1]
     type: Literal['configure_curator']
     config: CuratorConfig
+
+class CharacterBuilderCommand(StrictModel):
+    """Character Builder sources and activation. Bodies are validated by companion_ai.character_builder;
+    nothing here reaches EdgeLoop's engine, device output or safety stops."""
+    version: Literal[1]
+    type: Literal['character_builder']
+    action: Literal['list','get','save_world','save_character','preview','activate','deactivate']
+    kind: Literal['world','character'] | None = None
+    id: str | None = Field(default=None,pattern=r'^[a-z0-9][a-z0-9-]{0,23}$')
+    world: dict | None = None
+    character: dict | None = None
+
+    @model_validator(mode='after')
+    def required(self):
+        need={'get':('kind','id'),'save_world':('world',),'save_character':('character',),'preview':('id',),'activate':('id',)}
+        if any(getattr(self,name) is None for name in need.get(self.action,())):
+            raise ValueError('Missing field for this Character Builder action')
+        return self
 
 class JournalCommand(StrictModel):
     version: Literal[1]
@@ -208,7 +271,7 @@ class JournalCommand(StrictModel):
             raise ValueError('Privacy settings require configure')
         return self
 
-Messages = TypeAdapter(Annotated[Observation|Select|Chat|Models|Cancel|ResetNarrative|CharacterState|ConfigureDirector|ConfigureEvents|ConversationActivity|ConfigureContext|UpdateObjective|JournalCommand|ConfigureCurator,Field(discriminator='type')])
+Messages = TypeAdapter(Annotated[Observation|Select|Chat|Models|Cancel|ResetNarrative|CharacterState|ConfigureDirector|ConfigureEvents|ConversationActivity|ConfigureContext|UpdateObjective|JournalCommand|ConfigureCurator|SettingsOutcome|CharacterBuilderCommand,Field(discriminator='type')])
 
 
 def _schema_paths(node):

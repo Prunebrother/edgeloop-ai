@@ -3,6 +3,7 @@ from collections import deque, OrderedDict
 from copy import deepcopy
 from dataclasses import dataclass
 import time
+from companion_ai.player_events import PLAYER_EVENTS, player_evidence
 from companion_ai.director import ConversationDirector
 from companion_ai.grounding import Fact, SessionFacts, HistoricalEvent
 
@@ -41,6 +42,8 @@ class BrowserObservation:
         captured=details.get('captured_at_ms')
         if captured is not None and (captured>self.wall()*1000+1000 or self.last_capture is not None and captured<self.last_capture):return False
         previous=self.report;gap=not self.fresh()
+        p=((previous or {}).get('details') or {}).get('player');r=details.get('player')
+        if p and r and p['instance_id']==r['instance_id'] and any(r[k]<p[k] for k in ('opened','selected','started')):return False
         if details and previous and self.session_id==report['session_id'] and report['status']!='IDLE':
             if report['seconds']<previous['seconds'] or report['edges']<previous['edges']:return False
             old_details=previous.get('details') or {}
@@ -101,8 +104,9 @@ class BrowserObservation:
                 'active_running_seconds':final['seconds'] if complete else None,
                 'last_verified_running_ticks':final['seconds'], 'edges':final['edges'],
                 'experience':final['experience'],'goal':final['goal'],'termination':classification,
+                'orgasms':max(((final.get('details') or {}).get('orgasm_count') or 0),((previous.get('details') or {}).get('orgasm_count') or 0)),
                 'final_verified_at_ms':final_stamp,'received_at_ms':int(self.wall()*1000),
-                'completion_status':'user_reported' if details.get('completion_reported') or (previous.get('details') or {}).get('completion_reported') or classification=='accidental_release' else 'accepted_application_event' if classification=='calibration_completed' else 'unknown',
+                'completion_status':'user_reported' if details.get('completion_reported') or (previous.get('details') or {}).get('completion_reported') or classification=='accidental_release' or ((previous.get('details') or {}).get('orgasm_count') or 0)>0 else 'accepted_application_event' if classification=='calibration_completed' else 'unknown',
                 'completion_source':'explicit user report; not sensor evidence' if details.get('completion_reported') or (previous.get('details') or {}).get('completion_reported') else 'validated engine action; not physiological proof' if classification=='calibration_completed' else None,
                 'device_unready_observed':any(s['fault']=='device_unready' for s in (previous['safety'],report['safety'])),
                 'protection_observed':terminal=='safety_stop' or any(s['watchdog_paused'] or s['no_contact'] or s['fault'] in {'signal_lost','no_contact'} for s in (previous['safety'],report['safety'])),
@@ -125,6 +129,7 @@ class BrowserObservation:
 
     @staticmethod
     def event_evidence(kind,p,r,gap):
+        if kind in PLAYER_EVENTS:return player_evidence(kind,p,r,gap)
         if not p or gap:return None
         if p['session_id']!=r['session_id']:
             return 'session status changed IDLE -> RUNNING' if kind=='session_started' and p['status']=='IDLE' and r['status']=='RUNNING' else None
@@ -136,6 +141,12 @@ class BrowserObservation:
             if p['status'] not in {'RUNNING','PAUSED','RAMPDOWN'}:return None
             if outcome=='calibration_completed' and p['active_mode']=='calibrate' and r['status']=='IDLE':return 'Accepted calibration completion; engine ended the session after the confirmed action (not a physiological diagnosis)'
             if outcome=='survival_restart' and (p.get('details') or {}).get('terminal_outcome')!='survival_restart' and p['active_mode']=='survival' and r['status']=='RUNNING':return 'Accepted Survival completion; original engine restarted its climb, session counter continues (not session termination)'
+            return None
+        if kind=='orgasm_reported':
+            before=(p.get('details') or {}).get('orgasm_count') or 0
+            after=(r.get('details') or {}).get('orgasm_count') or 0
+            if p['status'] in {'RUNNING','PAUSED','RAMPDOWN'} and r['status']!='IDLE' and after>before:
+                return f'participant reported an orgasm: session count {before} -> {after}; the session keeps running (their own report, not a measurement)'
             return None
         if kind=='came_early':
             before=(p.get('details') or {}).get('learning_release_count')
@@ -209,6 +220,7 @@ class BrowserObservation:
                   'goal':'state.gameMode or tease','intensity':'50 + state.intensityValue','edges':'state.edges'}
         for name,unit,kind in [('effective_max','BPM','derived'),('pullback','BPM','derived'),('status',None,'status'),('seconds','seconds','status'),('experience',None,'setting'),('active_mode',None,'status'),('goal',None,'setting'),('intensity','percent','setting'),('edges','count','status')]:add(name,r.get(name),kind,upstream[name],unit)
         add('pauses',d.get('pauses'),'status','state.pauses','count')
+        add('pause_reason',d.get('pause_reason'),'status','state.pauseReason while PAUSED (engine pause source category)',reason='not paused or unknown source')
         add('trend',self.trend if self.trend!='unknown' else None,'derived','4+ distinct HR samples, span >=3 seconds, monotonic direction; 15-second window',reason='mixed samples; no consistent direction' if len(valid_samples)>=4 and span>=3 else 'insufficient timestamped sample evidence')
         for name,key in [('primary','strokerSpeed'),('secondary','prostateSpeed')]:add(name,(r.get('movement') or {}).get(name),'engine_value','state.'+key+'; NOT hardware readback','percent')
         add('physical_motion',None,'measurement','not collected; no hardware feedback available')

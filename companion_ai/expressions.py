@@ -11,6 +11,38 @@ FORMAT_INSTRUCTION = (
     'Then give your normal dialogue in your established character. '
     'Choose the expression for the delivery of this particular reply; do not copy an earlier header mechanically. The header describes your intended delivery, never the user or session state. '
     'Do not explain the header or narrate a facial gesture for this format.')
+# Near-miss IDs the F29 models write in place of an allowed one (counted over the 2026-11 simulation runs:
+# curious 44, confident 36, pride 8, thoughtful 6, ...). The portrait shows the closest allowed expression.
+ALIASES = {
+    'curious': 'focused', 'intrigued': 'focused', 'thoughtful': 'focused', 'practical': 'focused', 'analytical': 'focused',
+    'determined': 'focused', 'serious': 'focused', 'attentive': 'focused', 'clinical': 'focused',
+    'confident': 'proud', 'pride': 'proud', 'prideful': 'proud', 'smug': 'proud', 'satisfied': 'proud', 'triumphant': 'proud',
+    'impressed': 'proud',
+    'content': 'happy', 'hopeful': 'happy', 'pleased': 'happy', 'delighted': 'happy', 'cheerful': 'happy', 'warm': 'happy',
+    'amused': 'playful', 'teasing': 'playful', 'cheeky': 'mischievous', 'bratty': 'mischievous', 'sly': 'mischievous',
+    'seductive': 'flirty', 'sultry': 'flirty', 'coy': 'flirty', 'sensual': 'flirty',
+    'eager': 'excited', 'thrilled': 'excited', 'enthusiastic': 'excited',
+    'shocked': 'surprised', 'astonished': 'surprised', 'amazed': 'surprised',
+    'sad': 'disappointed', 'frustrated': 'disappointed',
+    'worried': 'concerned', 'anxious': 'concerned', 'cautious': 'concerned',
+    'reassuring': 'comforting', 'gentle': 'comforting', 'caring': 'comforting', 'soothing': 'comforting', 'tender': 'comforting',
+    'composed': 'neutral', 'calm': 'neutral',
+}
+
+
+def resolve_expression(content):
+    """The allowed ID a leading header means, or None. Accepts the canonical [[expression:ID]], a near-miss
+    ID ([[expression:curious]] -> focused), any letter case, and the bare [[ID:anything]] form ([[happy:125]])."""
+    content = content.strip().lower()
+    if content.startswith('expression:'):
+        word = content.removeprefix('expression:').strip()
+    else:
+        word = content.split(':', 1)[0].strip()
+        if word not in EXPRESSIONS:
+            return None
+    return word if word in EXPRESSIONS else ALIASES.get(word)
+
+
 # Repeats the contract at the start of a short card prompt, where this model otherwise malforms it.
 HEADER_REMINDER = 'Begin with the [[expression:ID]] header, with ID from the allowed list.'
 _IDS = '|'.join(EXPRESSIONS)
@@ -66,14 +98,14 @@ class ExpressionStream:
             self.leading = False
             return '[[' + self.envelope
         self.headers += 1
-        candidate = content.removeprefix('expression:')
-        valid = closed and not self.oversized and content.startswith('expression:') and candidate in EXPRESSIONS
+        candidate = content.removeprefix('expression:').strip().lower()
+        resolved = resolve_expression(content) if closed and not self.oversized else None
         if self.headers == 1:
-            self.candidate = candidate if not self.oversized and 0<len(candidate)<=32 and all(c in 'abcdefghijklmnopqrstuvwxyz_' for c in candidate) else None
-            self.valid = valid
-            if valid and self.leading and self.enabled:
-                self.expression = candidate
-                if self.on_expression:self.on_expression(candidate)
+            self.candidate = candidate if not self.oversized and 0<len(candidate)<=32 and all(c in 'abcdefghijklmnopqrstuvwxyz_:0123456789' for c in candidate) else None
+            self.valid = resolved is not None
+            if resolved and self.leading and self.enabled:
+                self.expression = resolved
+                if self.on_expression:self.on_expression(resolved)
         return ''
 
     def feed(self, text):
