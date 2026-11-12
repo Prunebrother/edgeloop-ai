@@ -11,7 +11,7 @@ from collections import defaultdict
 import math
 import re
 
-CHARACTERS = frozenset({'nova', 'evelyn', 'daisy', 'celeste'})
+CHARACTERS = frozenset({'nova', 'evelyn', 'daisy', 'celeste', 'mira'})
 WINDOW_DAYS = 30
 MAX_AGE_DAYS = 90
 MAX_ROWS = 100
@@ -22,7 +22,7 @@ def requested_cross_companions(prompt: str, model_scope: str) -> frozenset[str]:
     from companion_ai.session_journal import companion, SessionJournal
     if companion(model_scope) != 'nova' or not SessionJournal.relevant(prompt):
         return frozenset()
-    names = frozenset(x.lower() for x in re.findall(r'\b(?:Evelyn|Daisy|Celeste|Nova)\b', prompt, re.I))
+    names = frozenset(x.lower() for x in re.findall(r'\b(?:Evelyn|Daisy|Celeste|Nova|Mira)\b', prompt, re.I))
     return names if names - {'nova'} else frozenset()
 
 

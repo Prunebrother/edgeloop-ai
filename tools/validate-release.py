@@ -51,8 +51,21 @@ def validate(approved_identities=()):
             if not set(identities).issubset(set(approved_identities)):errors.append(('.git','unreviewed commit identity'))
     catalog=json.loads((ROOT/'src/assets/characters/manifest.json').read_text())
     portraits={p.lstrip('/') for c in catalog['characters'].values() for p in c['expressions'].values()}
-    if len(portraits)!=48 or any(not (ROOT/p).is_file() for p in portraits):errors.append(('Character_Art','incomplete expression portraits'))
-    if {n for n in found if n.startswith('Character_Art/')}!=portraits:errors.append(('Character_Art','unexpected unreferenced art'))
+    animations = set()
+    for character in catalog['characters'].values():
+        for expression, clips in character.get('animations', {}).items():
+            if expression not in catalog['expressions'] or not isinstance(clips, dict):
+                raise ValueError('Invalid animation expression or formats')
+            for fmt, asset in clips.items():
+                if fmt not in {'webm', 'mp4'} or not isinstance(asset, str) or not re.fullmatch(
+                        r'/Character_Art/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.' + fmt, asset):
+                    raise ValueError('Invalid curated animation path or format')
+                animations.add(asset.lstrip('/'))
+
+    # Every manifest character ships the full expression set (12 each), however many characters there are.
+    if len(portraits)!=12*len(catalog['characters']) or any(not (ROOT/p).is_file() for p in portraits):errors.append(('Character_Art','incomplete expression portraits'))
+    if any(not (ROOT/p).is_file() for p in animations):errors.append(('Character_Art','missing declared animation'))
+    if {n for n in found if n.startswith('Character_Art/')}!=portraits | animations:errors.append(('Character_Art','unexpected unreferenced art'))
     return {'passed':not errors,'packaged_files':len(included),'errors':[{'path':n,'category':c} for n,c in errors],
             'limits':'Pattern and hash checks only. Does not certify licensing, arbitrary secrets, human identities, or physical safety.'}
 

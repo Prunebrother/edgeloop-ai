@@ -9,7 +9,7 @@ const KIB=n=>(n/1024).toFixed(1)+' KiB';
 const blankWorld=()=>({schema_version:1,id:'',name:'',setting:'',lore:'',rules:[]});
 const blankCard=n=>({id:'card-'+n,theme:'',brief:'',when:{},repeat:true,enabled:true});
 const blankCharacter=()=>({schema_version:1,id:'',world:'',name:'',short_name:'',personality:'',voice:'',relationship:'',
-    model:'huihui_ai/qwen3.5-abliterated:9b',portrait:null,deck:{shared:'lifecycle',cards:[blankCard(1)]}});
+    model:'huihui_ai/qwen3.5-abliterated:9b',portrait:null,deck:{shared:'lifecycle+routine',cards:[blankCard(1)]}});
 const WHEN=[['min_seconds','From second'],['max_seconds','Until second'],['min_edges','From edge'],['max_edges','Up to edge']];
 // Conditions that the data format supports but this editor does not edit yet. They are shown,
 // and kept exactly as they are when the card is saved again.
@@ -55,7 +55,7 @@ export function mountCharacterBuilder(host,{send,models=()=>[],onClose=()=>{}}){
         <p class="builder-hint">One portrait is used for every expression in this release.</p></fieldset>
       </div>
       <fieldset data-b-deck><legend>Card deck</legend>
-        <label>Shared cards<select data-b-shared><option value="lifecycle">Lifecycle only (start, closing, arrival, milestones)</option><option value="lifecycle+routine">Lifecycle and routine (counts, time, heart rate)</option></select></label>
+        <label>Shared cards<select data-b-shared><option value="lifecycle+routine">Common deck and own cards, shuffled together (like the built-in companions)</option><option value="lifecycle">Own cards only, plus start, closing, arrival and milestones</option></select></label>
         <p class="builder-meter" data-b-count></p>
         <div data-b-cards></div><button type="button" data-b-add>Add card</button>
         <p class="builder-meter" data-b-character-size></p></fieldset>
@@ -80,10 +80,11 @@ export function mountCharacterBuilder(host,{send,models=()=>[],onClose=()=>{}}){
     const num=v=>v===''||v==null?undefined:Number(v);
     const message=(action,body)=>({version:1,type:'character_builder',action,...body});
     const sizeOf=m=>messageBytes(JSON.stringify(m));
+    const cardCount=()=>character.deck.cards.length+['session_start','session_end'].filter(k=>character.deck[k]).length;
 
     function meters(){
         collect();
-        const n=character.deck.cards.length;
+        const n=cardCount();
         q('[data-b-count]').textContent=n+' of '+MAX_CARDS+' cards'+(n>=MAX_CARDS?' · the deck is full':'');
         q('[data-b-add]').disabled=n>=MAX_CARDS;
         for(const [selector,label,m] of [['[data-b-world-size]','World message',message('save_world',{world})],['[data-b-character-size]','Character and deck message',message('save_character',{character})]]){
@@ -138,7 +139,7 @@ export function mountCharacterBuilder(host,{send,models=()=>[],onClose=()=>{}}){
         if(bytes>MESSAGE_LIMIT_BYTES){showErrors([{path:[action==='save_world'?'world':'character'],message:'This message is '+KIB(bytes)+', over the '+KIB(MESSAGE_LIMIT_BYTES)+' limit. '+SIZE_HELP}]);return false;}
         if(!send(m)){showErrors([{path:[action],message:'Not sent: the AI connection is not ready.'}]);return false;}
         return true;};
-    q('[data-b-add]').onclick=()=>{if(character.deck.cards.length>=MAX_CARDS)return;character.deck.cards.push(blankCard(character.deck.cards.length+1));renderCards();dirty();};
+    q('[data-b-add]').onclick=()=>{if(cardCount()>=MAX_CARDS)return;character.deck.cards.push(blankCard(character.deck.cards.length+1));renderCards();dirty();};
     const save=preview=>{
         if(saving){queued={preview:preview||!!queued?.preview};status('Saving… your newer changes will be saved next.');return;}
         previewAfterSave=preview;collect();showErrors([]);saving=2;savedAt=edits;status('Saving…');
@@ -167,7 +168,7 @@ export function mountCharacterBuilder(host,{send,models=()=>[],onClose=()=>{}}){
         const table=document.createElement('table');const head=table.createTHead().insertRow();for(const t of ['Card','Theme','When','Brief'])head.insertCell().textContent=t;
         const body=table.createTBody();for(const c of p.cards){const row=body.insertRow();row.insertCell().textContent=c.id+(c.custom?'':' (shared)');row.insertCell().textContent=c.theme;row.insertCell().textContent=c.when;row.insertCell().textContent=c.brief;}
         out.append(table);
-        const life=document.createElement('p');life.textContent='Shared lifecycle cards: '+[...p.shared_lifecycle.session_start,...p.shared_lifecycle.session_end,...p.shared_lifecycle.arrival,...p.shared_lifecycle.milestones].join(', ');out.append(life);
+        const life=document.createElement('p');life.textContent='Lifecycle cards: '+[...p.shared_lifecycle.session_start,...p.shared_lifecycle.session_end,...p.shared_lifecycle.arrival,...p.shared_lifecycle.milestones].join(', ');out.append(life);
         const persona=document.createElement('details');const s=document.createElement('summary');s.textContent='Persona prompt';const pre=document.createElement('pre');pre.textContent=p.persona_system;persona.append(s,pre);out.append(persona);
     }
     let originValue=null;const origin=()=>originValue;

@@ -27,10 +27,13 @@ class AIConfig(StrictModel):
     max_tokens: int = Field(default=2048, ge=16, le=4096)
     cpu_threads: int = Field(default=8, ge=1, le=16)
     idle_unload_seconds: int = Field(default=120, ge=0, le=1800)
-    temperature: float = Field(default=0.4, ge=0, le=2)
-    top_p: float = Field(default=0.95, gt=0, le=1)
-    top_k: int = Field(default=20, ge=0, le=200)
-    repeat_penalty: float = Field(default=1.0, ge=0, le=2)
+    # Sampling belongs to each companion's Modelfile (PARAMETER lines). None means "not sent",
+    # so Ollama applies the model's own values. Only code that sets a value on purpose (for
+    # example a temperature-0 evaluation) overrides it for that request; see stored_config().
+    temperature: float | None = Field(default=None, ge=0, le=2)
+    top_p: float | None = Field(default=None, gt=0, le=1)
+    top_k: int | None = Field(default=None, ge=0, le=200)
+    repeat_penalty: float | None = Field(default=None, ge=0, le=2)
     timeout_seconds: float = Field(default=120.0, ge=1, le=300)
     thinking: bool = False
     explicit_expressions: bool = True
@@ -42,6 +45,18 @@ class MemoryConfig(StrictModel):
     enabled: bool = True
     max_messages: int = Field(default=8, ge=2, le=64)
     persist_between_sessions: bool = False
+
+
+SAMPLING_KEYS = ('temperature', 'top_p', 'top_k', 'repeat_penalty')
+
+
+def stored_config(values):
+    """A config read back from saved settings (selection.json, model-presets.json).
+
+    Earlier versions saved the app's own sampling defaults (temperature 0.4, top_p 0.95, ...)
+    with every selection although no player could set them. Ignoring stored sampling lets each
+    Modelfile's PARAMETER values apply again, also for installs that saved those defaults."""
+    return {k: v for k, v in (values or {}).items() if k not in SAMPLING_KEYS}
 
 
 class ModelSelection(StrictModel):

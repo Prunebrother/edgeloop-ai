@@ -1,8 +1,18 @@
 # Changelog
 
+## v0.9.0-rc1 — test build: meet Mira, animated portraits (pre-release)
+
+<!-- Release candidate for play-testing. Linux and Windows. Same as v0.8.0-rc1 plus the changes below. New model: mira-narrative-v1; the other companions' models are unchanged. -->
+
+- New companion: Mira (HELIX-MORPH/09), a shapeshifting synthetic sent by Helix with her own agenda. She has her own personality, twelve portraits, fifteen personal cards and the common deck, like the other companions. She is brand new: tell us how she plays.
+- Animated portraits: every companion's portrait now breathes, shifts its weight and blinks, with one loop per expression. If your system is set to reduce motion, the still portraits are shown instead.
+- Companions now talk at their own temperature, as set in their model: Nova 0.75, Celeste and Mira 0.7, Evelyn and Daisy 0.6. Before, the app forced 0.4 on all of them. In our tests they repeat themselves far less (repeated phrases down 70 to 100%) and echo you less often.
+- Character Builder: new characters draw from the common deck, shuffled together with their own cards, as the built-in companions do. Characters you made earlier keep their setting: open them in the Character Builder and choose "Common deck and own cards" under Shared cards to switch.
+- The common deck no longer tells a companion how to feel (tease, marvel, be impressed). It says what to react to, and each character reacts in their own way.
+
 ## v0.8.0-rc1 — test build: multiple orgasms, I came button, smarter companions (pre-release)
 
-<!-- Public pre-release for testers. Linux and Windows (experimental). Same as v0.7.0-rc3 on the dev repository plus the changes below. Models are unchanged since v0.6.0-rc2. -->
+<!-- Release candidate for testers on the dev repository. Linux and Windows. Same as v0.7.0-rc3 plus the changes below. Models are unchanged since v0.6.0-rc2. -->
 
 - I came: a new button (keyboard C) to report an orgasm at any point of a running session, with or without Force Orgasm. It counts the orgasm, eases the toys down and starts the warm-up again (Survival restarts its climb); the session keeps going. When paused, it counts and resets but stays paused until you press Resume. A double tap counts once. Came Early is for accidents only again.
 - Several orgasms per session: History and the Session Journal show how many. Companions react to each one, know this session's count and, if they may read the Journal, your total with them.

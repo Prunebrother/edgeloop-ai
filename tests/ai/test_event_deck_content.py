@@ -16,8 +16,8 @@ from tests.fork.event_replay import Replay
 ROOT=Path(__file__).resolve().parents[2]
 RAW=json.loads((ROOT/'config/event-deck.json').read_text())
 DEFINITION,ERROR=load_definition(RAW)
-SESSION='session';COMPANIONS=['nova','evelyn','daisy','celeste']
-MODELS={'nova':'nova-narrative-v1:latest','evelyn':'evelyn-narrative-v1:latest','daisy':'daisy-narrative-v1:latest','celeste':'celeste-narrative-v2:latest'}
+SESSION='session';COMPANIONS=['nova','evelyn','daisy','celeste','mira']
+MODELS={'nova':'nova-narrative-v1:latest','evelyn':'evelyn-narrative-v1:latest','daisy':'daisy-narrative-v1:latest','celeste':'celeste-narrative-v2:latest','mira':'mira-narrative-v1:latest'}
 
 def normal():return {card.id:card for card in DEFINITION.normal}
 def missions():return {sequence.id:sequence for sequence in DEFINITION.sequences}
@@ -42,23 +42,25 @@ def drawn(target,ctx,limit=120):
 # Inventory
 
 def test_the_shipped_library_is_valid_and_has_a_new_revision():
- assert ERROR is None and DEFINITION.revision==5 and RAW['schema_version']==1
+ assert ERROR is None and DEFINITION.revision==6 and RAW['schema_version']==1
 
 @pytest.mark.parametrize('intent,count',[('edge_commentary',2),('session_duration',2),('hr_trend',3),('encouragement',2),('performance_observation',2),('playful_challenge',2),('recovery',2),('general_conversation',4),('finish_encouragement',2)])
 def test_every_shared_category_is_present(intent,count):
  assert len([c for c in DEFINITION.normal if c.intent==intent and c.audience=='shared'])==count
 
-@pytest.mark.parametrize('audience,intents',[('nova',{'character_curiosity_nova','character_challenge_nova'}),('evelyn',{'scientific_observation'}),('daisy',{'cloverfield_production','cloverfield_encouragement'}),('celeste',{'diplomatic_evaluation','personal_observation'})])
+@pytest.mark.parametrize('audience,intents',[('nova',{'character_curiosity_nova','character_challenge_nova'}),('evelyn',{'scientific_observation'}),('daisy',{'cloverfield_production','cloverfield_encouragement'}),('celeste',{'diplomatic_evaluation','personal_observation'}),('mira',{'helix_offer','procurement_humor','corporate_rivalry'})])
 def test_every_companion_has_its_requested_themes(audience,intents):
  cards=[c for c in DEFINITION.normal if c.audience==audience]
  assert len(cards)==15 and intents<={c.intent for c in cards}
- assert [c.id for c in cards if c.eligibility.phases==['finishing']]==[audience+'-finish']
+ # Mira also has a Helix-flavoured card for the finishing phase next to her finish card.
+ assert [c.id for c in cards if c.eligibility.phases==['finishing']]==(['mira-eyes-on-prize'] if audience=='mira' else [])+[audience+'-finish']
  assert [c.id for c in cards if c.eligibility.phases==['recovery']]==[audience+'-another-load']
  assert len([c for c in cards if c.intent=='orgasm_count' and c.eligibility.min_orgasms==1])==1
 
-def test_opening_and_closing_are_single_shared_cards():
- assert [(c.id,c.audience) for c in DEFINITION.session_start]==[('opening','shared')]
- assert [(c.id,c.audience) for c in DEFINITION.session_end]==[('closing','shared')]
+def test_opening_and_closing_are_shared_with_only_mira_overriding_them():
+ # One shared opening and closing; a companion may bring its own, which replaces the shared one for it only.
+ assert [(c.id,c.audience) for c in DEFINITION.session_start]==[('opening','shared'),('mira-uninvited-company','mira')]
+ assert [(c.id,c.audience) for c in DEFINITION.session_end]==[('closing','shared'),('mira-until-next-time','mira')]
 
 def test_the_mission_pack_is_three_counter_milestones_and_a_repeatable_orgasm_reaction():
  assert {k:(v.lane,v.audience,v.trigger.min_edges,v.trigger.min_seconds,v.trigger.event_kinds,len(v.steps),v.repeat) for k,v in missions().items()}=={f'edges-{n}':('mission','shared',n,None,[],1,False) for n in (3,7,10)}|{'orgasm-reported':('mission','shared',None,None,['orgasm_reported'],1,True),'next-round':('mission','shared',None,None,['round_ready'],1,True)}
@@ -87,6 +89,13 @@ def test_challenges_never_ask_for_settings_changes(card):
 def test_no_card_restricts_how_demanding_a_character_may_be(card):
  assert not re.search(r'\b(?:limits?|comfort|discomfort|pain)\b',card.brief,re.I) or card.eligibility.requires_hr
 
+SHARED=[c for c in [*DEFINITION.normal,*[step for s in DEFINITION.sequences for step in s.steps]] if c.audience=='shared']
+
+@pytest.mark.parametrize('card',SHARED,ids=[c.id for c in SHARED])
+def test_a_common_card_leaves_the_attitude_to_the_character(card):
+ # The common deck fits every companion and custom character: it says what to react to, never how to feel.
+ assert not re.search(r'\b(?:tease|marvel|celebrate|impressed|admire|intense|calm|reassure|looking forward)\b',card.brief,re.I)
+
 @pytest.mark.parametrize('card',[c for c in DEFINITION.normal if c.eligibility.requires_hr],ids=lambda c:c.id)
 def test_heart_rate_cards_need_a_verified_trend_and_claim_no_cause(card):
  assert card.eligibility.hr_trends and re.search(r'no cause',card.brief,re.I)
@@ -99,9 +108,10 @@ def test_each_companion_sees_only_shared_and_its_own_cards(identity):
  ctx=context(edges=5,seconds=1300,hr_current=True,hr_trend='falling')
  seen=drawn(deck(identity),ctx)
  foreign={c.id for c in DEFINITION.normal if c.audience not in {'shared',identity}}
- own={c.id for c in DEFINITION.normal if c.audience==identity and not c.eligibility.phases and not c.eligibility.min_orgasms}
+ own={c.id for c in DEFINITION.normal if c.audience==identity and not c.eligibility.phases and not c.eligibility.min_orgasms and not c.eligibility.requires_conversation}
  assert not foreign&set(seen) and own<=set(seen) and seen
- assert not {c.id for c in DEFINITION.normal if c.eligibility.phases or c.eligibility.min_orgasms or c.eligibility.min_total_orgasms}&set(seen)
+ # Cards tied to the finishing or recovery phase, or to reported orgasms, never play in the ordinary building phase.
+ assert not {c.id for c in DEFINITION.normal if (c.eligibility.phases and 'building' not in c.eligibility.phases) or c.eligibility.min_orgasms or c.eligibility.min_total_orgasms}&set(seen)
 
 @pytest.mark.parametrize('identity',COMPANIONS)
 def test_every_companions_current_model_resolves_to_its_cards(identity):
@@ -338,7 +348,8 @@ async def test_the_opening_card_reaches_the_model_for_every_companion():
  for identity in COMPANIONS:
   r,s,wire,frames=await service(identity=identity)
   s.pump();await s.task
-  assert 'Mark the start in your own voice' in prompt(wire)
+  own=next((c for c in DEFINITION.session_start if c.audience==identity),DEFINITION.session_start[0])
+  assert own.brief in prompt(wire)
 
 
 # Restart: a rebuilt deck never replays a milestone already reached

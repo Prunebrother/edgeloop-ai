@@ -40,6 +40,44 @@
         "concerned": "/Character_Art/Evelyn/Expressions/evelyn_concerned.png",
         "proud": "/Character_Art/Evelyn/Expressions/evelyn_proud.png",
         "comforting": "/Character_Art/Evelyn/Expressions/evelyn_comforting.png"
+      },
+      "animations": {
+        "neutral": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_neutral.webm"
+        },
+        "happy": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_happy.webm"
+        },
+        "playful": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_playful.webm"
+        },
+        "flirty": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_flirty.webm"
+        },
+        "mischievous": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_mischievous.webm"
+        },
+        "focused": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_focused.webm"
+        },
+        "excited": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_excited.webm"
+        },
+        "surprised": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_surprised.webm"
+        },
+        "disappointed": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_disappointed.webm"
+        },
+        "concerned": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_concerned.webm"
+        },
+        "proud": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_proud.webm"
+        },
+        "comforting": {
+          "webm": "/Character_Art/Evelyn/animations/evelyn_comforting.webm"
+        }
       }
     },
     "daisy": {
@@ -59,6 +97,44 @@
         "concerned": "/Character_Art/Daisy/expressions/daisy_concerned.png",
         "proud": "/Character_Art/Daisy/expressions/daisy_proud.png",
         "comforting": "/Character_Art/Daisy/expressions/daisy_comforting.png"
+      },
+      "animations": {
+        "neutral": {
+          "webm": "/Character_Art/Daisy/animations/daisy_neutral.webm"
+        },
+        "happy": {
+          "webm": "/Character_Art/Daisy/animations/daisy_happy.webm"
+        },
+        "playful": {
+          "webm": "/Character_Art/Daisy/animations/daisy_playful.webm"
+        },
+        "flirty": {
+          "webm": "/Character_Art/Daisy/animations/daisy_flirty.webm"
+        },
+        "mischievous": {
+          "webm": "/Character_Art/Daisy/animations/daisy_mischievous.webm"
+        },
+        "focused": {
+          "webm": "/Character_Art/Daisy/animations/daisy_focused.webm"
+        },
+        "excited": {
+          "webm": "/Character_Art/Daisy/animations/daisy_excited.webm"
+        },
+        "surprised": {
+          "webm": "/Character_Art/Daisy/animations/daisy_surprised.webm"
+        },
+        "disappointed": {
+          "webm": "/Character_Art/Daisy/animations/daisy_disappointed.webm"
+        },
+        "concerned": {
+          "webm": "/Character_Art/Daisy/animations/daisy_concerned.webm"
+        },
+        "proud": {
+          "webm": "/Character_Art/Daisy/animations/daisy_proud.webm"
+        },
+        "comforting": {
+          "webm": "/Character_Art/Daisy/animations/daisy_comforting.webm"
+        }
       }
     },
     "celeste": {
@@ -78,6 +154,44 @@
         "concerned": "/Character_Art/Celeste/expressions/celeste_concerned.png",
         "proud": "/Character_Art/Celeste/expressions/celeste_proud.png",
         "comforting": "/Character_Art/Celeste/expressions/celeste_comforting.png"
+      },
+      "animations": {
+        "neutral": {
+          "webm": "/Character_Art/Celeste/animations/celeste_neutral.webm"
+        },
+        "happy": {
+          "webm": "/Character_Art/Celeste/animations/celeste_happy.webm"
+        },
+        "playful": {
+          "webm": "/Character_Art/Celeste/animations/celeste_playful.webm"
+        },
+        "flirty": {
+          "webm": "/Character_Art/Celeste/animations/celeste_flirty.webm"
+        },
+        "mischievous": {
+          "webm": "/Character_Art/Celeste/animations/celeste_mischievous.webm"
+        },
+        "focused": {
+          "webm": "/Character_Art/Celeste/animations/celeste_focused.webm"
+        },
+        "excited": {
+          "webm": "/Character_Art/Celeste/animations/celeste_excited.webm"
+        },
+        "surprised": {
+          "webm": "/Character_Art/Celeste/animations/celeste_surprised.webm"
+        },
+        "disappointed": {
+          "webm": "/Character_Art/Celeste/animations/celeste_disappointed.webm"
+        },
+        "concerned": {
+          "webm": "/Character_Art/Celeste/animations/celeste_concerned.webm"
+        },
+        "proud": {
+          "webm": "/Character_Art/Celeste/animations/celeste_proud.webm"
+        },
+        "comforting": {
+          "webm": "/Character_Art/Celeste/animations/celeste_comforting.webm"
+        }
       }
     },
     "nova": {
@@ -97,6 +211,101 @@
         "concerned": "/Character_Art/Nova/expressions/nova_concerned.png",
         "proud": "/Character_Art/Nova/expressions/nova_proud.png",
         "comforting": "/Character_Art/Nova/expressions/nova_comforting.png"
+      },
+      "animations": {
+        "neutral": {
+          "webm": "/Character_Art/Nova/animations/nova_neutral.webm"
+        },
+        "happy": {
+          "webm": "/Character_Art/Nova/animations/nova_happy.webm"
+        },
+        "playful": {
+          "webm": "/Character_Art/Nova/animations/nova_playful.webm"
+        },
+        "flirty": {
+          "webm": "/Character_Art/Nova/animations/nova_flirty.webm"
+        },
+        "mischievous": {
+          "webm": "/Character_Art/Nova/animations/nova_mischievous.webm"
+        },
+        "focused": {
+          "webm": "/Character_Art/Nova/animations/nova_focused.webm"
+        },
+        "excited": {
+          "webm": "/Character_Art/Nova/animations/nova_excited.webm"
+        },
+        "surprised": {
+          "webm": "/Character_Art/Nova/animations/nova_surprised.webm"
+        },
+        "disappointed": {
+          "webm": "/Character_Art/Nova/animations/nova_disappointed.webm"
+        },
+        "concerned": {
+          "webm": "/Character_Art/Nova/animations/nova_concerned.webm"
+        },
+        "proud": {
+          "webm": "/Character_Art/Nova/animations/nova_proud.webm"
+        },
+        "comforting": {
+          "webm": "/Character_Art/Nova/animations/nova_comforting.webm"
+        }
+      }
+    },
+    "mira": {
+      "name": "Mira",
+      "fit": "contain",
+      "position": "50% 50%",
+      "expressions": {
+        "neutral": "/Character_Art/Mira/expressions/mira_neutral.png",
+        "happy": "/Character_Art/Mira/expressions/mira_happy.png",
+        "playful": "/Character_Art/Mira/expressions/mira_playful.png",
+        "flirty": "/Character_Art/Mira/expressions/mira_flirty.png",
+        "mischievous": "/Character_Art/Mira/expressions/mira_mischievous.png",
+        "focused": "/Character_Art/Mira/expressions/mira_focused.png",
+        "excited": "/Character_Art/Mira/expressions/mira_excited.png",
+        "surprised": "/Character_Art/Mira/expressions/mira_surprised.png",
+        "disappointed": "/Character_Art/Mira/expressions/mira_dissapointed.png",
+        "concerned": "/Character_Art/Mira/expressions/mira_concerned.png",
+        "proud": "/Character_Art/Mira/expressions/mira_proud.png",
+        "comforting": "/Character_Art/Mira/expressions/mira_comforting.png"
+      },
+      "animations": {
+        "neutral": {
+          "webm": "/Character_Art/Mira/animations/mira_neutral.webm"
+        },
+        "happy": {
+          "webm": "/Character_Art/Mira/animations/mira_happy.webm"
+        },
+        "playful": {
+          "webm": "/Character_Art/Mira/animations/mira_playful.webm"
+        },
+        "flirty": {
+          "webm": "/Character_Art/Mira/animations/mira_flirty.webm"
+        },
+        "mischievous": {
+          "webm": "/Character_Art/Mira/animations/mira_mischievous.webm"
+        },
+        "focused": {
+          "webm": "/Character_Art/Mira/animations/mira_focused.webm"
+        },
+        "excited": {
+          "webm": "/Character_Art/Mira/animations/mira_excited.webm"
+        },
+        "surprised": {
+          "webm": "/Character_Art/Mira/animations/mira_surprised.webm"
+        },
+        "disappointed": {
+          "webm": "/Character_Art/Mira/animations/mira_disappointed.webm"
+        },
+        "concerned": {
+          "webm": "/Character_Art/Mira/animations/mira_concerned.webm"
+        },
+        "proud": {
+          "webm": "/Character_Art/Mira/animations/mira_proud.webm"
+        },
+        "comforting": {
+          "webm": "/Character_Art/Mira/animations/mira_comforting.webm"
+        }
       }
     }
   },
@@ -126,9 +335,11 @@
     "nova-narrative-f29-v011:latest": "nova",
     "evelyn-narrative-f29-v013:latest": "evelyn",
     "daisy-narrative-f29-v014:latest": "daisy",
-    "celeste-narrative-f29-v012:latest": "celeste"
+    "celeste-narrative-f29-v012:latest": "celeste",
+    "mira-narrative-v1:latest": "mira"
   },
   "presentation": {
+    "animated_characters_enabled": true,
     "session_reactions": {},
     "cooldown_ms": 6000,
     "chat_hold_ms": 8000

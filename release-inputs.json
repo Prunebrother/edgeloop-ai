@@ -1,5 +1,5 @@
 {
-  "version": "v0.8.0-rc1",
+  "version": "v0.9.0-rc1",
   "platform": "linux-x86_64",
   "ollama": {
     "version": "0.40.13",
@@ -34,7 +34,8 @@
     "nova-narrative-f29-v011",
     "evelyn-narrative-f29-v013",
     "daisy-narrative-f29-v014",
-    "celeste-narrative-f29-v012"
+    "celeste-narrative-f29-v012",
+    "mira-narrative-v1"
   ],
   "default_model": "nova-narrative-f29-v011:latest",
   "third_party_sources": [

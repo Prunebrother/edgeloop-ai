@@ -23,7 +23,7 @@ def strict_object(pairs):
         result[key] = value
     return result
 
-from .models import AIConfig, ModelSelection
+from .models import AIConfig, ModelSelection, SAMPLING_KEYS
 from .diagnostics import Metrics
 
 
@@ -206,9 +206,9 @@ class OllamaProvider:
                 raise ValueError('Embedded model instructions and runtime exceed estimated context budget; increase context length')
         payload = {'model': config.model, 'messages': messages,
             'stream': True, 'think': False, 'keep_alive': config.idle_unload_seconds,
-            'options': {'num_ctx': config.context_length, 'num_thread': config.cpu_threads,
-                        'num_predict': config.max_tokens, 'temperature': config.temperature,
-                        'top_p': config.top_p, 'top_k': config.top_k, 'repeat_penalty': config.repeat_penalty}}
+            'options': {'num_ctx': config.context_length, 'num_thread': config.cpu_threads, 'num_predict': config.max_tokens}}
+        # Sampling comes from the model's Modelfile; only a value set on purpose is sent.
+        payload['options'] |= {k: getattr(config, k) for k in SAMPLING_KEYS if getattr(config, k) is not None}
         if request.response_schema is not None:
             payload['format'] = request.response_schema
         if request.tools:

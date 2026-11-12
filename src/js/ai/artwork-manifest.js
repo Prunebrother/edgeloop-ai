@@ -17,6 +17,12 @@ export function setCustomCharacter(model,character,origin){
         expressions:src?Object.fromEntries(manifest.expressions.map(e=>[e,src])):{}}};
 }
 export function customCharacter(){return custom;}
+// Curated local files only. Never turn a catalog entry into a remote URL, query,
+// decoded traversal or user-selected Player asset. Keep this contract in both hosts.
+export function animationPath(value,format){
+    return typeof value==='string'&&['webm','mp4'].includes(format)&&
+        new RegExp('^/Character_Art/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.'+format+'$').test(value)?value:null;
+}
 export function resolveArtwork(model,expression='neutral',catalog=CHARACTER_MANIFEST) {
     const own=catalog===CHARACTER_MANIFEST&&custom&&model===custom.model;
     const id=own?custom.id:Object.hasOwn(catalog.models,model||'')?catalog.models[model]:null;
@@ -24,6 +30,15 @@ export function resolveArtwork(model,expression='neutral',catalog=CHARACTER_MANI
     const requested=EXPRESSIONS.includes(expression)?expression:'neutral';
     const candidates=[{src:character.expressions?.[requested],expression:requested},{src:character.expressions?.neutral,expression:'neutral'}];
     const sources=candidates.filter((x,i,a)=>x.src&&a.findIndex(y=>y.src===x.src)===i);
+    // Custom overrides intentionally have no animation capability. Their existing
+    // image/package contract is unchanged, even on a model with built-in clips.
+    const clips=own?null:character.animations?.[requested];
+    const animations=['webm','mp4'].flatMap(format=>{
+        const src=animationPath(clips?.[format],format);
+        return src?[{src,expression:requested,type:'video',format,
+            mime:format==='webm'?'video/webm; codecs="vp9"':'video/mp4; codecs="avc1.42E01E"'}]:[];
+    });
     return {id:id||'generic',name:character.name,expression:requested,fit:character.fit==='cover'?'cover':'contain',position:character.position||'50% 50%',
-        src:sources[0]?.src||null,sources:sources.map(x=>x.src),candidates:sources};
+        src:sources[0]?.src||null,sources:sources.map(x=>x.src),candidates:sources,
+        animations:catalog.presentation?.animated_characters_enabled===true?animations:[]};
 }

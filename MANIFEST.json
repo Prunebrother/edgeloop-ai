@@ -57,13 +57,73 @@
       "executable": false
     },
     "CHANGELOG.md": {
-      "sha256": "9fd7ec87fc513aae66c2763dc55562c1cf4dac9fa616d9b81fa65881968476c2",
-      "bytes": 13346,
+      "sha256": "8f290eda5e6b346370a8557dba2d2df2084cd8a75d8823ce4d3e52f6bc4fd5c3",
+      "bytes": 14769,
       "executable": false
     },
     "CONTRIBUTING.md": {
       "sha256": "deb711370cd8600c276cd262f38ecf2f691761ff0002aad1be826b6fa73ab416",
       "bytes": 1940,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_comforting.webm": {
+      "sha256": "7410fab692c43cb3d609864b4907cc528cd2e5562cc9205273ed71acbc3d021d",
+      "bytes": 634224,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_concerned.webm": {
+      "sha256": "d06bfc157ccf566cbd0638b9fae2cba4a866de52cd54932b735b85a2682ce5b6",
+      "bytes": 644533,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_disappointed.webm": {
+      "sha256": "8a692bec32e35fbc878afb6dd3c2014730138d95599dd168b31727d920f497b5",
+      "bytes": 610205,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_excited.webm": {
+      "sha256": "20c234bfcdccd51306c5fabf317ae1df58da0ff53bf4187a193714a3a655c168",
+      "bytes": 651481,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_flirty.webm": {
+      "sha256": "89b8e8ed744d556ff46f0361066b6508638d42addc0311e978c53b2613420e39",
+      "bytes": 623504,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_focused.webm": {
+      "sha256": "a3925c51fa4c96ecf57758bc2f4389a9607df98b884074e0a2c80b721a35aaea",
+      "bytes": 626127,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_happy.webm": {
+      "sha256": "3d65468dcdf86db7586271605dfdb7606c3569a33049f65693e969f51b16bfe2",
+      "bytes": 435839,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_mischievous.webm": {
+      "sha256": "b7dc65136af61950ce55b5bb33f123719d27c94e25fe537d3972232ed02e2fbf",
+      "bytes": 633808,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_neutral.webm": {
+      "sha256": "474756d7d45832a94f56bfdd01acc0989fcb3b4b7ffb5abf421695c9a5fc0802",
+      "bytes": 440064,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_playful.webm": {
+      "sha256": "4ffd07dcb0e530bcf03c2f999832338332be3cb2be8c4accd551c89fca7224ec",
+      "bytes": 436396,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_proud.webm": {
+      "sha256": "97dac14428c54b5ff7952c3407d84dd8289b03284aab6936bfd823c768cf9162",
+      "bytes": 654022,
+      "executable": false
+    },
+    "Character_Art/Celeste/animations/celeste_surprised.webm": {
+      "sha256": "e214c7c756c6c143548a738397207d5a4e29aef579a7cb89a94961ec818d2262",
+      "bytes": 639675,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_comforting.png": {
@@ -124,6 +184,66 @@
     "Character_Art/Celeste/expressions/celeste_surprised.png": {
       "sha256": "34862a5fd2444375074f89bc1682da32b76012b9de22786e5e5ec4142299fd58",
       "bytes": 2025233,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_comforting.webm": {
+      "sha256": "6dde4c77539b8cc79b8b7232fcf8d7e863dfb47870df1305946a208e1eaee32d",
+      "bytes": 1033366,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_concerned.webm": {
+      "sha256": "d7fa9409d037c9602b6c73fbbe9b711e09487d1c90126ae871a8e352bfe01f0b",
+      "bytes": 956583,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_disappointed.webm": {
+      "sha256": "2f8caeb1e7fcbb14e7ec6115c57fb4af9b96a9a9021ac911a6c938955ec38c14",
+      "bytes": 1074140,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_excited.webm": {
+      "sha256": "18e42e3febde0d3f9103ac0993c292c91216a93b480ad5c0fdaaba5fcccaefdf",
+      "bytes": 1011088,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_flirty.webm": {
+      "sha256": "3b8bb3fcd5858a18943dce10f31620cf9fa1a24ef07e5c4696d1a76d9086004d",
+      "bytes": 1113962,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_focused.webm": {
+      "sha256": "06239e0832c7bfc0bf838eba283b722019bea0eb8d89eb14d34af7ab87ad1501",
+      "bytes": 1002705,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_happy.webm": {
+      "sha256": "c444b5c427d1b37d9aa95ec09903c1e6046b6d93368c217687d11cad4e021922",
+      "bytes": 1059426,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_mischievous.webm": {
+      "sha256": "c24c12379084631fcfb4b7d74f368db32f5dfe400f3922a5e1c933b294cfd92c",
+      "bytes": 960156,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_neutral.webm": {
+      "sha256": "97502efa65ccdd4fca8a88d6aa158a07db7798220e10900fc23a5ce8b878e20f",
+      "bytes": 1222240,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_playful.webm": {
+      "sha256": "ec6afa3ffc535cd458cfe2f4fc34f674d619d87a9cb58a3aaa0a7919e4c46de5",
+      "bytes": 1067217,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_proud.webm": {
+      "sha256": "562cfbe48960dde03ccfeb451fc0285eaa7d4b03a369b120937bc1831909947d",
+      "bytes": 1023325,
+      "executable": false
+    },
+    "Character_Art/Daisy/animations/daisy_surprised.webm": {
+      "sha256": "c15857c0c45b794d32d35fba2bd6a6d383e7417f062fd5c5e685714592ef423d",
+      "bytes": 1067803,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_comforting.png": {
@@ -246,6 +366,246 @@
       "bytes": 1923048,
       "executable": false
     },
+    "Character_Art/Evelyn/animations/evelyn_comforting.webm": {
+      "sha256": "985cd4fa634fc2a1319242166de64d9a6f3841d1304d70543ca2b3f2a0ec84ed",
+      "bytes": 660137,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_concerned.webm": {
+      "sha256": "6b5e0fafa6400bb5f9b4ea278e4f97a5e22eb43d48738604ddcba65d680f5e4f",
+      "bytes": 654052,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_disappointed.webm": {
+      "sha256": "e1f1e78304e1c69e5bc3b036a0f8904de32790c6d502896f1720cb0ca5e33363",
+      "bytes": 587130,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_excited.webm": {
+      "sha256": "2439674dc7184ef97a41c6cf1753ce28b628488f505111b7e70168d2c46fda33",
+      "bytes": 399133,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_flirty.webm": {
+      "sha256": "852697606e602c4f05d486d41d58a1fc13c2c752299b41ebb0afe75b600a5e39",
+      "bytes": 598155,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_focused.webm": {
+      "sha256": "9ca9327a9062b4e699941a2b822e6ece74c176e72e858852d772c725759221f9",
+      "bytes": 582289,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_happy.webm": {
+      "sha256": "c4164d4dc7846633bb48557da341c0cb7306598233b130293eef85add13028e8",
+      "bytes": 433903,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_mischievous.webm": {
+      "sha256": "a7eed65b99827f00695720d741be23fffaedbe0fd91fac3b650d027f335f39e6",
+      "bytes": 605156,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_neutral.webm": {
+      "sha256": "a430375f6815a95c0b378748b1ad81bd9b504f1529d54c527f10d2b41d5aa8e1",
+      "bytes": 459403,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_playful.webm": {
+      "sha256": "f253ea20077ecdee8a2ea168ed04134b641c29ecb8a018c2ec102c86051b8606",
+      "bytes": 408945,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_proud.webm": {
+      "sha256": "341d91bb30f4be33c8372e6f9adebc072dd026acd13dd740272292a25e998c8f",
+      "bytes": 441473,
+      "executable": false
+    },
+    "Character_Art/Evelyn/animations/evelyn_surprised.webm": {
+      "sha256": "be9e9d8e23d8f35cad5a25fa5f1af32bc4df1641e5d3cc7a191e16c24012eb3b",
+      "bytes": 597507,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_comforting.webm": {
+      "sha256": "c311a352319618eecf587b006e43f3e1c6996940c810dbc800ecd96c57fc9e2b",
+      "bytes": 832786,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_concerned.webm": {
+      "sha256": "2dc778548c92c49c828e8960bf7d493249603268343f09aa6afcce93fadc7f63",
+      "bytes": 834790,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_disappointed.webm": {
+      "sha256": "44917b1f3bfd47c1e6104c07bce4999734d2c3feb7e678ed332836873f612332",
+      "bytes": 805023,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_excited.webm": {
+      "sha256": "58dcef5fccf629bb74c9c8631e15823e1ca57049ca2f3f2694488ceda503a1bd",
+      "bytes": 869428,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_flirty.webm": {
+      "sha256": "05eecb5d8a37757f44a082b5873dc1de65ce8127c9d6d63aed0fd7c538b92271",
+      "bytes": 929071,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_focused.webm": {
+      "sha256": "818357953bc74ce18e3961bc2d058f24c5478c362c95f3d35e79fe4280513063",
+      "bytes": 836086,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_happy.webm": {
+      "sha256": "0ab707c106b61f8e454d1c2d4c9ceac467e92af7f8a040929e688ee9b013c30b",
+      "bytes": 901698,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_mischievous.webm": {
+      "sha256": "077108973468607b960adf54a8b462cd81280036da4c5d203a94e03ea6bbe1e3",
+      "bytes": 826462,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_neutral.webm": {
+      "sha256": "4fa623e99cafdd090ce66aa2812ece42fe8586cf988c92dadd1ed2bc19cbe120",
+      "bytes": 956342,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_playful.webm": {
+      "sha256": "74fb7874640a02ac89a57c891e78ec11848768cbaee3b2a35e27c2fe0d87ddda",
+      "bytes": 1046667,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_proud.webm": {
+      "sha256": "0c7fdecfdf2b29ec599f679b1ddf2afef0a1a967295d21a7e958b85ce51294bb",
+      "bytes": 969277,
+      "executable": false
+    },
+    "Character_Art/Mira/animations/mira_surprised.webm": {
+      "sha256": "247cde05e461c17ffeed5bbab0566d04f96295a44922da0b7d163feba75231ab",
+      "bytes": 893462,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_comforting.png": {
+      "sha256": "4f14e8adf1705169c568860e1e160b0064400f01bc4747d4b631b4e86e98064b",
+      "bytes": 2241639,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_concerned.png": {
+      "sha256": "092a2d6757a7d83ebc219c705e5ad9f06f0d7b4b322e6ea48443a37ec64cb532",
+      "bytes": 2234072,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_dissapointed.png": {
+      "sha256": "3640d6ceaede12d4cece2e5cbfebc158583370845a0f60a96fbf02e6dff134de",
+      "bytes": 2197133,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_excited.png": {
+      "sha256": "64e3f5f91261a71ecf146af022c7c82dd5e32cf02dfc14278ccd97f52040f3d0",
+      "bytes": 2224363,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_flirty.png": {
+      "sha256": "bb03db686e5c8979fb40ad89cc20667179f7034f6a66d4f17864fecabe779234",
+      "bytes": 2250582,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_focused.png": {
+      "sha256": "22df58ec32fa4303dbbff619cfcc04335bdbbb7315c49a385437dd957fff928e",
+      "bytes": 2221910,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_happy.png": {
+      "sha256": "75435cbdfb344847771e6026a4cc47a3b84703966e1ec8fa1ac8f23f0df8eaf2",
+      "bytes": 2221847,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_mischievous.png": {
+      "sha256": "b42db3da1aa2f16ac878709f2a0c2d3665d8852e528c1c03bdb23a90826f969b",
+      "bytes": 2185230,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_neutral.png": {
+      "sha256": "a9875ee4b7c5c6a7e92f06176e29698788716b78959a3b17a74e6f9eb925e2fe",
+      "bytes": 2262683,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_playful.png": {
+      "sha256": "990e5c546b26c7e5bdf8aa17e08411a2b55eb4c06379e4a15a576f9f6f8a2986",
+      "bytes": 2293831,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_proud.png": {
+      "sha256": "6b74fb5336fd04b3c506162a785f8d2371973659946830cdb37679642cce978b",
+      "bytes": 2270680,
+      "executable": false
+    },
+    "Character_Art/Mira/expressions/mira_surprised.png": {
+      "sha256": "86a8d083363d7a15ed8c9648e64c9c03e229a96d1c481ca0c914c0f267a2fe8f",
+      "bytes": 2232144,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_comforting.webm": {
+      "sha256": "dbdb13321129fa422d65318ffb551bcb20571dcef5b99c0ef6aaee409b8a76db",
+      "bytes": 999018,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_concerned.webm": {
+      "sha256": "ecc49a758047e5fb9484a94675a042c812711554089cd7faa30835ee434df5c6",
+      "bytes": 928124,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_disappointed.webm": {
+      "sha256": "3654546854d659ebfad446ae6a2c5e584cec3ea67cd8967ca48fdba645514f3e",
+      "bytes": 978837,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_excited.webm": {
+      "sha256": "ee3ad6c656de9b26c1c841dc46900880e8ad7fd056e709011dad60eda757333f",
+      "bytes": 1283345,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_flirty.webm": {
+      "sha256": "c9ac00e01c2b0fa58ceef9517f0de8cc71106b3f2d4785af30f509d0b1dd9034",
+      "bytes": 1033358,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_focused.webm": {
+      "sha256": "f8e68d45fa4bd6928fefc5c2c3c0300cf89c604abb52177b78c15688864a871a",
+      "bytes": 955562,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_happy.webm": {
+      "sha256": "9428fa26734042d3f5ace8113fb79723ddda310b9cacf192790edbbcb113f5a0",
+      "bytes": 718038,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_mischievous.webm": {
+      "sha256": "0dd8aa7172d8d9b96ec082cbc75e26a542ec0fcbc38c04c92081f49e07b2e2f5",
+      "bytes": 1021957,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_neutral.webm": {
+      "sha256": "183511ae9529e7ce0b29a8aa9574bbbe3cf1c2e6df33bc31e63be5b4461873f3",
+      "bytes": 866891,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_playful.webm": {
+      "sha256": "5bccf2d70fcdedf5b15985242a6330c809dc6f66174d14b81662936674fe5ee7",
+      "bytes": 1076509,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_proud.webm": {
+      "sha256": "983a6210314e13d0ddb17b95f014fc0c280385e18ac93d306be0d15013891d82",
+      "bytes": 998263,
+      "executable": false
+    },
+    "Character_Art/Nova/animations/nova_surprised.webm": {
+      "sha256": "a834a9020a1a082adc5128d36ce649d74ab05ccdcbbf765ecc9b2f520de3f692",
+      "bytes": 1197340,
+      "executable": false
+    },
     "Character_Art/Nova/expressions/nova_comforting.png": {
       "sha256": "e08b278b7112d130cb5258a8eb855e79eb68ab55218fa053065683bad9462b40",
       "bytes": 2507564,
@@ -317,7 +677,7 @@
       "executable": false
     },
     "INSTALL.md": {
-      "sha256": "d210ac56996c42f55733e1e49eef74590af97aad440cea5a65404da05a8a535e",
+      "sha256": "e53f1b22239281d7eaa46085ca193246c14142f5d8e94dc60ba106af0995b41a",
       "bytes": 8101,
       "executable": false
     },
@@ -352,8 +712,8 @@
       "executable": false
     },
     "README.md": {
-      "sha256": "f1bb0826ec7a1152f33bd2f037a7da310754d0bf20ee6330d30e4148aa3a1599",
-      "bytes": 4213,
+      "sha256": "40cde5c7cd2ff68377a64ae6d8599e59a1c1599659ccdea4df742597da31793b",
+      "bytes": 5455,
       "executable": false
     },
     "RELEASING.md": {
@@ -402,8 +762,8 @@
       "executable": false
     },
     "ai_observer/server.py": {
-      "sha256": "6d53a57457528723d8e3aa4376f422778e4410dcbaab2e4ed6a35561a39e489e",
-      "bytes": 39628,
+      "sha256": "2c5a76d6dbbbd5b8d12d2df7eb04f608ca9823e016aa5926a2d2a33c7d558001",
+      "bytes": 39673,
       "executable": false
     },
     "ai_observer/smoke.py": {
@@ -541,6 +901,26 @@
       "bytes": 5398,
       "executable": false
     },
+    "characters/models/mira-narrative-v1/Modelfile": {
+      "sha256": "ce2ff718de6aae6ceeb3ce62b5cf6a68c350801a09c24568f5572b53869c04b0",
+      "bytes": 7429,
+      "executable": false
+    },
+    "characters/models/mira-narrative-v1/README.md": {
+      "sha256": "6daf5bdd6824e0cb52f34a8c35b3010f309616e872fbe45f0087c2bda975da8b",
+      "bytes": 5868,
+      "executable": false
+    },
+    "characters/models/mira-narrative-v1/SESSION_DECK.md": {
+      "sha256": "7ae05d8816d6c48847c71bb76c6b1e45419e8e7335e37a6de78287ebe52901e4",
+      "bytes": 8711,
+      "executable": false
+    },
+    "characters/models/mira-narrative-v1/session-deck.json": {
+      "sha256": "06d41760fd23208224da325ef45bb06abd7f3f9bfc12d7ff9b7ed94c0a97b4e7",
+      "bytes": 6245,
+      "executable": false
+    },
     "characters/models/mira/Modelfile": {
       "sha256": "e5df2b0a5e0d97761136cb45a810c8100eb126759e23454a7cad53b949bf0fb5",
       "bytes": 1596,
@@ -562,8 +942,8 @@
       "executable": false
     },
     "companion_ai/character_builder.py": {
-      "sha256": "1f4d9dccbd40d1715579327c7520ec184ce4a0d40b41a57a2d80b588bddff6af",
-      "bytes": 24949,
+      "sha256": "93e25f31c6e98799f0ec366267614b96980dd806f1e4fa2bda6bd29a2b0eb4d2",
+      "bytes": 27461,
       "executable": false
     },
     "companion_ai/context.py": {
@@ -577,8 +957,8 @@
       "executable": false
     },
     "companion_ai/conversation.py": {
-      "sha256": "0fc73ca457346c523cbc6b13e780026e0629b3e4227b75773f17d1c8cfb5f3a3",
-      "bytes": 115698,
+      "sha256": "56c23d7350e14c5dc61abd039ed27b22f264e825fb3aa8575ebc95dae5929e5e",
+      "bytes": 115728,
       "executable": false
     },
     "companion_ai/diagnostics.py": {
@@ -597,8 +977,8 @@
       "executable": false
     },
     "companion_ai/event_intelligence.py": {
-      "sha256": "b39c14f437809de71b59d922ed329fc7db4bb4a8e42956a64b9024806c21276e",
-      "bytes": 18734,
+      "sha256": "3687ac529902c38e961c74dcab3b5c9ff40fc2ee94c0245932039ebcde66b4cd",
+      "bytes": 18812,
       "executable": false
     },
     "companion_ai/event_policy.py": {
@@ -627,8 +1007,8 @@
       "executable": false
     },
     "companion_ai/llm.py": {
-      "sha256": "7cac61e1d2beeb3ddda4d13bf8fcba2f98a1c995124337cf68588f0e3be1f4c2",
-      "bytes": 15652,
+      "sha256": "dad7dd5f50d607dce88d87032a3b3a771fce983759744b1664db78fc724298ae",
+      "bytes": 15698,
       "executable": false
     },
     "companion_ai/memory_curator.py": {
@@ -637,8 +1017,8 @@
       "executable": false
     },
     "companion_ai/models.py": {
-      "sha256": "7765e29b2fbd899162441fa03d6ddbc400f1fca11d172277d02ab5bfca0d2113",
-      "bytes": 2218,
+      "sha256": "f105a0568896744e412709b2c3378367df26f16b4ec5e197978235c63e0180d1",
+      "bytes": 3077,
       "executable": false
     },
     "companion_ai/narrative.py": {
@@ -652,8 +1032,8 @@
       "executable": false
     },
     "companion_ai/nova_verified_bridge.py": {
-      "sha256": "496a9639becce75a1912f12b444182ce3119349fe3ece4ef12ee7379e6ac59a8",
-      "bytes": 6098,
+      "sha256": "0b130a1d76157cd78050566dc468f00a7e5fbf359aa5857e00bb2750e3120865",
+      "bytes": 6111,
       "executable": false
     },
     "companion_ai/player_events.py": {
@@ -672,8 +1052,8 @@
       "executable": false
     },
     "companion_ai/session_journal.py": {
-      "sha256": "56157610b5ebd9c0530f8102281c3869a50a7766b86f1f1948a26d5592b60a4b",
-      "bytes": 15421,
+      "sha256": "d2280514cf26b7014a5618268b212b242b189909ad22c33d4ca03060151bba82",
+      "bytes": 15426,
       "executable": false
     },
     "companion_ai/settings_control.py": {
@@ -697,13 +1077,13 @@
       "executable": false
     },
     "config/event-deck.json": {
-      "sha256": "98876143f7eea1a5d06ae9f4f5377356db3d171d3f680bc647669b200fb236d7",
-      "bytes": 37090,
+      "sha256": "865bdb805babfbde9ea0efe5e90c8a3fead431951e3e296a9d9150a331763b9a",
+      "bytes": 44650,
       "executable": false
     },
     "docs/fork/f2-changes.json": {
-      "sha256": "fe24e1346890375621ce9fbfe5856ac4e957643c32b1c9f5e5f2426dbbda959a",
-      "bytes": 7140,
+      "sha256": "1ef18e86866f9cd8de09e16e9398b8b665c0fd5e5c0a26f6aa44e612a4621750",
+      "bytes": 7739,
       "executable": false
     },
     "docs/fork/f2101-release-privacy.md": {
@@ -767,12 +1147,12 @@
       "executable": false
     },
     "index.html": {
-      "sha256": "7817320fac4e7fb8706b14d0fe67ad293b45d9e1ebb05f6d5dd7c20e86543c61",
+      "sha256": "963dcd1ee22f0bc34860c4de474ec3ccaee10aa0f1184fa099c5c861fd8dc02d",
       "bytes": 159208,
       "executable": false
     },
     "install.sh": {
-      "sha256": "642ba3e1f119afd4cb01add83b97ba3eaae09e26bd5cfe01c0a4e6b79b53b01f",
+      "sha256": "dbfa3abc28c332286fe150b6a447cfca09f0ed18eb2750659137eafab8825cd2",
       "bytes": 2846,
       "executable": true
     },
@@ -962,7 +1342,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "e42a8a8368fb81b3ebc5d8c0148ec5848dbb3ea551550fe7b5d3b483f396dcb0",
+      "sha256": "7521c140b2a9cc93ea9c7157de52bd13f4a88c019cda746273e557d4efb87cc4",
       "bytes": 564,
       "executable": false
     },
@@ -972,8 +1352,8 @@
       "executable": false
     },
     "release-inputs.json": {
-      "sha256": "8f6becc69df0ef5a997736677a43fd1b38955e7a035c8b232e56c775f5e03aab",
-      "bytes": 2856,
+      "sha256": "ed5c24b4503bff02e57ce67b83b5167f76fde376a246fafd045e15ebff684a7d",
+      "bytes": 2881,
       "executable": false
     },
     "requirements.lock": {
@@ -982,13 +1362,13 @@
       "executable": false
     },
     "src/assets/characters/manifest.json": {
-      "sha256": "3bec3fe7be0ac82f69352875833a2f2fd9a63f9ff99565098f1870c66636f050",
-      "bytes": 5852,
+      "sha256": "bf5180d41f2e4ac8daa502d0bef5e51439dda9f5d6b8a4b6cf00d7ed037b2976",
+      "bytes": 13397,
       "executable": false
     },
     "src/css/companion.css": {
-      "sha256": "29ae1a5385a1c5827d1e8318629f78741f1e006be0fa1e452e6cd8a058b4cccc",
-      "bytes": 35849,
+      "sha256": "c18390560d6128a6326bcc61459c2dd7f1ae7b3c8707b0ed3c40efc602d4d399",
+      "bytes": 36009,
       "executable": false
     },
     "src/js/ai-settings/control.js": {
@@ -1017,13 +1397,13 @@
       "executable": false
     },
     "src/js/ai/artwork-manifest.js": {
-      "sha256": "ba09f50106a52d58c3e0dde1ea8e69b6767dc2e6015c2405d0e89a058b6e482d",
-      "bytes": 2275,
+      "sha256": "e2e68e34fe71f95244ee8c695dcb30514dcfc96d561dff3b7a10628c723e8e77",
+      "bytes": 3272,
       "executable": false
     },
     "src/js/ai/character-builder.js": {
-      "sha256": "3b96a168d3312caec1aa392876bb4d937f3297fde1df43874a20da2e111b47ad",
-      "bytes": 19328,
+      "sha256": "a216a7bd1b9f00390b60ab9b8280a2c70cc4d540d3d5e6fb7813edb1a1c533ce",
+      "bytes": 19452,
       "executable": false
     },
     "src/js/ai/character-menus.js": {
@@ -1032,13 +1412,13 @@
       "executable": false
     },
     "src/js/ai/character.js": {
-      "sha256": "9222c7041776727056ea1026592945af794431912a484e6bdc826bcdc8abf2ef",
-      "bytes": 7848,
+      "sha256": "c44e480ebcbdd4a7a6d0e80a5f67a76c1cbd8e71be660fb59701725778a0029a",
+      "bytes": 14818,
       "executable": false
     },
     "src/js/ai/companion.js": {
-      "sha256": "80a462e5bafa155f0642622b0b7617cd3456e83b443f37bde0a7762d189662af",
-      "bytes": 23664,
+      "sha256": "e73c5b5462e0fb9bd8df56cdb9d79e9bd545ee35b0b233a6e8f517e86e6e6fef",
+      "bytes": 23752,
       "executable": false
     },
     "src/js/ai/connection.js": {
@@ -1062,8 +1442,8 @@
       "executable": false
     },
     "src/js/ai/layout.js": {
-      "sha256": "bde59e85e2ad694f6821363b60602a8c20f48a7b8452f40b1ba6b16575375287",
-      "bytes": 8780,
+      "sha256": "7a3bbf586aa70bda549c1d3b1a739b2592eacb490cdeeff051b2b1c320c07766",
+      "bytes": 9310,
       "executable": false
     },
     "src/js/ai/presentation-controller.js": {
@@ -1632,7 +2012,7 @@
       "executable": false
     },
     "tests/ai/test_arrival_comparison.py": {
-      "sha256": "134be30d42d35e1045e3beadf77d728cd551e3a76f09f3c0406d53df53b92711",
+      "sha256": "db4c626a8f9c4332cbad5c42384eec34283c2bc37286dda6e5f3dd952081d35a",
       "bytes": 39334,
       "executable": false
     },
@@ -1642,13 +2022,13 @@
       "executable": false
     },
     "tests/ai/test_card_prompt.py": {
-      "sha256": "72a6f569f9582308fc1e6bb92cdb805dc2b265fcb86bd48a12a0ca82c1452815",
+      "sha256": "688b4a0f3782168b57727d9034c586da1b2efe3d91d75d7923e867964ab20890",
       "bytes": 26825,
       "executable": false
     },
     "tests/ai/test_character_builder.py": {
-      "sha256": "2b2b1af9e39a94fde530604f26ba0094610513973b403f5346dd32e639b02085",
-      "bytes": 30122,
+      "sha256": "2c73e27af1fd315d1bbab2bb367daa3bc6fb384a7424e1dee1c43d7eeec8a020",
+      "bytes": 30643,
       "executable": false
     },
     "tests/ai/test_character_cards.py": {
@@ -1712,8 +2092,8 @@
       "executable": false
     },
     "tests/ai/test_event_deck_content.py": {
-      "sha256": "1e62605a29bd3efeee97da919489cc2875557cc06eb6ec9062c636b5d4d2aef1",
-      "bytes": 24869,
+      "sha256": "b1a126d8b358813c2d9bc956d84469ba87fede352c964ee549bf558071cb3e6b",
+      "bytes": 26087,
       "executable": false
     },
     "tests/ai/test_event_deck_integration.py": {
@@ -1799,6 +2179,11 @@
     "tests/ai/test_model_identity.py": {
       "sha256": "2c8f451efe8751f033c4098f3396e441428cb1ca19ac02c576b9b7643685dcb5",
       "bytes": 1950,
+      "executable": false
+    },
+    "tests/ai/test_modelfile_sampling.py": {
+      "sha256": "21d4639f2dceba29a88e6b783d953c562809e395bb3acc09e8ea2ae420cb6e7f",
+      "bytes": 2596,
       "executable": false
     },
     "tests/ai/test_multiple_orgasms.py": {
@@ -1991,6 +2376,21 @@
       "bytes": 16813,
       "executable": false
     },
+    "tests/fixtures/portrait-animation/README.md": {
+      "sha256": "fbe4d9d4a5f5eb82d9ae696a2d159f3674294996dabe9d5ce69533f2e137ae80",
+      "bytes": 909,
+      "executable": false
+    },
+    "tests/fixtures/portrait-animation/idle.mp4": {
+      "sha256": "3c0fb1eea21770ef15f6bb9c4c45278ce8f1d9958ee111029485ea493927c1ec",
+      "bytes": 4519,
+      "executable": false
+    },
+    "tests/fixtures/portrait-animation/idle.webm": {
+      "sha256": "a7e0fd80a1cce83bd7dfa92b2673e4dac32ac35aa086f7405abe30edb068dd82",
+      "bytes": 3641,
+      "executable": false
+    },
     "tests/fork/ai-settings-browser.mjs": {
       "sha256": "8be88168fbd4100621eb245e2ed7517bdfe7afb3cc637fef98b705a958c747f1",
       "bytes": 14026,
@@ -2032,8 +2432,8 @@
       "executable": false
     },
     "tests/fork/character-builder-regressions-browser.mjs": {
-      "sha256": "35c86e5095074de677c7a200a62596eaf09de34e05922b6be0f9897402f3eeb9",
-      "bytes": 8799,
+      "sha256": "69c5ca34a26d239ae4d10a54d085b3e323cbe27994ae2b18d89d4d6386b1a7b6",
+      "bytes": 10893,
       "executable": false
     },
     "tests/fork/character-builder.test.mjs": {
@@ -2296,6 +2696,16 @@
       "bytes": 7754,
       "executable": false
     },
+    "tests/fork/portrait-animation-browser.mjs": {
+      "sha256": "c1f7635f722493dc6e030d770499ccfc4aaf7a2425ec6538e203c04c57bf2a3a",
+      "bytes": 9363,
+      "executable": false
+    },
+    "tests/fork/portrait-animation.test.mjs": {
+      "sha256": "404dfd25380e013e99ee613a3a3935bf65c203547d2c000dabd84031bfdd974a",
+      "bytes": 14494,
+      "executable": false
+    },
     "tests/fork/presentation.test.mjs": {
       "sha256": "ad5ba1bb17715325ee4b22fd6f2468dfa5aebcc4f4674ffc5f92d2ea2a6c1414",
       "bytes": 12888,
@@ -2361,14 +2771,29 @@
       "bytes": 3274,
       "executable": false
     },
+    "tests/fork/test_mira_model.py": {
+      "sha256": "6017fc58a63341f4f1ab0c571dea124c8babf3397d5bcde690dccdcd4ffe2446",
+      "bytes": 4200,
+      "executable": false
+    },
+    "tests/fork/test_mira_session_deck.py": {
+      "sha256": "9b3152b49f7fc3288be6b957c0abd35a85536b2e95bc8cf0708db7f5dd772d56",
+      "bytes": 14634,
+      "executable": false
+    },
     "tests/fork/test_observer.py": {
       "sha256": "589596ec0c23ff92dc0a0755dd12520473244c341e503bc1b9053674662d7468",
       "bytes": 25521,
       "executable": false
     },
+    "tests/fork/test_portrait_animation_assets.py": {
+      "sha256": "5a9b031cdc6ce97b58d1746009598202988875b1ab2a088c7a1bbe022e370810",
+      "bytes": 7122,
+      "executable": false
+    },
     "tests/fork/test_release_bundle.py": {
-      "sha256": "68a186748ca90205fd226dce37b4e3ee8b0d8b271cfce396bdd45ca1ece40a49",
-      "bytes": 11619,
+      "sha256": "9b3d00e372129a2e48bcf39d1d3ecaf02de4d21a7e719784615a25c11ce621fe",
+      "bytes": 11640,
       "executable": false
     },
     "tests/fork/test_upstream_sync_guards.py": {
@@ -2426,6 +2851,11 @@
       "bytes": 9639,
       "executable": true
     },
+    "tools/check_mira.py": {
+      "sha256": "9099c14110a94aba389ea5dfb695c2616c559c414dfce8577ef6662831cab2cf",
+      "bytes": 11584,
+      "executable": false
+    },
     "tools/edgeloop-ai": {
       "sha256": "827fce21ae35cb35dfcfa0cfd36d736b555dcd055e7caf8ae9b156455cfe2809",
       "bytes": 3569,
@@ -2437,8 +2867,8 @@
       "executable": false
     },
     "tools/export-public-source.py": {
-      "sha256": "a2f631aca22b363edcd7cdabdea25d7a3bd3353d0535cef9020794cb6f96ece4",
-      "bytes": 4950,
+      "sha256": "9338455482cb056fb570389d6457125a6ce09168fd67049f21c81ab4d321ac43",
+      "bytes": 5741,
       "executable": true
     },
     "tools/fixtures/smoke-clip.funscript": {
@@ -2512,8 +2942,8 @@
       "executable": true
     },
     "tools/serve_local.py": {
-      "sha256": "e3c4b8d34c46a6f10a2a76f64ee1bf45ca927bdece06d49f9803019f3c5f91c1",
-      "bytes": 5163,
+      "sha256": "bef633f3203b4a08f226197b8117710f19a6e7660de489c5c0aefa452f3e8621",
+      "bytes": 5635,
       "executable": false
     },
     "tools/setup-ai.sh": {
@@ -2532,8 +2962,8 @@
       "executable": false
     },
     "tools/validate-release.py": {
-      "sha256": "a866011969e2a3ab3617608ad96994f4fe444c403d0d4a71d04c817b097fbd17",
-      "bytes": 4111,
+      "sha256": "0594ac3ecbc2ad37facb093672f1151d18f6c4df3a89fcd7fc7d0279a427a771",
+      "bytes": 5057,
       "executable": true
     },
     "tools/windows/build-windows.py": {

@@ -398,7 +398,7 @@ def test_mission_occasions_state_the_finished_result_with_no_ordinal(card_id,mil
  assert milestone in card.occasion and not re.search(r'\b(?:first|second|third|final)\b',card.occasion+card.brief,re.I)
 
 def test_the_shuffle_seed_input_is_unchanged():
- assert DEFINITION.revision==5
+ assert DEFINITION.revision==6
 
 @pytest.mark.parametrize('card',[c for c in ALL if c.eligibility.requires_hr],ids=lambda c:c.id)
 def test_a_heart_rate_brief_leaves_the_source_to_the_reading_itself(card):
