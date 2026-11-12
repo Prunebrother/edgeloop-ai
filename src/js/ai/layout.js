@@ -85,8 +85,16 @@ function mountPlayerWorkspace(shell,center,chat,emergencyStop,setView){
     // A smaller conversation keeps showing the newest line if it was showing it before.
     const follow=()=>{if(pinned&&history.clientHeight)history.scrollTop=history.scrollHeight;};
     if(history){new ResizeObserver(follow).observe(history);new MutationObserver(follow).observe(history,{childList:true,subtree:true,characterData:true});}
+    // IntersectionObserver cannot detect the fixed Theater stage covering a
+    // portrait. Expose only layout occlusion; the renderer owns all media work.
+    const portraitVisibility=()=>{
+        const portrait=shell.querySelector('#character-panel');
+        if(portrait)portrait.dataset.presentationOccluded=String(body.dataset.player==='on'&&stage.dataset.theater==='on');
+    };
+    new MutationObserver(portraitVisibility).observe(stage,{attributes:true,attributeFilter:['data-theater']});
     const sync=()=>{const open=body.dataset.player==='on',opened=open&&shell.dataset.player!=='on';
         shell.dataset.player=open?'on':'off';workspace.hidden=!open;
+        portraitVisibility();
         // On a phone the Player button lives in the Session view; the video is in the Chat view.
         if(opened&&shell.dataset.view==='session'&&matchMedia('(max-width:760px)').matches)setView('chat');};
     new MutationObserver(sync).observe(body,{attributes:true,attributeFilter:['data-player']});sync();

@@ -21,7 +21,7 @@ from companion_ai.llm import thinking_support, InferenceCompatibilityError
 from companion_ai.player_events import PLAYER_EVENTS
 from companion_ai.event_policy import significance
 from companion_ai.event_intelligence import preset
-from companion_ai.models import AIConfig, SpeechPolicy
+from companion_ai.models import AIConfig, SpeechPolicy, stored_config
 from companion_ai.storage import SettingsStore
 from companion_ai.session_journal import SessionJournal
 from .config import RuntimeConfig, validate_ollama_url
@@ -133,7 +133,7 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                 model=package.model if package else manager.config.model
                 async with model_lock:
                     presets=store.read('model-presets.json',{})
-                    values=manager.config.model_dump()|presets.get(manager.preset_key(model),{})|{'model':model,'thinking':False,'explicit_expressions':runtime_config.explicit_expressions}
+                    values=manager.config.model_dump()|stored_config(presets.get(manager.preset_key(model),{}))|{'model':model,'thinking':False,'explicit_expressions':runtime_config.explicit_expressions}
                     await manager.select(AIConfig.model_validate(values),'adapt',interrupt,character=package)
                     speech.activate_model()
                     publish({'type':'model_selected','model':manager.config.model,'thinking':False,'character':manager.character_status(),
@@ -383,7 +383,7 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                         try:
                             async with model_lock:
                                 presets=store.read('model-presets.json',{})
-                                values=manager.config.model_dump() | presets.get(manager.preset_key(message.selection.model),presets.get(manager.config.provider+':'+message.selection.model,{})) | {'model':message.selection.model}
+                                values=manager.config.model_dump() | stored_config(presets.get(manager.preset_key(message.selection.model),presets.get(manager.config.provider+':'+message.selection.model,{}))) | {'model':message.selection.model}
                                 if message.thinking is True:raise ValueError('Thinking must remain OFF')
                                 values['thinking']=False
                                 values['explicit_expressions']=runtime_config.explicit_expressions

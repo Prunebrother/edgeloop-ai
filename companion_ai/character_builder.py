@@ -26,7 +26,7 @@ import json
 from pathlib import Path
 import re
 from typing import Literal
-from pydantic import Field, ValidationError, field_validator, model_validator
+from pydantic import Field, ValidationError, field_validator, model_validator, model_serializer
 from .event_deck import Card, DeckDefinition, Eligibility, SHARED
 from .models import StrictModel
 
@@ -135,16 +135,37 @@ class CardSpec(StrictModel):
 
 
 class DeckSpec(StrictModel):
-    # 'lifecycle': the shared start, closing, arrival and milestone cards plus this deck.
-    # 'lifecycle+routine': also the built-in shared routine cards (edge count, duration, heart rate).
-    shared: Literal['lifecycle', 'lifecycle+routine'] = 'lifecycle'
+    # 'lifecycle+routine' (default): the shared lifecycle cards plus the common routine deck (counts,
+    # time, heart rate, encouragement, conversation, finishing and another-round cards), shuffled
+    # together with this character's own cards, as for the built-in companions.
+    # 'lifecycle': only the shared start, closing, arrival and milestone cards plus this deck.
+    # Saved characters keep the value they were saved with.
+    shared: Literal['lifecycle', 'lifecycle+routine'] = 'lifecycle+routine'
     cards: list[CardSpec] = Field(default_factory=list, max_length=MAX_CARDS)
+    # Optional personal wording in existing lifecycle lanes, not new triggers.
+    # Omitted overrides retain the shared opening/closing exactly as before.
+    session_start: CardSpec | None = None
+    session_end: CardSpec | None = None
+
+    @model_serializer(mode='wrap')
+    def source_fields(self, handler):
+        # Do not add null fields to an unchanged legacy source or bump its revision.
+        value = handler(self)
+        for kind in ('session_start', 'session_end'):
+            if value.get(kind) is None:
+                value.pop(kind, None)
+        return value
 
     @model_validator(mode='after')
     def unique(self):
-        ids = [card.id for card in self.cards]
+        lifecycle = [c for c in (self.session_start, self.session_end) if c is not None]
+        ids = [card.id for card in [*self.cards, *lifecycle]]
+        if len(ids) > MAX_CARDS:
+            raise ValueError('A deck can contain at most 16 authored cards including opening and closing')
         if len(ids) != len(set(ids)):
             raise ValueError('Card IDs must be unique within the deck')
+        if any(c.when != Eligibility() for c in lifecycle):
+            raise ValueError('Opening and closing use the existing lifecycle conditions, not custom eligibility')
         return self
 
 
@@ -246,8 +267,8 @@ def persona_system(world, character):
     return '\n'.join(lines)
 
 
-def runtime_card(character, spec):
-    return Card(id=f'{character.id}.{spec.id}', kind='normal', audience=identity(character.id),
+def runtime_card(character, spec, kind='normal'):
+    return Card(id=f'{character.id}.{spec.id}', kind=kind, audience=identity(character.id),
                 intent=spec.theme.replace('-', '_'), brief=spec.brief, occasion=spec.occasion,
                 eligibility=spec.when, memory='none', repeat=spec.repeat)
 
@@ -308,6 +329,10 @@ def compose(world, character, art=None):
         'persona_system': persona_system(world, character),
         'deck': {'shared': character.deck.shared, 'cards': cards},
     }
+    for kind in ('session_start', 'session_end'):
+        spec = getattr(character.deck, kind)
+        if spec is not None and spec.enabled:
+            body['deck'][kind] = runtime_card(character, spec, kind).model_dump(mode='json')
     body['content_sha256'] = sha256(canonical(body).encode()).hexdigest()
     return body
 
@@ -338,6 +363,14 @@ class Package(StrictModel):
         cards = [Card.model_validate(card) for card in self.deck.get('cards', [])]
         if not cards or any(c.kind != 'normal' or c.audience != self.identity or not c.id.startswith(self.id + '.') for c in cards):
             raise ValueError('Package cards must be custom normal cards for this character only')
+        for kind in ('session_start', 'session_end'):
+            if kind in self.deck:
+                card = Card.model_validate(self.deck[kind])
+                if card.kind != kind or card.audience != self.identity or not card.id.startswith(self.id + '.'):
+                    raise ValueError('Package lifecycle cards must belong to this character and lane only')
+        ids = [c.id for c in cards] + [self.deck[k]['id'] for k in ('session_start', 'session_end') if k in self.deck]
+        if len(ids) != len(set(ids)) or len(ids) > MAX_CARDS:
+            raise ValueError('Package card IDs must be unique and within the authored-card limit')
         if self.deck.get('shared') not in {'lifecycle', 'lifecycle+routine'}:
             raise ValueError('Unknown shared-card policy')
         return self
@@ -374,8 +407,11 @@ def compose_definition(base, package):
     """
     shared = lambda cards: [c for c in cards if c.audience == SHARED]
     normal = shared(base.normal) if package.deck['shared'] == 'lifecycle+routine' else []
-    return DeckDefinition(revision=base.revision, session_start=shared(base.session_start),
-                          session_end=shared(base.session_end), arrival=shared(base.arrival),
+    def lifecycle(kind):
+        cards = shared(getattr(base, kind))
+        return cards + ([Card.model_validate(package.deck[kind])] if kind in package.deck else [])
+    return DeckDefinition(revision=base.revision, session_start=lifecycle('session_start'),
+                          session_end=lifecycle('session_end'), arrival=shared(base.arrival),
                           sequences=[s for s in base.sequences if s.audience == SHARED],
                           normal=normal + package.cards)
 
@@ -528,6 +564,10 @@ def preview(package, base_definition):
     for card in visible:
         themes[card.intent] = themes.get(card.intent, 0) + 1
     order = shuffled([c.id for c in visible], package['content_sha256'])
+    def effective_lifecycle(kind):
+        cards = getattr(definition, kind)
+        own = [c for c in cards if c.audience == package['identity']]
+        return [c.id for c in own or cards]
     return {
         'id': package['id'], 'revision': package['revision'], 'content_sha256': package['content_sha256'],
         'model': package['model'], 'name': package['character']['name'], 'short_name': package['character']['short_name'],
@@ -537,7 +577,7 @@ def preview(package, base_definition):
         'cards': [{'id': c.id, 'theme': c.intent, 'brief': c.brief, 'occasion': c.occasion, 'when': describe_when(c.eligibility),
                    'custom': c.audience != SHARED} for c in visible],
         'themes': dict(sorted(themes.items())),
-        'shared_lifecycle': {'session_start': [c.id for c in definition.session_start], 'session_end': [c.id for c in definition.session_end],
+        'shared_lifecycle': {'session_start': effective_lifecycle('session_start'), 'session_end': effective_lifecycle('session_end'),
                              'arrival': [c.id for c in definition.arrival], 'milestones': [s.id for s in definition.sequences]},
         'sample_shuffle': order,
     }

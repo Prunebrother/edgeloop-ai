@@ -98,6 +98,29 @@ try{
  assert(JSON.stringify(events.shown)==='{"physiology":"0","session":"2","story":"0"}','Custom preferences were not reloaded: '+JSON.stringify(events.shown));
  assert(JSON.stringify(Object.keys(events.preferences).sort())==='["custom.wren","generic"]','Malformed preference identities: '+JSON.stringify(events.preferences));
  assert(JSON.stringify(events.preferences['custom.wren'])==='{"physiology":0,"session":2,"configuration":2,"story":0}','Custom preference not saved: '+JSON.stringify(events.preferences));
+
+ // Personal opening/closing briefs must survive normal-card editing and count
+ // toward the existing sixteen-card limit. No server or activation is used.
+ const lifecycle=await page.evaluate(async()=>{
+  const {mountCharacterBuilder}=await import('/src/js/ai/character-builder.js');
+  const host=document.createElement('div');document.body.append(host);const sent=[];
+  const builder=mountCharacterBuilder(host,{send:m=>{sent.push(structuredClone(m));return true;}});
+  const world={id:'test-world',name:'World',setting:'A fictional world',lore:'',rules:[]};
+  const opening={id:'opening',theme:'greeting',brief:'Greet in character.'};
+  const closing={id:'closing',theme:'farewell',brief:'Say farewell in character.'};
+  const character={id:'mira',world:world.id,name:'Mira',short_name:'Mira',personality:'Witty',voice:'Concise',relationship:'Companion',model:'mira-narrative-v1:latest',deck:{shared:'lifecycle',session_start:opening,session_end:closing,cards:Array.from({length:10},(_,i)=>({id:'card-'+i,theme:'banter',brief:'Offer a fresh remark.',when:{},enabled:true}))}};
+  builder.receive({type:'character_builder',action:'get',kind:'character',ok:true,value:character});
+  builder.receive({type:'character_builder',action:'get',kind:'world',ok:true,value:world});
+  const count=host.querySelector('[data-b-count]').textContent;
+  const add=host.querySelector('[data-b-add]');for(let i=0;i<4;i++)add.click();
+  const full=add.disabled;
+  host.querySelector('[data-b-save]').click();
+  const saved=sent.filter(m=>m.action==='save_character').at(-1).character;
+  return {count,full,cards:saved.deck.cards.length,opening:saved.deck.session_start,closing:saved.deck.session_end};
+ });
+ assert(lifecycle.count.startsWith('12 of 16'),'Lifecycle overrides missing from card count: '+JSON.stringify(lifecycle));
+ assert(lifecycle.full&&lifecycle.cards===14,'Lifecycle overrides exceeded the authored-card limit: '+JSON.stringify(lifecycle));
+ assert(lifecycle.opening.brief==='Greet in character.'&&lifecycle.closing.brief==='Say farewell in character.','Lifecycle briefs lost during save');
  assert(!errors.length,'Page errors: '+errors.join('; '));
  console.log('character-builder-regressions-browser: passed');
 }finally{await browser.close();}

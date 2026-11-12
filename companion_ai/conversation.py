@@ -15,7 +15,7 @@ from .reply_cleanup import CleanupConfig, ReplyCleaner, clean_reply
 from .player_events import PLAYER_EVENTS, PLAYER_BRIEFS, player_current
 from .settings_control import SettingsControl, CARD_KIND as SETTINGS_CARD, card_brief as settings_card_brief, settings_intent, available as settings_available
 from .event_policy import SELECTION_EVENTS, REACTION_EVENTS
-from .models import SpeechPolicy, AIConfig, MemoryConfig
+from .models import SpeechPolicy, AIConfig, MemoryConfig, stored_config
 from .diagnostics import Metrics
 from .llm import OllamaProvider, ChatMessage, LLMRequest, collect_reply, InferenceCompatibilityError, NoVisibleResponseError, OutputBudgetExceededError, thinking_support
 from .context import compose_messages, ContextBudgetError
@@ -45,7 +45,7 @@ class ModelManager:
     def __init__(self, base_url="http://127.0.0.1:11434", transport=None, store=None):
         self.base_url, self.transport, self.store = base_url, transport, store
         saved = store.read('selection.json', {}) if store else {}
-        self.config = AIConfig.model_validate(saved.get('config', {}) | {'thinking': False})
+        self.config = AIConfig.model_validate(stored_config(saved.get('config', {})) | {'thinking': False})
         self.mode = "stopped"
         self.metrics = Metrics()
         self.adapter = None

@@ -5,6 +5,7 @@ from pathlib import Path, PurePosixPath
 import sys
 import os
 import json
+import re
 from urllib.parse import unquote, urlsplit
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,7 +14,7 @@ PUBLIC={'index.html','sw.js','manifest.json','README.md','CHANGELOG.md','LICENSE
 def public_file(raw, root=ROOT):
     path=unquote(urlsplit(raw).path).lstrip('/') or 'index.html'
     # Windows would read a backslash as a separator and a colon as a drive or stream name.
-    if '\\' in path or ':' in path: return None
+    if '\\' in path or ':' in path or '\0' in path: return None
     parts=PurePosixPath(path).parts
     if any(p.startswith('.') for p in parts): return None
     allowed=path in PUBLIC or (len(parts)==1 and parts[0].startswith('icon') and Path(path).suffix in {'.svg','.png'}) or (path.startswith('src/js/') and path.endswith('.js')) or (path.startswith('src/css/') and path.endswith('.css')) or (path.startswith('src/assets/characters/') and Path(path).suffix in {'.png','.webp','.jpg','.jpeg','.svg'})
@@ -23,7 +24,11 @@ def public_file(raw, root=ROOT):
         try:
             catalog=json.loads((root/'src/assets/characters/manifest.json').read_text())
             referenced={asset.lstrip('/') for c in catalog['characters'].values() for asset in c['expressions'].values() if isinstance(asset,str)}
-            allowed=path in referenced and Path(path).suffix.lower() in {'.png','.jpg','.jpeg','.webp'}
+            animations={asset.lstrip('/') for c in catalog['characters'].values()
+                        for expression,clips in c.get('animations',{}).items() if expression in catalog.get('expressions',[])
+                        for fmt,asset in clips.items() if fmt in {'webm','mp4'} and isinstance(asset,str)
+                        and re.fullmatch(r'/Character_Art/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.'+fmt,asset)}
+            allowed=(path in referenced and Path(path).suffix.lower() in {'.png','.jpg','.jpeg','.webp'}) or path in animations
         except (OSError,ValueError,KeyError,TypeError,AttributeError):allowed=False
     target=root/path
     if target.absolute()!=target.resolve():return None

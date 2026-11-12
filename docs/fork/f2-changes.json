@@ -7,17 +7,17 @@
   "CHANGELOG.md": {
     "base_sha256": "6a6139fe22de0953008e09984134644b1b3dbc8a0b5562ad8cc26c5b906da16d",
     "reason": "F2.10 public release documentation/dependency configuration",
-    "sha256": "9fd7ec87fc513aae66c2763dc55562c1cf4dac9fa616d9b81fa65881968476c2"
+    "sha256": "8f290eda5e6b346370a8557dba2d2df2084cd8a75d8823ce4d3e52f6bc4fd5c3"
   },
   "README.md": {
     "base_sha256": "31e06342d10aa4d7001bee7f037a1da28587a611d40ed5ca7c22785643de8c8c",
     "reason": "F2.10 public release documentation/dependency configuration; approved Prunebrother source-publication location and status; v0.3.0 includes art, local browser libraries and complete runtime installer",
-    "sha256": "f1bb0826ec7a1152f33bd2f037a7da310754d0bf20ee6330d30e4148aa3a1599"
+    "sha256": "40cde5c7cd2ff68377a64ae6d8599e59a1c1599659ccdea4df742597da31793b"
   },
   "index.html": {
     "base_sha256": "b5e1bbe949cfdf489219b82bed99c3b3d63b6374f0f3979737073c0dc21b57f0",
     "reason": "F2.1 stylesheet link and accessible viewport zoom; original controls preserved; v0.3.0 includes art, local browser libraries and complete runtime installer; upstream 1.1.4.31 sync: local-app library placeholder uses ~/Videos instead of an absolute home path (release privacy scan); v0.7.0: footer names the fork version (EdgeLoop AI vX) beside the engine version; v0.8.0: I came button in the transport row",
-    "sha256": "7817320fac4e7fb8706b14d0fe67ad293b45d9e1ebb05f6d5dd7c20e86543c61"
+    "sha256": "963dcd1ee22f0bc34860c4de474ec3ccaee10aa0f1184fa099c5c861fd8dc02d"
   },
   "package.json": {
     "base_sha256": "4530b83fb523fb476390b151a0da7f7d0134d5a38fd4eabdb892c156fc204872",
@@ -48,6 +48,16 @@
     "base_sha256": "1ad54fe27a2ad00ee8abb242716fcb77ae37326d52ef56e069d6dbb517779c9d",
     "reason": "Public companion modules/manifest precache; F2.4 high-resolution originals use bounded renderer/browser HTTP cache; AI/auth exclusions preserved; F2.5 cache version invalidation only; F2.5.1 cache version only; F2.6 cache version only; F2.6.1 character menu module and cache invalidation; F2.7 event settings module and cache invalidation; F2.8 context tools precache and cache invalidation; F2.8.1 cache invalidation only; F2.8.2 context diagnostics cache invalidation only; free-form objective guidance cache invalidation only; F2.8.3 memory diagnostics cache invalidation; F2.8.4 public journal UI module precache and cache invalidation (journal records remain private observer data); F2.8.4.1 curator controls and memory diagnostics cache invalidation only; Nova character registration cache invalidation only; F2.8.5 Director controls cache invalidation only; v0.3.0 includes art, local browser libraries and complete runtime installer; upstream 1.1.4.31 sync: union of upstream player/page-focus precache and fork modules, cache version invalidation",
     "sha256": "3a751b88eacbc767d2612d6fbdc1db52798b4c1026d52dd8177eb406f14c84e5"
+  },
+  "app/host.mjs": {
+    "base_sha256": "da16fce44adafb5e7eb997a480633b478f0fc3a00602907f1c890a2beba88f41",
+    "reason": "Complete local-app release packaging; original engine and hardware controls preserved.",
+    "sha256": "39830141ef2cebf606f97601f4dcf2382078d7b92dc4a8d240c32930850b2d85"
+  },
+  "app/host.test.mjs": {
+    "base_sha256": "be7d662865d051466d51f71045cecea3fb77c0f13c33e7a7c9f8f05c77e4a55c",
+    "reason": "Complete local-app release packaging; original engine and hardware controls preserved.",
+    "sha256": "1970a67c4c5cf782ea6e395ab8781c7bb6abb3ca9983eb50f48d4d75fd68d0a1"
   },
   "src/js/keybinds.js": {
     "base_sha256": "ab092af1ab401321feda81e3009ac483ee5d0c0c6090376f2ad92b3b073789c8",

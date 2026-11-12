@@ -46,7 +46,7 @@ PRIOR={'edges':7,'seconds':720,'experience':'classic','goal':'tease','outcome':'
 
 def test_arrival_cards_ship_without_story_memory_or_scheduling_rules_and_leave_the_deck_alone():
  assert {c.id for c in DEFINITION.arrival}=={'arrival-returning','arrival-first','arrival-greeting'}
- assert all(c.kind=='arrival' and c.memory=='none' for c in DEFINITION.arrival) and RAW['revision']==5
+ assert all(c.kind=='arrival' and c.memory=='none' for c in DEFINITION.arrival) and RAW['revision']==6
  assert not {c.id for c in DEFINITION.arrival}&{c.id for c in DEFINITION.normal}
 
 def test_an_arrival_card_cannot_write_story_memory():

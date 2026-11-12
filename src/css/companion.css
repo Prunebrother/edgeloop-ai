@@ -322,3 +322,6 @@ body.companion-app {margin:0;padding:0;display:block;height:100dvh;min-height:0;
 .builder-workspace .builder-portrait {max-width:160px;max-height:200px;border-radius:8px;display:block;margin:6px 0}
 #ai-companion[data-paired=false] [data-open-builder] {display:none}
 @media(max-width:760px){.builder-scroll {padding:4px 10px 12px}.builder-bar-hint {display:none}}
+
+/* Optional portrait clips use the existing layers, never the user Player. */
+#character-panel[data-animated="true"] .character-art {transition-duration:.35s}

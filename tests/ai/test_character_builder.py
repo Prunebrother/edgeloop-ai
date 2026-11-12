@@ -348,7 +348,16 @@ def test_composed_deck_has_shared_lifecycle_and_only_this_characters_cards():
     assert {s.id for s in definition.sequences} == {'edges-3', 'edges-7', 'edges-10', 'orgasm-reported', 'next-round'}
     routine = cb.compose_definition(BASE, cb.load_package(cb.compose(WORLD, WREN | {'deck': WREN['deck'] | {'shared': 'lifecycle+routine'}}, ART)))
     assert {c.audience for c in routine.normal} == {'shared', 'custom.wren-calloway'}
-    assert not any(c.audience in {'daisy', 'nova', 'evelyn', 'celeste'} for c in routine.normal)
+    assert not any(c.audience in {'daisy', 'nova', 'evelyn', 'celeste', 'mira'} for c in routine.normal)
+
+
+def test_a_new_character_draws_from_the_common_deck_by_default():
+    deck = {k: v for k, v in WREN['deck'].items() if k != 'shared'}
+    p = cb.compose(WORLD, WREN | {'deck': deck}, ART)
+    assert p['deck']['shared'] == 'lifecycle+routine'
+    definition = cb.compose_definition(BASE, cb.load_package(p))
+    shared = {c.id for c in BASE.normal if c.audience == 'shared'}
+    assert shared <= {c.id for c in definition.normal} and {c.audience for c in definition.normal} == {'shared', 'custom.wren-calloway'}
 
 
 def test_dominant_theme_gets_more_draws_through_the_existing_shuffle():

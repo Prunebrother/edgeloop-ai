@@ -2,6 +2,12 @@
 
 EdgeLoop AI adds local AI companions to [EdgeLoop by marshallmims](https://github.com/marshallmims/edgeloop), based on version 1.1.4.33, upstream commit `d3c5df33834f6106796e3768ad283d0eb5ab1ef9`. Maintained by Prunebrother. Experimental software for adults; physical safety has not been verified.
 
+## Test build: v0.9.0-rc1 (Linux and Windows)
+
+[v0.9.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.9.0-rc1) is a pre-release for play-testing. It introduces **Mira**, a new shapeshifting companion with her own agenda, gives every companion an animated portrait, and lets each companion talk at the temperature set in its own model, so they repeat themselves far less. The Windows build is still experimental. The current release below remains the recommended version for everyone else.
+
+**Windows 10/11 (experimental):** download `EdgeLoop-AI-Setup-v0.9.0-rc1.exe` from the [release page](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.9.0-rc1) and run it. **Linux:** `curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.9.0-rc1/install.sh && bash install.sh`
+
 ## Current release: v0.8.0-rc1 (Linux and Windows)
 
 [v0.8.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.8.0-rc1) brings the Character Builder, several orgasms per session with an **I came** button, companions that run the next round on their own, and an experimental Windows installer. The Windows build has not been hardware tested yet, so keep your toy's own stop button within reach. The previous release, [v0.4.0](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.4.0), stays available. Install instructions for both platforms are in [INSTALL.md](INSTALL.md) and on the release page.
@@ -19,7 +25,7 @@ bash install.sh
 
 The installer downloads and verifies the complete release, installs into your account without sudo, creates **EdgeLoop AI** and **Stop EdgeLoop AI** application shortcuts, and opens the app. Accept the adult-use gate, then chat with Nova or choose another companion. No Python, Node, Ollama or model commands are needed. Keep approximately 25 GB free during installation; the download is about 9 GB, most of it base-model weights. Downloads resume when you rerun the installer. You can remove its download cache after installation.
 
-The complete bundle includes all 48 original character portraits, four prepared character models for Evelyn, Daisy, Celeste and Nova, the base-model weight set, Ollama 0.40.13, portable Python 3.12.16, pinned Python dependencies and local browser libraries. A source ZIP or Git clone includes the artwork and model definitions; use the **Release installer** for runtimes and weights.
+The complete v0.8.0-rc1 bundle includes all 48 original character portraits, four prepared character models for Evelyn, Daisy, Celeste and Nova (v0.9.0-rc1 adds Mira: 60 portraits with animated loops and five character models), the base-model weight set, Ollama 0.40.13, portable Python 3.12.16, pinned Python dependencies and local browser libraries. A source ZIP or Git clone includes the artwork and model definitions; use the **Release installer** for runtimes and weights.
 
 Inference runs locally. A CPU can run the models slowly; compatible NVIDIA hardware can accelerate the bundled runtime. Available RAM/VRAM must accommodate the model and its context. No universal minimum or latency guarantee has been established. Windows is supported experimentally through its own setup program. AMD ROCm acceleration, macOS, ARM and non-systemd installation are outside this bundle's tested scope.
 

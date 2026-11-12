@@ -40,14 +40,27 @@ def plan(rev, rules):
     keep = set(rules['keep'])
     catalog = json.loads(subprocess.check_output(['git', '-C', str(ROOT), 'show', f"{rev}:{rules['art']['catalog']}"]))
     portraits = {p.lstrip('/') for c in catalog['characters'].values() for p in c['expressions'].values()}
+    animations = set()
+    for character in catalog['characters'].values():
+        for expression, clips in character.get('animations', {}).items():
+            if expression not in catalog['expressions'] or not isinstance(clips, dict):
+                raise ValueError('Invalid animation expression or formats')
+            for fmt, asset in clips.items():
+                if fmt not in {'webm', 'mp4'} or not isinstance(asset, str) or not re.fullmatch(
+                        r'/Character_Art/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.' + fmt, asset):
+                    raise ValueError('Invalid curated animation path or format')
+                animations.add(asset.lstrip('/'))
+
     for name in files:
         if name in keep:
             continue
         reason = next((r for rx, r in patterns if rx.match(name)), None)
-        if reason is None and name.startswith(rules['art']['root']) and name not in portraits:
+        if reason is None and name.startswith(rules['art']['root']) and name not in portraits | animations:
             reason = rules['art']['reason']
         if reason:
             excluded[name] = reason
+    if animations - set(files):
+        raise ValueError('Declared animation is not committed')
     missing_keep = sorted(keep - set(files))
     return [n for n in files if n not in excluded], excluded, missing_keep, portraits
 
