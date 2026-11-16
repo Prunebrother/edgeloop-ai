@@ -20,9 +20,12 @@ from companion_ai.llm import ChatMessage, LLMRequest, OllamaProvider
 from companion_ai.models import AIConfig
 from companion_ai.system_rules import SYSTEM_RULES
 
-NAME = 'mira-narrative-v1:latest'
+# F2.9 layered standard: the parent holds base + sampling, the f29 child carries the reviewed SYSTEM.
+NAME = 'mira-narrative-f29-v015:latest'
+PARENT = 'mira-narrative-v1:latest'
 BASE = 'huihui_ai/qwen3.5-abliterated:9b'
-SOURCE = ROOT / 'characters/models/mira-narrative-v1/Modelfile'
+SOURCE = ROOT / 'characters/models/mira-narrative-f29-v015/Modelfile'
+PARENT_SOURCE = ROOT / 'characters/models/mira-narrative-v1/Modelfile'
 PARAMETERS = {'temperature': .7, 'top_p': .9, 'top_k': 20, 'num_ctx': 8192}
 CASES = [
     {'id': 'neutral', 'expression': 'neutral', 'prompt': 'Tell me one harmless interest of yours. Just ordinary conversation.',
@@ -57,15 +60,20 @@ def source_system(text):
 
 def offline_checks():
     text = SOURCE.read_text()
+    parent = PARENT_SOURCE.read_text()
+    candidate = SOURCE.parent / 'SYSTEM.CANDIDATE.txt'
     definition = json.loads((SOURCE.parent / 'character.REVIEW.yaml').read_text())
     template = ROOT / 'Characters_F2.9_update/Empty_Templates/character.template.yaml'
     keys = re.findall(r'^([a-z_]+):', template.read_text(), re.M)
     checks = {
         'standard_template_sections': set(definition) == set(keys),
         'model_identity': definition['metadata']['character_id'] == 'mira' and 'HELIX-MORPH/09' in text,
-        'supported_local_base': re.findall(r'^FROM (.+)$', text, re.M) == [BASE],
-        'inherited_native_template': not re.search(r'^(?:TEMPLATE|ADAPTER|MESSAGE)\b|^PARAMETER stop\b', text, re.M),
-        'sampling_parameters': {k: float(v) for k, v in re.findall(r'^PARAMETER (\w+) ([0-9.]+)$', text, re.M)} == PARAMETERS,
+        'f29_child_of_parent': re.findall(r'^FROM (.+)$', text, re.M) == [PARENT],
+        'parent_on_supported_local_base': re.findall(r'^FROM (.+)$', parent, re.M) == [BASE],
+        'inherited_native_template': not any(re.search(r'^(?:TEMPLATE|ADAPTER|MESSAGE)\b|^PARAMETER stop\b', t, re.M) for t in (text, parent)),
+        'sampling_in_parent_only': {k: float(v) for k, v in re.findall(r'^PARAMETER (\w+) ([0-9.]+)$', parent, re.M)} == PARAMETERS
+                                   and not re.search(r'^PARAMETER\b', text, re.M),
+        'system_candidate_matches': candidate.is_file() and candidate.read_text().rstrip('\n') == source_system(text),
         'twelve_existing_expressions': len(EXPRESSIONS) == 12 and 'disappointed' in EXPRESSIONS,
         'six_required_dialogue_cases': [c.get('expression') for c in CASES[:6]] == ['neutral','flirty','mischievous','focused','concerned','comforting'],
         'standalone_system_present': len(source_system(text)) > 1000,
@@ -98,19 +106,25 @@ def prepare(host, build=False):
     tags = {m['name'] for m in api(host, '/api/tags').get('models', [])}
     if BASE not in tags:
         raise RuntimeError('Supported base is not installed on this Ollama server; no download or build attempted')
-    wanted = source_system(SOURCE.read_text())
-    if NAME in tags:
-        current = api(host, '/api/show', {'model': NAME})
-        if current.get('system', '').strip() != wanted.strip():
-            raise RuntimeError('The target tag already has different instructions; preserving it instead of overwriting')
+    # Parent first (base + sampling), then the f29 child that FROMs it.
+    todo = []
+    for name, source in ((PARENT, PARENT_SOURCE), (NAME, SOURCE)):
+        if name in tags:
+            current = api(host, '/api/show', {'model': name})
+            if current.get('system', '').strip() != source_system(source.read_text()).strip():
+                raise RuntimeError(f'{name} already has different instructions; preserving it instead of overwriting')
+        else:
+            todo.append((name, source))
+    if not todo:
         return {'status': 'already_present', 'model': NAME}
     if not build:
         raise RuntimeError('Mira is not installed; rerun with --live --build to create it from the already installed base')
-    result = subprocess.run(['ollama', 'create', NAME, '-f', str(SOURCE)],
-        env=dict(os.environ, OLLAMA_HOST=host), capture_output=True, text=True, timeout=90)
-    if result.returncode:
-        raise RuntimeError('ollama create failed: ' + result.stderr[-1200:])
-    return {'status': 'created', 'model': NAME}
+    for name, source in todo:
+        result = subprocess.run(['ollama', 'create', name, '-f', str(source)],
+            env=dict(os.environ, OLLAMA_HOST=host), capture_output=True, text=True, timeout=90)
+        if result.returncode:
+            raise RuntimeError('ollama create failed: ' + result.stderr[-1200:])
+    return {'status': 'created', 'model': NAME, 'created': [n for n, _ in todo]}
 
 
 async def dialogue(host):

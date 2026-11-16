@@ -46,7 +46,7 @@ PRIOR={'edges':7,'seconds':720,'experience':'classic','goal':'tease','outcome':'
 
 def test_arrival_cards_ship_without_story_memory_or_scheduling_rules_and_leave_the_deck_alone():
  assert {c.id for c in DEFINITION.arrival}=={'arrival-returning','arrival-first','arrival-greeting'}
- assert all(c.kind=='arrival' and c.memory=='none' for c in DEFINITION.arrival) and RAW['revision']==6
+ assert all(c.kind=='arrival' and c.memory=='none' for c in DEFINITION.arrival) and RAW['revision']==7
  assert not {c.id for c in DEFINITION.arrival}&{c.id for c in DEFINITION.normal}
 
 def test_an_arrival_card_cannot_write_story_memory():
@@ -136,7 +136,7 @@ async def test_a_returning_player_gets_only_their_last_session_with_this_compani
  r.observation.journal=journal([record(s.active_model_id,now_ms=now_ms(r),edges=7,seconds=720),record('ollama:http://127.0.0.1:11434:evelyn:latest',sid='other',edges=99,now_ms=now_ms(r))])
  await play(s)
  text=prompt(wire)
- assert spoken(frames)==['Well, here you are. Shall we begin, or just talk?'] and 'Previous session: 7 edges in 12 minutes.' in text and 'Last recorded session: ended about 3 days ago.' in text
+ assert spoken(frames)==['Well, here you are. Shall we begin, or just talk?'] and 'Edges in the previous session: 7.' in text and 'Length of the previous session: 12 minutes.' in text and 'Last recorded session: ended about 3 days ago.' in text
  assert 'Experience' not in text and 'Goal' not in text and 'The participant stopped it' in text
  assert '99' not in sent(wire) and '171' not in sent(wire) and 'first session' not in text.lower()
 
@@ -146,7 +146,7 @@ async def test_high_and_low_counts_get_the_same_unprescribed_instruction(edges):
  r.observation.journal=journal([record(s.active_model_id,now_ms=now_ms(r),edges=edges)])
  await play(s)
  text=prompt(wire)
- assert f'Previous session: {edges} edge' in text and 'No reaction is expected' in text and 'no figure is automatically good or bad' in text
+ assert f'Edges in the previous session: {edges}.' in text and 'No reaction is expected' in text and 'no figure is automatically good or bad' in text
  assert 'never stated as fact' in text and 'ignore pain' not in text and 'standards' not in text
 
 async def test_a_confirmed_empty_journal_acknowledges_a_first_session():
@@ -563,7 +563,7 @@ async def test_arrival_takes_story_direction_too():
  r,s,wire,frames=await idle();r.observation.journal=journal([record(s.active_model_id,now_ms=now_ms(r))])
  s.narrative.update_objective('create',{'premise':'You are playing the stern inspector.'})
  await play(s)
- assert 'playing the stern inspector' in prompt(wire) and 'Previous session: 7 edges' in prompt(wire)
+ assert 'playing the stern inspector' in prompt(wire) and 'Edges in the previous session: 7.' in prompt(wire)
 
 async def test_a_paused_direction_is_ignored():
  r,s,wire,frames=await idle();r.observation.journal=journal()

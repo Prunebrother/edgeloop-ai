@@ -363,7 +363,7 @@ async def test_a_returning_greeting_gets_the_time_from_the_journal_stamp_first(d
     text = prompt(wire)
     assert f'Last recorded session: ended {words}. That is how long ago it ended, not how long it ran or when you last spoke.' in text
     assert 'only contact' not in text and 'say roughly how long ago that session was' in text
-    assert text.index(words) < text.index('Previous session:')
+    assert text.index(words) < text.index('Edges in the previous session:')
 
 
 async def test_a_record_with_no_usable_stamp_gets_no_time_to_mention():

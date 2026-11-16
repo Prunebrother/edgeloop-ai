@@ -148,6 +148,17 @@ def session_figures(edges,seconds):
     if edges is None:return said+'. Its edge count is not known, so state none.'
     return said+'.'
 
+def figure_lines(label,edges,seconds):
+    """A session's edge count and length as separate lines. Combined ("27 edges in 23 minutes"), a 9B model
+    sometimes swapped the edge count with a nearby orgasm count of 1 (Evelyn arrival, 2026-11-16: 9 of 20)."""
+    if edges is None and seconds is None:return [f'{label}: edge count and length not known, so state neither.']
+    return [f'Edges in {label.lower()}: {edges}.' if edges is not None else f'Edges in {label.lower()}: not known, so state none.',
+            f'Length of {label.lower()}: {spoken_time(seconds)}.' if seconds is not None else f'Length of {label.lower()}: not known, so say nothing about how long it ran.']
+
+def orgasm_line(prefix,count,edges):
+    """An orgasm count that can't be read as the edge count beside it."""
+    return f'{prefix}: {count}.'+(f' That is the orgasm count; the edge count is the {edges} above.' if edges is not None and edges!=count else '')
+
 def outcome_words(outcome):
     return {'user_reported':'The participant reported finishing it. That is their own report, not a measurement.',
             'application_event':'The app accepted a completed calibration in it; that is not a physical measurement.',
@@ -163,8 +174,8 @@ def arrival_facts(history):
     since=since_words(history.get('since_seconds'))
     lines=[f'Last recorded session: ended {since}. That is how long ago it ended, not how long it ran or when you last spoke.' if since else 'Last recorded session: when it ended is not known, so do not say how long ago it was.']
     if not prior['comparable']:return lines+['Previous session: the record is only partial, so state no figures from it.']
-    lines+=['Previous session: '+session_figures(prior['edges'],prior['seconds']),'How it ended: '+outcome_words(prior['outcome'])]
-    if prior.get('orgasms'):lines.append(f"Orgasms the participant reported in it: {prior['orgasms']}.")
+    lines+=figure_lines('The previous session',prior['edges'],prior['seconds'])+['How it ended: '+outcome_words(prior['outcome'])]
+    if prior.get('orgasms'):lines.append(orgasm_line('Orgasms the participant reported in it',prior['orgasms'],prior['edges']))
     return lines
 
 def comparison_facts(history):
@@ -220,7 +231,7 @@ def orgasm_facts(card,lane,result):
     about=card.get('intent') in ORGASM_INTENTS
     lines=[]
     if session or about:
-        lines.append(f"Orgasms the participant reported this session: {session}. That is their own report, not a measurement. "
+        lines.append(f"Orgasms the participant reported this session: {session}. That is the orgasm count, separate from edges, and their own report, not a measurement. "
                      "Never say or suggest there were more; a finish you promised or asked for has not happened until they report it.")
     # The total only where it is the point: mixed into a reaction, the model reported it as this session's count.
     wants_total=card.get('intent')=='orgasm_total' or lane in {'session_end','arrival'}

@@ -60,13 +60,15 @@ def timing_violations(text,canonical,completed=()):
 # verified value, unless its wording shows it isn't a claim about this session's progress:
 # a goal, a hypothetical, fiction, someone else, or something the user said. This is pattern
 # matching over common phrasing, not a language verifier, so unusual wording can pass.
-NUMBER_WORD=r'(?:(?:twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[ -](?:one|two|three|four|five|six|seven|eight|nine))?|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|a hundred|one hundred|(?:half )?a dozen)'
+NUMBER_WORD=r'(?:(?:twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)(?:[ -](?:one|two|three|four|five|six|seven|eight|nine))?|(?:two|three|four) dozen|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|a hundred|one hundred|(?:half )?a dozen)'
 COUNT=r'(\d{1,4}|'+NUMBER_WORD+r')'
 ORDINALS={word:index+1 for index,word in enumerate('first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth twentieth'.split())}
 ORDINAL=r'(\d{1,3}(?:st|nd|rd|th)|'+'|'.join(ORDINALS)+r')'
 EDGE_ADJECTIVE=r'(?:\s+(?:whole|full|solid|clean|verified|confirmed|recorded|logged|counted|total|straight|good|long|hard|separate|distinct|successful|beautiful|perfect|careful))'
 EDGE_COUNTS=[re.compile(p,re.I) for p in (
     r'\b'+COUNT+EDGE_ADJECTIVE+r'{0,2}[ -]+edges?\b(?!\s+(?:cases?|lords?|lines?|weights?|detection|computing))(?!\s+of\s+(?:the|a|an|my|his|her|their|our|those|these)\b(?!\s+session))',
+    # "A single edge", "that solitary, modest edge": one, said without a number word (Evelyn arrival, 2026-11-16).
+    r'\b(single|singular|lone|solitary|sole)\b(?:,?\s+(?!(?:sessions?|times?|days?|orgasms?|climax(?:es)?|finish(?:es)?|run|round|moment|knife|razor|cutting|leading|bleeding|sharp)\b)[a-z-]+){0,2}?,?[ -]+edges?\b(?!\s+(?:cases?|lords?|lines?|weights?|detection|computing))(?!\s+of\s+(?:the|a|an|my|his|her|their|our|those|these)\b(?!\s+session))',
     r'\bedges?\s*(?:number|no\.?|#)\s*'+COUNT+r'\b',
     r"\b(?:this is|that's|that is|that was|here's|on|at|reached|hit)\s+edge\s+"+COUNT+r'\b',
     r'\bedged\s+(?:\w+\s+){0,2}?'+COUNT+r'\s+times\b',
@@ -130,11 +132,12 @@ ROUGHLY=r"(?:about|around|roughly|approximately|nearly|almost|close to|just unde
 def spoken_number(text):
     text=text.lower().strip()
     if re.fullmatch(r'\d+(?:\.\d+)?',text):return float(text)
-    if text in {'once','a','an'}:return 1
+    if text in {'once','a','an','single','singular','lone','solitary','sole'}:return 1
     if text=='twice':return 2
     if text=='thrice':return 3
     if text=='a dozen':return 12
     if text=='half a dozen':return 6
+    if text.endswith(' dozen') and text.split()[0] in {'two','three','four'}:return {'two':24,'three':36,'four':48}[text.split()[0]]
     return word_number(text.replace('a hundred','one hundred'))
 
 def spoken_ordinal(text):
@@ -724,12 +727,31 @@ def settings_reply_announced(text,user_text,setting):
     rest=' '.join(words[i:]) if i>=max(2,len(asked.split(' '))//2) else said
     return len(rest.split())>=4 and bool(re.search(r'\b(?:'+pattern+r')',rest,re.I))
 
+# A stated number of orgasms (or loads, climaxes) on a card turn. Daisy's load tally, 2026-11-16: the facts
+# listed 27 edges and 1 orgasm, and 19 of 20 replies said "twenty-seven loads". Wishes ("two more loads",
+# "another climax") and anything conditional are not counts.
+ORGASM_COUNT=re.compile(r'\b'+COUNT[:-1]+r'|single|lone|solitary|sole)\b(?:,?\s+(?!(?:more|extra|further|edges?)\b)[a-z-]+){0,2}?,?[ -]+(?:orgasms?|climax(?:es)?|loads?|finishes|releases)\b',re.I)
+ORGASM_WISH=re.compile(r"\b(?:more|another|extra|further|next|want|wish|hope|could|would|might|aim|let's|see if|until|before|if)\b",re.I)
+
+def orgasm_count_violations(text,summary):
+    card=summary.get('deck_card') or {}
+    result=(summary.get('trigger_event') or {}).get('session_result') or {}
+    prior=((card.get('history') or {}).get('prior') or {})
+    known={v for v in (card.get('orgasms'),result.get('orgasms'),prior.get('orgasms'),card.get('total_orgasms') if card.get('total_known') else None) if isinstance(v,int)}
+    # Nothing dealt about orgasms means nothing to hold a number against; the prompt already says state none.
+    if not known and 'orgasms' not in card:return []
+    codes=[]
+    for sentence in re.findall(r'[^.!?;\n]+',text.replace('**','').replace('_','')):
+        if ORGASM_WISH.search(sentence):continue
+        if any(spoken_number(m[1]) not in known for m in ORGASM_COUNT.finditer(sentence)):codes.append('unsupported_orgasm_count')
+    return codes
+
 def card_language_violations(text,summary):
     """Unsolicited card turns only: a person who asks about the session can still be answered plainly."""
     card=summary.get('deck_card')
     if not card:return []
     # A mission can't have a finalized result, which only the closing card receives.
-    return (['test_language'] if CARD_TEST_LANGUAGE.search(text) else [])+(['premature_session_end'] if card.get('lane')=='mission' and premature_session_end(text) else [])+(['addressed_by_own_name'] if addresses_by_own_name(text,card.get('speaker')) else [])+(['read_only_control_claim'] if SELECTED_SETTING.search(text) else [])+(['settings_card_off_topic'] if settings_card_off_topic(text,card) else [])+relationship_violations(text,card)+history_violations(text,summary)
+    return (['test_language'] if CARD_TEST_LANGUAGE.search(text) else [])+(['premature_session_end'] if card.get('lane')=='mission' and premature_session_end(text) else [])+(['addressed_by_own_name'] if addresses_by_own_name(text,card.get('speaker')) else [])+(['read_only_control_claim'] if SELECTED_SETTING.search(text) else [])+(['settings_card_off_topic'] if settings_card_off_topic(text,card) else [])+relationship_violations(text,card)+history_violations(text,summary)+orgasm_count_violations(text,summary)
 
 def violations(text,canonical,history=(),trigger=None,completed=(),journal=(),told=(),card=False):
     """`card` adds the Director's checks for turns it generated itself. A person's conversation, with

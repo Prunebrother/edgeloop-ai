@@ -1,5 +1,14 @@
 # Mira — HELIX-MORPH/09 (editable narrative draft)
 
+> **Status 2026-11-16: F2.9 standard.** Mira now follows the same two-model layout as the cast.
+> This folder is the **parent** `mira-narrative-v1` (base model and sampling, built as a release
+> intermediate). The model the app uses is `mira-narrative-f29-v015`
+> (`../mira-narrative-f29-v015/`: `FROM mira-narrative-v1:latest` plus the reviewed SYSTEM,
+> `SYSTEM.CANDIDATE.txt` and `character.REVIEW.yaml` 0.1.5). The persona text is unchanged
+> from the tuned v1 (700494c). `tools/check_mira.py --live --build` creates the parent first,
+> then the f29 model. Live smoke 2026-11-16: 12/12 offline checks, 10/10 dialogue cases.
+> See `docs/fork/NEW_CHARACTER_GUIDE.md`.
+
 > **Status 2026-11-12: standard companion (dev only, not in a release).** Mira now runs like
 > Nova, Celeste, Evelyn and Daisy: her own Modelfile persona (temperature 0.7, applied by
 > Ollama because the app no longer overrides Modelfile sampling), her twelve portraits in

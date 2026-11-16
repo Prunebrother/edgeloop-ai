@@ -42,7 +42,7 @@ def drawn(target,ctx,limit=120):
 # Inventory
 
 def test_the_shipped_library_is_valid_and_has_a_new_revision():
- assert ERROR is None and DEFINITION.revision==6 and RAW['schema_version']==1
+ assert ERROR is None and DEFINITION.revision==7 and RAW['schema_version']==1
 
 @pytest.mark.parametrize('intent,count',[('edge_commentary',2),('session_duration',2),('hr_trend',3),('encouragement',2),('performance_observation',2),('playful_challenge',2),('recovery',2),('general_conversation',4),('finish_encouragement',2)])
 def test_every_shared_category_is_present(intent,count):
