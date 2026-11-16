@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.10.0-rc1 — calmer portraits, sharper companions
+
+<!-- Linux and Windows (Windows experimental). Same as v0.9.0-rc1 plus the changes below. New model: mira-narrative-f29-v015 (Mira's persona is unchanged); the other companions' models are unchanged. -->
+
+- Animated portraits: the background no longer moves with the character. Each companion is now animated as a cut-out over a still background, so the scenery beside her hair and shoulders stays put. Poses, faces and style are the same as before; Mira moves a little more fluidly, as a slime girl should.
+- Companions keep their numbers straight: a returning greeting no longer mixes up how many edges and how many orgasms your last session had, and Daisy's tally of your loads counts orgasms, not edges. Replies that state a wrong number of edges or orgasms are now caught and corrected before you see them.
+- Mira now runs on the same model layout as the other companions (mira-narrative-f29-v015), so she installs and updates like them.
+
 ## v0.9.0-rc1 — test build: meet Mira, animated portraits (pre-release)
 
 <!-- Release candidate for play-testing. Linux and Windows. Same as v0.8.0-rc1 plus the changes below. New model: mira-narrative-v1; the other companions' models are unchanged. -->

@@ -54,7 +54,7 @@ async def test_arrival_sees_the_session_the_idle_observer_still_names():
  history=s.session_history()
  assert history['status']=='found' and history['prior']['edges']==4
  await play(s)
- assert 'first session' not in prompt(wire).lower() and 'Previous session: 4 edges' in prompt(wire)
+ assert 'first session' not in prompt(wire).lower() and 'Edges in the previous session: 4.' in prompt(wire)
  assert s.arrival.state=='delivered'
 
 async def test_arrival_never_claims_a_first_session_when_the_only_record_is_the_retained_one():
@@ -617,7 +617,7 @@ async def test_unauthorized_figures_reach_no_part_of_the_prompt(state):
 async def test_authorized_figures_arrive_only_as_dealt():
  r,s,wire,stored=await arrival_after_a_session('found')
  text=arrival_messages(wire)[-1]['content']
- assert 'Previous session: 77 edges' in text and 'logged' not in text and 'I reached' not in text
+ assert 'Edges in the previous session: 77.' in text and 'logged' not in text and 'I reached' not in text
 
 @pytest.mark.parametrize('state',STATES)
 async def test_story_memory_and_stored_conversation_are_preserved(state):
@@ -770,11 +770,11 @@ async def arrival_with(**values):
 async def test_elapsed_time_and_session_length_are_separate_facts():
  text=await arrival_with(edges=4,seconds=230,ago_days=2/24)
  assert 'Last recorded session: ended about 2 hours ago. That is how long ago it ended, not how long it ran or when you last spoke.' in text and 'only contact' not in text
- assert 'Previous session: 4 edges in 3 minutes 50 seconds.' in text and 'Occasion: Returning participant.' in text
+ assert 'Edges in the previous session: 4.' in text and 'Length of the previous session: 3 minutes 50 seconds.' in text and 'Occasion: Returning participant.' in text
 
 async def test_an_unknown_length_is_stated_and_nothing_stands_in_for_it():
  text=await arrival_with(edges=4,seconds=None,ago_days=2/24,completeness='final_duration_unavailable')
- assert 'Previous session: 4 edges. Its length is not known, so say nothing about how long it ran.' in text
+ assert 'Edges in the previous session: 4.' in text and 'Length of the previous session: not known, so say nothing about how long it ran.' in text
  assert 'not how long it ran' in text and 'minutes' not in text.split('Task:')[0]
 
 @pytest.mark.parametrize('line',['Four edges in two hours?','Four edges in just two hours; a brisk pace.','Four hours of pure teasing, and I am still wondering.','Two hours of edging, and you stopped.'])

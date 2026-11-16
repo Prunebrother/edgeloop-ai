@@ -42,9 +42,11 @@ def test_create_uses_installed_base_and_only_the_new_tag(monkeypatch):
         return SimpleNamespace(returncode=0, stderr='')
     monkeypatch.setattr(mira.subprocess, 'run', run)
     assert mira.prepare('http://127.0.0.1:11435', build=True)['status'] == 'created'
-    assert calls[0][0] == ['ollama', 'create', mira.NAME, '-f', str(mira.SOURCE)]
-    assert calls[0][1]['env']['OLLAMA_HOST'] == 'http://127.0.0.1:11435'
-    assert len(calls) == 1  # no pull, no server start, no aliases altered
+    # F2.9 layering: the parent (base + sampling) is created first, then the f29 child that FROMs it.
+    assert calls[0][0] == ['ollama', 'create', mira.PARENT, '-f', str(mira.PARENT_SOURCE)]
+    assert calls[1][0] == ['ollama', 'create', mira.NAME, '-f', str(mira.SOURCE)]
+    assert all(c[1]['env']['OLLAMA_HOST'] == 'http://127.0.0.1:11435' for c in calls)
+    assert len(calls) == 2  # no pull, no server start, no other aliases altered
 
 
 @pytest.mark.parametrize('host', ['https://127.0.0.1', 'http://other.example', 'http://127.0.0.1:11435/private', 'http://user:pass@localhost', 'http://127.0.0.1:99999'])

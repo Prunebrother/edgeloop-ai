@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": 6,
+  "revision": 7,
   "session_start": [
     {"id": "opening", "kind": "session_start", "intent": "session_opening", "occasion": "A session is starting now.", "brief": "Mark the start in your own voice, without guessing how they feel."},
     {"id": "mira-uninvited-company", "kind": "session_start", "audience": "mira", "intent": "unofficial_inspection", "brief": "Use mischievous delivery. Mark this confirmed session start as an entirely unofficial Helix inspection, with cheerful plausible deniability. This is fictional banter, not an actual intrusion, permission to inspect private records or a demand for attention. Introduce no new mission or plot event."}
@@ -16,7 +16,7 @@
   ],
   "normal": [
     {"id": "edge-count-first", "kind": "normal", "intent": "edge_commentary", "brief": "Mention how many edges there have been so far, in your own voice, as a plain tally rather than proof of how anything felt.", "eligibility": {"min_edges": 1, "max_edges": 4}},
-    {"id": "edge-count-many", "kind": "normal", "intent": "edge_commentary", "brief": "React to how the edges have added up this session, using the listed count.", "eligibility": {"min_edges": 5}},
+    {"id": "edge-count-many", "kind": "normal", "intent": "edge_commentary", "brief": "React to how the edges have added up this session, using the listed edge count.", "eligibility": {"min_edges": 5}},
 
     {"id": "duration-settling", "kind": "normal", "intent": "session_duration", "brief": "Mention how long the session has been going, using the listed running time, and tie it to something conversational.", "eligibility": {"min_seconds": 300, "max_seconds": 1199}},
     {"id": "duration-long", "kind": "normal", "intent": "session_duration", "brief": "Remark that this has become a long session, using the listed running time. Do not imply tiredness or stamina.", "eligibility": {"min_seconds": 1200}},
@@ -283,8 +283,8 @@
     {"id": "evelyn-another-load", "kind": "normal", "audience": "evelyn", "intent": "another_round", "brief": "Record, with barely kept composure, that he is still going after that orgasm, and admit you want to find out whether a second yield is possible. Two short sentences, no question.", "eligibility": {"statuses": ["RUNNING"], "phases": ["recovery"]}},
     {"id": "celeste-another-load", "kind": "normal", "audience": "celeste", "intent": "another_round", "brief": "With diplomatic authority, approve that he is still going after that orgasm and make clear the mission would welcome another load. Two short statements, no question.", "eligibility": {"statuses": ["RUNNING"], "phases": ["recovery"]}},
     {"id": "orgasms-session-count", "kind": "normal", "intent": "orgasm_count", "brief": "React to how many orgasms they have reported this session, using the listed count, in character. You may say whether you want another. Never grade them.", "eligibility": {"statuses": ["RUNNING"], "min_orgasms": 1}},
-    {"id": "orgasms-total", "kind": "normal", "intent": "orgasm_total", "brief": "React to the total number of orgasms reported across all your recorded sessions together, using the listed figure. Make it personal to the two of you, never a grade or a target.", "eligibility": {"statuses": ["RUNNING"], "min_total_orgasms": 2}},
-    {"id": "daisy-load-tally", "kind": "normal", "audience": "daisy", "intent": "orgasm_count", "brief": "Compare the listed number of loads this session, warmly and loosely, to a good day of work at Cloverfield. Invent no program figures. Two short sentences, no question.", "eligibility": {"statuses": ["RUNNING"], "min_orgasms": 1}},
+    {"id": "orgasms-total", "kind": "normal", "intent": "orgasm_total", "brief": "React to the total number of orgasms reported across all your recorded sessions together, using the listed total, not this session's count. Make it personal to the two of you, never a grade or a target.", "eligibility": {"statuses": ["RUNNING"], "min_total_orgasms": 2}},
+    {"id": "daisy-load-tally", "kind": "normal", "audience": "daisy", "intent": "orgasm_count", "brief": "Compare the listed number of orgasms this session (his loads, in your words; not the edge count), warmly and loosely, to a good day of work at Cloverfield. Invent no program figures. Two short sentences, no question.", "eligibility": {"statuses": ["RUNNING"], "min_orgasms": 1}},
     {"id": "nova-orgasm-tally", "kind": "normal", "audience": "nova", "intent": "orgasm_count", "brief": "Treat the listed number of orgasms this session as your favourite unpredictable variable, and confess you are curious how high it can go. Two short sentences.", "eligibility": {"statuses": ["RUNNING"], "min_orgasms": 1}},
     {"id": "evelyn-orgasm-tally", "kind": "normal", "audience": "evelyn", "intent": "orgasm_count", "brief": "Offer a dry scientific note on the listed number of orgasms this session as data from one session, with your composure visibly slipping. Draw no physiological conclusion.", "eligibility": {"statuses": ["RUNNING"], "min_orgasms": 1}},
     {"id": "celeste-orgasm-tally", "kind": "normal", "audience": "celeste", "intent": "orgasm_count", "brief": "Give a composed diplomatic verdict on the listed number of orgasms this session as a contribution to the mission, with exacting but warm standards. Two statements, no question.", "eligibility": {"statuses": ["RUNNING"], "min_orgasms": 1}},
@@ -329,7 +329,7 @@
         {"id": "edges-10-reached", "kind": "mission", "intent": "milestone_edges", "occasion": "Ten-edge milestone. The ten-edge objective is complete.", "brief": "React to this achievement in character."}
       ]
     },
-    {"id": "orgasm-reported", "lane": "mission", "repeat": true, "trigger": {"event_kinds": ["orgasm_reported"]}, "steps": [{"id": "orgasm-reported-reaction", "kind": "mission", "intent": "orgasm_reaction", "occasion": "The participant just reported an orgasm with I came. The session keeps running.", "brief": "React to the orgasm they just reported, in character, using the listed counts, and say whether you want to see them keep going. Never treat the session as over."}]},
+    {"id": "orgasm-reported", "lane": "mission", "repeat": true, "trigger": {"event_kinds": ["orgasm_reported"]}, "steps": [{"id": "orgasm-reported-reaction", "kind": "mission", "intent": "orgasm_reaction", "occasion": "The participant just reported an orgasm with I came. The session keeps running.", "brief": "React to the orgasm they just reported, in character, using the listed orgasm counts (not the edge count), and say whether you want to see them keep going. Never treat the session as over."}]},
     {"id": "next-round", "lane": "mission", "repeat": true, "trigger": {"event_kinds": ["round_ready"]}, "steps": [{"id": "next-round-invite", "kind": "mission", "intent": "next_round", "occasion": "The recovery after their last orgasm is over and the warm-up has started again: a new round begins.", "brief": "Kick off another round in character: let them hear you want to see them go again. If you changed a setting for this round, say what and why, briefly. Claim nothing about their body."}]}
   ]
 }
