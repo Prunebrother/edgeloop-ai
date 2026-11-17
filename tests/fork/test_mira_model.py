@@ -76,6 +76,6 @@ async def test_dialogue_cases_use_real_provider_native_persona_and_current_runti
         assert body['model'] == mira.NAME and body['think'] is False
         assert 'tools' not in body
         assert body['options']['num_ctx'] == 8192 and body['options']['num_predict'] == 384
-        assert 'HELIX-MORPH/09' in body['messages'][0]['content']
+        assert 'HELIX-MORPH/08' in body['messages'][0]['content']
         assert mira.FORMAT_INSTRUCTION in body['messages'][0]['content']
         assert mira.SYSTEM_RULES in body['messages'][0]['content']

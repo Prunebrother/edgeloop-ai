@@ -82,6 +82,8 @@ class ProjectionDetails(StrictModel):
     orgasm_count: int = Field(default=0,ge=0,le=1000)
     last_orgasm_seconds: int | None = Field(default=None,ge=0,le=31536000)
     settle_outcome: Literal['premature_release'] | None = None
+    # Calibration: True once the engine wrote the saved maximum to its settings store this session, False if that write failed.
+    calibration_saved: bool | None = None
     terminal_outcome: Literal['calibration_completed','premature_release','survival_restart','manual_stop','cancelled','other_stop','safety_stop'] | None = None
     ease_down_seconds: int | None = Field(ge=0,le=3600)
     rampdown_seconds: int | None = Field(ge=0,le=3600)
@@ -191,6 +193,23 @@ class UpdateObjective(StrictModel):
     action: Literal['create','update','revise','pause','resume','complete','abandon']
     fields: ObjectiveFields | None = None
 
+class CampaignCommand(StrictModel):
+    """Campaign navigation. The observer validates every transition; evidence never comes from the browser's say-so."""
+    version: Literal[1]
+    type: Literal['campaign']
+    action: Literal['get','start','abandon','answer']
+    campaign_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
+    mission_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
+    # A puzzle answer: which puzzle (objective) and which option. The observer checks it; the browser never decides.
+    objective_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
+    answer: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
+
+    @model_validator(mode='after')
+    def targets(self):
+        if self.action=='start' and not (self.campaign_id and self.mission_id):raise ValueError('start needs a campaign and a mission')
+        if (self.action=='answer')!=bool(self.objective_id and self.answer):raise ValueError('answer needs a puzzle and an option, and only answer takes them')
+        return self
+
 class ConfigureContext(StrictModel):
     version: Literal[1]
     type: Literal['configure_context']
@@ -227,7 +246,7 @@ class SettingsOutcome(StrictModel):
     to: SettingValue = None
     clamped: bool | None = None
     undoable: bool | None = None
-    trigger: Literal['own','user','round'] | None = None
+    trigger: Literal['own','user','round','mission'] | None = None
 
 class ConfigureCurator(StrictModel):
     version: Literal[1]
@@ -271,7 +290,7 @@ class JournalCommand(StrictModel):
             raise ValueError('Privacy settings require configure')
         return self
 
-Messages = TypeAdapter(Annotated[Observation|Select|Chat|Models|Cancel|ResetNarrative|CharacterState|ConfigureDirector|ConfigureEvents|ConversationActivity|ConfigureContext|UpdateObjective|JournalCommand|ConfigureCurator|SettingsOutcome|CharacterBuilderCommand,Field(discriminator='type')])
+Messages = TypeAdapter(Annotated[Observation|Select|Chat|Models|Cancel|ResetNarrative|CharacterState|ConfigureDirector|ConfigureEvents|ConversationActivity|ConfigureContext|UpdateObjective|JournalCommand|ConfigureCurator|SettingsOutcome|CharacterBuilderCommand|CampaignCommand,Field(discriminator='type')])
 
 
 def _schema_paths(node):

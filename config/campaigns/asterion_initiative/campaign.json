@@ -1,0 +1,1005 @@
+{
+  "schema_version": 1,
+  "id": "asterion_initiative",
+  "order": 1,
+  "title": "The Asterion Initiative",
+  "description": "Join Asterion's research initiative, meet its specialists, complete introductory assignments, and begin your journey through the EdgeLoop universe.",
+  "artwork": null,
+  "available_from_start": true,
+  "starting_companions": [
+    "nova"
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "id": "introduction",
+      "title": "Introduction",
+      "summary": "Meet Project EdgeLoop, its specialists and your hardware, and earn your certification."
+    },
+    {
+      "number": 2,
+      "id": "advanced_research",
+      "title": "Advanced Research",
+      "summary": "Harder assignments: a larger dataset, a production quota, comparative testing and the Director's reassessment."
+    },
+    {
+      "number": 3,
+      "id": "shadows_of_helix",
+      "title": "Shadows of Helix",
+      "summary": "Sabotage at Asterion and Cloverfield, an intruder in the night, and suspicion that falls on you."
+    },
+    {
+      "number": 4,
+      "id": "rise_of_helix",
+      "title": "Rise of Helix",
+      "summary": "Coming soon.",
+      "teaser": true
+    }
+  ],
+  "missions": [
+    {
+      "id": "orientation",
+      "order": 1,
+      "title": "Orientation",
+      "companion": "nova",
+      "difficulty": "introductory",
+      "summary": "Nova welcomes you to Project EdgeLoop and walks you through your first session.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Nova"
+        },
+        {
+          "id": "edge",
+          "type": "edge_count",
+          "count": 1,
+          "label": "Reach 1 edge"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "unlock_companion",
+          "id": "evelyn",
+          "label": "Dr. Evelyn Voss joins the campaign"
+        }
+      ],
+      "story": {
+        "chapter": 1,
+        "tags": [
+          "introduction"
+        ]
+      }
+    },
+    {
+      "id": "first_assessment",
+      "order": 2,
+      "title": "First Assessment",
+      "companion": "evelyn",
+      "difficulty": "introductory",
+      "prerequisites": [
+        "orientation"
+      ],
+      "summary": "Dr. Evelyn Voss needs repeated edges for her prolonged-edging study.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Evelyn"
+        },
+        {
+          "id": "edges",
+          "type": "edge_count",
+          "count": 5,
+          "label": "Reach 5 edges in this session"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "unlock_companion",
+          "id": "daisy",
+          "label": "Daisy Mae Harper joins the campaign"
+        }
+      ],
+      "story": {
+        "chapter": 1,
+        "tags": [
+          "asterion"
+        ]
+      }
+    },
+    {
+      "id": "country_connections",
+      "order": 3,
+      "title": "Country Connections",
+      "companion": "daisy",
+      "difficulty": "introductory",
+      "prerequisites": [
+        "first_assessment"
+      ],
+      "summary": "Daisy welcomes you to Cloverfield Farm and its production quota.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Daisy"
+        },
+        {
+          "id": "orgasm",
+          "type": "orgasm_count",
+          "count": 1,
+          "label": "Have 1 orgasm and report it"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "unlock_companion",
+          "id": "celeste",
+          "label": "Celeste joins the campaign"
+        }
+      ],
+      "hints": [
+        "An orgasm counts when you report it in EdgeLoop: I came, Finished me or Came Early."
+      ],
+      "story": {
+        "chapter": 1,
+        "tags": [
+          "cloverfield"
+        ]
+      }
+    },
+    {
+      "id": "directors_test",
+      "order": 4,
+      "title": "The Director's Test",
+      "companion": "celeste",
+      "difficulty": "standard",
+      "prerequisites": [
+        "country_connections"
+      ],
+      "summary": "Celeste runs her own evaluation of your potential.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Celeste"
+        },
+        {
+          "id": "edges",
+          "type": "edge_count",
+          "count": 5,
+          "label": "Reach 5 edges in this session"
+        },
+        {
+          "id": "orgasm",
+          "type": "orgasm_count",
+          "count": 1,
+          "label": "Have 1 orgasm in the same session"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "assessments_passed",
+          "label": "All four assessments passed"
+        }
+      ],
+      "hints": [
+        "Both counts must happen in one session. If the session ends first, the next session starts again from zero."
+      ],
+      "story": {
+        "chapter": 1,
+        "tags": [
+          "irra"
+        ]
+      }
+    },
+    {
+      "id": "certification",
+      "order": 5,
+      "title": "Asterion Certification",
+      "companion": "nova",
+      "difficulty": "standard",
+      "prerequisites": [
+        "directors_test"
+      ],
+      "summary": "Nova sets your baseline: a Calibration run that saves your maximum heart rate.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a Calibration session with Nova"
+        },
+        {
+          "id": "orgasm",
+          "type": "orgasm_count",
+          "count": 1,
+          "label": "Finish the run with Finished me"
+        },
+        {
+          "id": "calibrated",
+          "type": "calibration_completed",
+          "label": "Complete the Calibration run"
+        },
+        {
+          "id": "saved",
+          "type": "calibration_saved",
+          "label": "Save your maximum heart rate"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "baseline_established",
+          "label": "Baseline metrics established"
+        },
+        {
+          "type": "chapter_complete",
+          "id": "introduction",
+          "label": "Chapter 1: Introduction complete"
+        }
+      ],
+      "session": {
+        "active_mode": "calibrate",
+        "label": "Calibration"
+      },
+      "settings_control": {
+        "allowed": [
+          "intensity"
+        ]
+      },
+      "hints": [
+        "Choose Calibration in EdgeLoop (Calibrate button), then press play.",
+        "Edged saves your max before an orgasm but ends the run without one; certification needs the run to end with Finished me.",
+        "After Finished me your max is saved at once. The toys then ease down and the run ends by itself; pressing Stop during the ease-down still counts.",
+        "During this mission Nova may only change the intensity. You can stop at any time."
+      ],
+      "story": {
+        "chapter": 1,
+        "tags": [
+          "certification"
+        ]
+      }
+    },
+    {
+      "id": "endurance_study",
+      "order": 6,
+      "title": "The Endurance Study",
+      "companion": "evelyn",
+      "difficulty": "standard",
+      "prerequisites": [
+        "certification"
+      ],
+      "summary": "Dr. Voss wants a far larger dataset for her research into repeated edging cycles.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Evelyn"
+        },
+        {
+          "id": "edges",
+          "type": "edge_count",
+          "count": 15,
+          "milestones": [
+            5,
+            10
+          ],
+          "label": "Reach 15 edges in one session"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "endurance_dataset",
+          "label": "Endurance dataset recorded"
+        }
+      ],
+      "hints": [
+        "All 15 edges must happen in one session. Pausing is fine; if the session ends first, the next one starts again from zero."
+      ],
+      "story": {
+        "chapter": 2,
+        "tags": [
+          "asterion"
+        ]
+      }
+    },
+    {
+      "id": "cloverfield_quota",
+      "order": 7,
+      "title": "The Cloverfield Quota",
+      "companion": "daisy",
+      "difficulty": "standard",
+      "prerequisites": [
+        "endurance_study"
+      ],
+      "summary": "Cloverfield Farm has a higher production quota to meet, and Daisy needs your help.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Daisy"
+        },
+        {
+          "id": "orgasms",
+          "type": "orgasm_count",
+          "count": 2,
+          "milestones": [
+            1
+          ],
+          "label": "Report 2 orgasms in one session"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "cloverfield_quota",
+          "label": "Cloverfield quota contribution recorded"
+        }
+      ],
+      "hints": [
+        "An orgasm counts when you report it in EdgeLoop. I came keeps the session running, so use it for the first one; Came Early ends the session.",
+        "Both must happen in one session. Pausing between them is fine; if the session ends first, the next one starts again from zero."
+      ],
+      "story": {
+        "chapter": 2,
+        "tags": [
+          "cloverfield"
+        ]
+      }
+    },
+    {
+      "id": "adaptive_calibration",
+      "order": 8,
+      "title": "Adaptive Systems Calibration",
+      "companion": "nova",
+      "difficulty": "standard",
+      "prerequisites": [
+        "cloverfield_quota"
+      ],
+      "summary": "Nova needs comparative data: four different play styles, five minutes each.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Nova"
+        },
+        {
+          "id": "styles",
+          "type": "style_stages",
+          "count": 4,
+          "seconds": 300,
+          "label": "Run 4 different play styles for 5 minutes each"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "adaptive_dataset",
+          "label": "Comparative dataset saved"
+        }
+      ],
+      "settings_control": {
+        "allowed": [
+          "play_style",
+          "game"
+        ],
+        "directed": true
+      },
+      "hints": [
+        "Choose any four play styles. Time counts only while the session runs with no game switched on; pauses do not count.",
+        "Switch play style whenever you like. Each style keeps its time, and one style fills only one stage.",
+        "All four stages must happen in one session.",
+        "With AI Settings Control on, Nova switches to a new play style herself each time one has its 5 minutes (and switches a game off). She makes no other changes during this mission. You can still change anything yourself."
+      ],
+      "story": {
+        "chapter": 2,
+        "tags": [
+          "asterion"
+        ]
+      }
+    },
+    {
+      "id": "directors_reassessment",
+      "order": 9,
+      "title": "The Director's Reassessment",
+      "companion": "celeste",
+      "difficulty": "challenge",
+      "prerequisites": [
+        "adaptive_calibration"
+      ],
+      "summary": "Celeste returns for a 30-minute staged assessment of your progress.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Celeste"
+        },
+        {
+          "id": "assessment",
+          "type": "stage_sequence",
+          "label": "Complete the 30-minute staged assessment",
+          "tolerance": 2,
+          "stages": [
+            {
+              "id": "baseline",
+              "label": "Baseline",
+              "seconds": 600,
+              "intensity": 75
+            },
+            {
+              "id": "development",
+              "label": "Development",
+              "seconds": 600,
+              "intensity": 100
+            },
+            {
+              "id": "final",
+              "label": "Final Assessment",
+              "seconds": 600,
+              "intensity": 125
+            }
+          ]
+        },
+        {
+          "id": "finish",
+          "type": "orgasm_count",
+          "count": 1,
+          "after": "assessment",
+          "label": "Then report your orgasm"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "chapter_complete",
+          "id": "advanced_research",
+          "label": "Chapter 2: Advanced Research complete"
+        }
+      ],
+      "settings_control": {
+        "allowed": [
+          "intensity"
+        ],
+        "directed": true,
+        "after": "assessment",
+        "then_allowed": [
+          "intensity",
+          "orgasm"
+        ]
+      },
+      "review": [
+        "endurance_study",
+        "cloverfield_quota",
+        "adaptive_calibration"
+      ],
+      "hints": [
+        "Set the intensity yourself: 75% for the first 10 minutes, then 100%, then 125%. Within 2% counts.",
+        "The stage clock runs only while the session runs at the stage's intensity. Pausing or another level stops it; no time is lost.",
+        "After 30 minutes, report your orgasm (I came or Finished me). You may switch on Force Orgasm for it.",
+        "With AI Settings Control on, Celeste sets each stage's intensity herself and switches on Force Orgasm when the 30 minutes are done. She makes no other changes during this mission. Your AI intensity limits must reach 125% (the default does). You can pause or stop at any time.",
+        "Everything must happen in one session."
+      ],
+      "story": {
+        "chapter": 2,
+        "tags": [
+          "irra"
+        ]
+      }
+    },
+    {
+      "id": "the_anomaly",
+      "order": 10,
+      "title": "The Anomaly",
+      "companion": "evelyn",
+      "difficulty": "challenge",
+      "prerequisites": [
+        "directors_reassessment"
+      ],
+      "summary": "Someone has tampered with Dr. Voss's research database. Help her rebuild a trustworthy dataset.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Evelyn"
+        },
+        {
+          "id": "edges",
+          "type": "edge_count",
+          "count": 30,
+          "milestones": [
+            10,
+            20
+          ],
+          "label": "Reach 30 edges in one session"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "dataset_reconstructed",
+          "label": "Replacement dataset recorded"
+        }
+      ],
+      "flags": {
+        "evelyn_research_sabotage": "discovered"
+      },
+      "hints": [
+        "All 30 edges must happen in one session. Pausing is fine; if the session ends first, the next one starts again from zero."
+      ],
+      "story": {
+        "chapter": 3,
+        "tags": [
+          "asterion",
+          "sabotage"
+        ]
+      }
+    },
+    {
+      "id": "the_empty_vault",
+      "order": 11,
+      "title": "The Empty Vault",
+      "companion": "daisy",
+      "difficulty": "challenge",
+      "prerequisites": [
+        "the_anomaly"
+      ],
+      "summary": "Cloverfield's reserves have vanished before a vital delivery. Daisy needs an emergency contribution, fast.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Daisy"
+        },
+        {
+          "id": "delivery",
+          "type": "orgasm_count",
+          "count": 1,
+          "within_seconds": 900,
+          "warnings": [
+            300,
+            60
+          ],
+          "label": "Report an orgasm within 15 minutes"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "unlock_companion",
+          "id": "mira",
+          "label": "Mira joins the campaign"
+        }
+      ],
+      "flags": {
+        "cloverfield_theft": "discovered"
+      },
+      "hints": [
+        "The 15 minutes start when your session with Daisy starts, and run on the session clock: pausing stops them.",
+        "An orgasm counts when you report it in EdgeLoop: I came, Finished me or Came Early.",
+        "If the time runs out, the delivery is missed for this try. Start a new session to try again with a fresh 15 minutes."
+      ],
+      "story": {
+        "chapter": 3,
+        "tags": [
+          "cloverfield",
+          "sabotage"
+        ]
+      }
+    },
+    {
+      "id": "midnight_intruder",
+      "order": 12,
+      "title": "Midnight Intruder",
+      "companion": "mira",
+      "difficulty": "challenge",
+      "prerequisites": [
+        "the_empty_vault"
+      ],
+      "summary": "Someone is inside Asterion after midnight. You find her first.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Mira"
+        },
+        {
+          "id": "encounter",
+          "type": "stage_sequence",
+          "label": "Survive the 30-minute encounter",
+          "stages": [
+            {
+              "id": "discovery",
+              "label": "Discovery",
+              "seconds": 600,
+              "raise_to": 100
+            },
+            {
+              "id": "deception",
+              "label": "Deception",
+              "seconds": 600,
+              "raise_to": 110
+            },
+            {
+              "id": "confrontation",
+              "label": "Confrontation",
+              "seconds": 600,
+              "raise_to": 120
+            }
+          ]
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "intruder_escaped",
+          "label": "The intruder escaped"
+        }
+      ],
+      "settings_control": {
+        "allowed": [
+          "intensity"
+        ],
+        "directed": true
+      },
+      "flags": {
+        "mira_infiltration": "completed",
+        "player_suspicion": "suspected"
+      },
+      "hints": [
+        "Three stages of 10 minutes of running time each, at any intensity. Pauses do not count.",
+        "With AI Settings Control on, Mira raises the intensity at the start of each stage (100%, 110%, 120%, within your limits). She makes no other changes. Lowering it again costs you no progress.",
+        "All 30 minutes must happen in one session. You can pause or stop at any time."
+      ],
+      "story": {
+        "chapter": 3,
+        "tags": [
+          "mira",
+          "helix"
+        ]
+      }
+    },
+    {
+      "id": "loyalty_test",
+      "order": 13,
+      "title": "The Loyalty Test",
+      "companion": "celeste",
+      "difficulty": "challenge",
+      "prerequisites": [
+        "midnight_intruder"
+      ],
+      "summary": "Your credentials opened the door for the intruder. Celeste demands proof of your commitment.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Celeste"
+        },
+        {
+          "id": "edges",
+          "type": "edge_count",
+          "count": 40,
+          "milestones": [
+            10,
+            25
+          ],
+          "label": "Reach 40 edges in one session"
+        },
+        {
+          "id": "judgment",
+          "type": "orgasm_count",
+          "count": 1,
+          "after": "edges",
+          "label": "Then report your orgasm"
+        }
+      ],
+      "rewards": [
+        {
+          "type": "milestone",
+          "id": "conditional_reinstatement",
+          "label": "Conditionally reinstated"
+        }
+      ],
+      "flags": {
+        "celeste_judgment": "provisional"
+      },
+      "hints": [
+        "All 40 edges and the orgasm must happen in one session; only an orgasm after the 40th edge counts.",
+        "Pausing is fine; if the session ends first, the next one starts again from zero."
+      ],
+      "story": {
+        "chapter": 3,
+        "tags": [
+          "irra"
+        ]
+      }
+    },
+    {
+      "id": "ghost_in_the_machine",
+      "order": 14,
+      "title": "Ghost in the Machine",
+      "companion": "nova",
+      "difficulty": "standard",
+      "prerequisites": [
+        "loyalty_test"
+      ],
+      "summary": "Nova doesn't believe you're guilty. Together you investigate the intrusion.",
+      "objectives": [
+        {
+          "id": "hr",
+          "type": "hr_monitor_connected",
+          "label": "Connect your heart-rate monitor"
+        },
+        {
+          "id": "toy",
+          "type": "toy_connected",
+          "label": "Connect your toy"
+        },
+        {
+          "id": "start",
+          "type": "session_started",
+          "label": "Start a session with Nova"
+        },
+        {
+          "id": "log",
+          "type": "puzzle_solved",
+          "label": "Puzzle 1: The access log",
+          "puzzle": {
+            "title": "The access log",
+            "clues": [
+              "02:14 Door B-7 opened. Badge ASR-0413.",
+              "02:16 Server room opened. Badge ASR-0413.",
+              "02:31 Server room closed. Badge ASR-0413.",
+              "Badge ASR-0413 is registered to you. Badges are issued only by Asterion Security, internally.",
+              "Camera 4: your own badge stayed in your locker all night."
+            ],
+            "question": "What do the logs say about the badge the intruder used?",
+            "options": [
+              {
+                "id": "carried",
+                "label": "Your real badge, carried by you"
+              },
+              {
+                "id": "internal",
+                "label": "A copy of an internally issued Asterion credential"
+              },
+              {
+                "id": "outside",
+                "label": "A forged badge made outside Asterion"
+              },
+              {
+                "id": "none",
+                "label": "No badge was used"
+              }
+            ],
+            "answer": "internal",
+            "hint": "Your badge never left the locker, so the one at the doors was a copy. And who issues Asterion badges?"
+          }
+        },
+        {
+          "id": "money",
+          "type": "puzzle_solved",
+          "label": "Puzzle 2: Follow the money",
+          "puzzle": {
+            "title": "Follow the money",
+            "clues": [
+              "The offer for Cloverfield came from Greenfield Holdings.",
+              "Greenfield Holdings is owned by Meridian Ventures.",
+              "Meridian Ventures is owned by Helix Biotechnology.",
+              "Nobody owns Helix Biotechnology but its founders."
+            ],
+            "question": "Who is really behind the offer for Cloverfield?",
+            "options": [
+              {
+                "id": "greenfield",
+                "label": "Greenfield Holdings"
+              },
+              {
+                "id": "meridian",
+                "label": "Meridian Ventures"
+              },
+              {
+                "id": "helix",
+                "label": "Helix Biotechnology"
+              },
+              {
+                "id": "irra",
+                "label": "The IRRA"
+              }
+            ],
+            "answer": "helix",
+            "hint": "Follow each owner up the chain until nobody owns the owner."
+          }
+        },
+        {
+          "id": "record",
+          "type": "puzzle_solved",
+          "label": "Puzzle 3: The edited record",
+          "puzzle": {
+            "title": "The edited record",
+            "clues": [
+              "Evelyn's dataset was last edited at 02:22, from her admin account.",
+              "That night Evelyn was at a conference 400 km away.",
+              "The server room was open from 02:16 to 02:31 (badge ASR-0413).",
+              "An admin session can only be opened from inside the server room, by Asterion staff."
+            ],
+            "question": "What happened to Evelyn's data?",
+            "options": [
+              {
+                "id": "evelyn",
+                "label": "Evelyn edited it herself"
+              },
+              {
+                "id": "accident",
+                "label": "It was corrupted by accident"
+              },
+              {
+                "id": "inside",
+                "label": "It was edited during the intrusion, through a staff session: someone inside helped"
+              },
+              {
+                "id": "nothing",
+                "label": "Nothing happened to it"
+              }
+            ],
+            "answer": "inside",
+            "hint": "Compare the edit time with the server-room times, and remember where Evelyn was."
+          }
+        }
+      ],
+      "rewards": [
+        {
+          "type": "chapter_complete",
+          "id": "shadows_of_helix",
+          "label": "Chapter 3: Shadows of Helix complete"
+        }
+      ],
+      "flags": {
+        "nova_investigation": "completed",
+        "helix_connection": "discovered",
+        "player_suspicion": "cleared",
+        "asterion_insider": "suspected"
+      },
+      "hints": [
+        "Solve the three puzzles in the mission panel while your session with Nova runs. A wrong answer only shows a hint; try again as often as you like.",
+        "Solved puzzles are saved, even if the session ends or you leave the mission. There is no edge or time goal."
+      ],
+      "story": {
+        "chapter": 3,
+        "tags": [
+          "asterion",
+          "helix"
+        ]
+      }
+    }
+  ]
+}

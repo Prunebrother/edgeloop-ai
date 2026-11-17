@@ -193,12 +193,12 @@ class SessionJournal:
             )
         ]
         # Factual history belongs to the user; another character is shared only when explicitly named.
-        named = re.findall(r'\b(Evelyn|Daisy|Celeste|Nova|Mira)\b', prompt, re.I)
+        named = re.findall(r'\b(Evelyn|Daisy|Celeste|Nova|Mira|VEX-?9)\b', prompt, re.I)
         # Nova never receives RAW records belonging to other companions.
         # Cross-character analysis uses a separate, opt-in, aggregate-only adapter.
         if companion(scope) == 'nova' and any(n.casefold() != 'nova' for n in named):
             return []
-        if named: records = [r for r in self.data['records'] if any(c['companion'].casefold() in {n.casefold() for n in named} for c in r['companions'])]
+        if named: records = [r for r in self.data['records'] if any(c['companion'].casefold() in {n.casefold().replace('-', '') for n in named} for c in r['companions'])]
         if companion(scope) == 'nova':
             # Explicit or implicit Nova-only requests must never expose raw
             # multi-companion rows, including records with Nova and Daisy.

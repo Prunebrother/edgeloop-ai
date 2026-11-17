@@ -2,6 +2,12 @@
 
 EdgeLoop AI adds local AI companions to [EdgeLoop by marshallmims](https://github.com/marshallmims/edgeloop), based on version 1.1.4.33, upstream commit `d3c5df33834f6106796e3768ad283d0eb5ab1ef9`. Maintained by Prunebrother. Experimental software for adults; physical safety has not been verified.
 
+## Test build: v0.11.0-rc1 (Linux and Windows)
+
+[v0.11.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.11.0-rc1) is a public test build for play-testing. It adds **campaign mode** (The Asterion Initiative: three chapters, 14 missions), a new main menu where your companion hosts, and a sixth companion, **VEX-9**, a commanding Helix extraction unit. The Windows build is still experimental. The current release stays v0.10.0-rc1 below. Feedback is very welcome in the [issues](https://github.com/Prunebrother/edgeloop-ai/issues).
+
+**Windows 10/11 (experimental):** download `EdgeLoop-AI-Setup-v0.11.0-rc1.exe` from the [release page](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.11.0-rc1) and run it. **Linux:** `curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.11.0-rc1/install.sh && bash install.sh`
+
 ## Current release: v0.10.0-rc1 (Linux and Windows)
 
 [v0.10.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.10.0-rc1) brings five companions with animated portraits, including **Mira**, a shapeshifting companion with her own agenda. The portraits now move over a still background, companions keep edge and orgasm counts straight, and each companion talks at the temperature set in its own model. The Windows build has not been hardware tested yet, so keep your toy's own stop button within reach. Earlier releases, such as [v0.8.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.8.0-rc1) and [v0.4.0](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.4.0), stay available. Install instructions for both platforms are in [INSTALL.md](INSTALL.md) and on the release page.

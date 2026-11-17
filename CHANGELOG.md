@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.11.0-rc1 — campaign mode, new menus and VEX-9 (public test build)
+
+<!-- Public test build (pre-release). Linux and Windows (Windows experimental). Same as v0.10.0-rc1 plus the changes below. New models: vex9-narrative-v1 (intermediate) and vex9-narrative-f29-v016; mira-narrative-f29-v017 replaces v015; the other companions' models are unchanged. -->
+
+- Campaign mode: The Asterion Initiative, a story campaign in three chapters and 14 missions. Each mission has its own companion and objectives that EdgeLoop checks itself (edges, orgasms, calibration, timed stages, puzzles), with rewards, unlocked companions and saved progress. The mission's companion knows the mission and reacts to what actually happens in it. During a mission the companion stays fixed; Freeplay works as before.
+- New main menu and mission board: your companion hosts the menu and greets you, and the menus scale cleanly up to 4K.
+- New companion: VEX-9 (HELIX-VEX/09), the Helix Dynamics extraction unit. Commanding, clinical and dominant, with a very dry sense of humour; she calls you RPU-001 and only shows respect by revising your classification. Twelve animated portraits in a dim lab, fifteen personal cards plus her own session opening and closing, and a place on the main menu.
+- Mira is now HELIX-MORPH/08 (mira-narrative-f29-v017), so the two Helix units no longer share a number. Her personality is unchanged.
+- Calibration: in the certification mission, pressing Stop while the toys ease down after Finished me no longer loses the run. Your max is saved as soon as you confirm.
+
 ## v0.10.0-rc1 — calmer portraits, sharper companions
 
 <!-- Linux and Windows (Windows experimental). Same as v0.9.0-rc1 plus the changes below. New model: mira-narrative-f29-v015 (Mira's persona is unchanged); the other companions' models are unchanged. -->

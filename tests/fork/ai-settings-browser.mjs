@@ -38,7 +38,7 @@ try{
   if(!['127.0.0.1','localhost'].includes(u.hostname))return route.abort();return route.continue();
  });
  const engine=()=>page.evaluate(async()=>{const {state}=await import('/src/js/state.js');return {status:state.sessionStatus,style:state.teaseMode,game:state.gameMode,endgame:state.endgameType,orgasm:Boolean(state.orgasmMode),intensity:state.intensityValue};});
- await page.goto(uiUrl+'/',{waitUntil:'load'});await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();
+ await page.goto(uiUrl+'/',{waitUntil:'load'});await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
  await page.locator('#companion-dashboard').waitFor();
  await page.locator('[data-url]').fill(observerUrl.replace('http:','ws:')+'/observe');await page.locator('[data-token]').fill('browser-fixture-token-'+'x'.repeat(32));await page.locator('[data-connect]').click();
  await page.waitForFunction(()=>document.querySelector('[data-telemetry]').textContent.includes('Authoritative telemetry connected'));

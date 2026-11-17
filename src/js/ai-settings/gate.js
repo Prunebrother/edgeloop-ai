@@ -94,8 +94,10 @@ export function parseRequest(raw) {
     // once per reported orgasm when its recovery is over; it sets up the next round, so it never ends,
     // pauses or forces anything.
     const trigger = raw.trigger === undefined ? 'own' : raw.trigger;
-    if (trigger !== 'own' && trigger !== 'user' && trigger !== 'round') return null;
+    if (trigger !== 'own' && trigger !== 'user' && trigger !== 'round' && trigger !== 'mission') return null;
     if (trigger === 'round' && (setting === 'pause' || setting === 'stop' || (setting === 'orgasm' && value === true))) return null;
+    // A campaign mission step only ever turns things toward the mission; it never pauses or stops.
+    if (trigger === 'mission' && (setting === 'pause' || setting === 'stop')) return null;
     return { id: raw.id, session_id: raw.session_id, setting, value, trigger, reason: cleanReason(raw.reason) };
 }
 
@@ -145,6 +147,8 @@ export function authorize(raw, ctx) {
         if (request.trigger === 'own' && !ownChangeReady(settings, ctx.now, ctx.lastAiAt))
             return reject(settings.pacing === 'never' ? 'own_changes_off' : 'paced');
         // The invited round decision skips the pacing gap (it is not unprompted), but 'never' still means never.
+        // A campaign mission step skips the pacing gap too (the mission sets its moments), but 'never' still means never.
+        if (request.trigger === 'mission' && settings.pacing === 'never') return reject('own_changes_off');
         if (request.trigger === 'round') {
             if (settings.pacing === 'never') return reject('own_changes_off');
             if (!roundOpen(settings, ctx)) return reject('no_round_open');

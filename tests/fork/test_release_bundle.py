@@ -87,7 +87,8 @@ def test_release_art_and_model_inventory_is_complete():
     inputs = json.loads((ROOT / 'release-inputs.json').read_text())
     catalog = json.loads((ROOT / 'src/assets/characters/manifest.json').read_text())
     assert inputs['characters'] == ['nova-narrative-f29-v011', 'evelyn-narrative-f29-v013',
-                                    'daisy-narrative-f29-v014', 'celeste-narrative-f29-v012', 'mira-narrative-f29-v015']
+                                    'daisy-narrative-f29-v014', 'celeste-narrative-f29-v012', 'mira-narrative-f29-v017',
+                                    'vex9-narrative-f29-v016']
     assert [m['name'] for m in inputs['models']] == ['huihui_ai/qwen3.5-abliterated:9b']
     assert inputs['default_model'] == inputs['characters'][0] + ':latest'
     intermediates = set(inputs['intermediate_characters'])

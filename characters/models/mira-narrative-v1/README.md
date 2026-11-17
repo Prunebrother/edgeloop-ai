@@ -1,5 +1,10 @@
 # Mira — HELIX-MORPH/09 (editable narrative draft)
 
+> **Status 2026-11-17: HELIX-MORPH/08.** At the user's request Mira's designation changed from /09 to /08
+> (VEX-9 is HELIX-VEX/09). New persona folder `../mira-narrative-f29-v017/` (definition 0.1.7); the
+> text is otherwise identical to v015, which shipped in v0.10.0-rc1; v017 ships from v0.11.0-rc1. This parent's first-draft
+> SYSTEM still says /09; the f29 model always replaces it. `tools/check_mira.py` now targets v017.
+
 > **Status 2026-11-16: F2.9 standard.** Mira now follows the same two-model layout as the cast.
 > This folder is the **parent** `mira-narrative-v1` (base model and sampling, built as a release
 > intermediate). The model the app uses is `mira-narrative-f29-v015`

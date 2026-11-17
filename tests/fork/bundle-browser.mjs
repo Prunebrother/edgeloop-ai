@@ -51,7 +51,7 @@ try{
  });
  page=await context.newPage();const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto('http://127.0.0.1:8770/');
- await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();
+ await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
  await page.waitForFunction(()=>document.querySelector('[data-selected]')?.textContent==='Active: nova-narrative-v1:latest',null,{timeout:180000});
  await page.waitForFunction(()=>document.querySelector('#character-panel img:last-child')?.naturalWidth>0);
  report.model=await page.locator('[data-selected]').textContent();

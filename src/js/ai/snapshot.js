@@ -80,6 +80,7 @@ export class Capture {
                 pause_reason:state.sessionStatus==='PAUSED'&&Object.hasOwn(pauseReasons,state.pauseReason)?pauseReasons[state.pauseReason]:null,calibration_pass:['primary','dual'].includes(state.calibrationPass)?state.calibrationPass:'none',
                 warmup_active:warmupActive,warmup_remaining_seconds:warmupActive?Math.ceil(warmup-elapsed):null,
                 completion_reported:Boolean(settings.completion_reported),
+                calibration_saved:typeof settings.calibration_saved==='boolean'?settings.calibration_saved:null,
                 orgasm_count:optional(settings.orgasm_count,0,1000)??0,last_orgasm_seconds:optional(settings.last_orgasm_seconds,0,31536000),
                 learning_release_count:optional(settings.learning_release_count,0,1000000),
                 settle_outcome:state.settleOutcome==='Premature Release'?'premature_release':null,

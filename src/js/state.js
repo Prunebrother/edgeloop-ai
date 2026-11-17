@@ -134,6 +134,7 @@ export const state = {
     trainState: 'climb',
     // Which Calibration run is armed: 'primary', 'dual', or null.
     calibrationPass: null,
+    calibrationSaved: null,
     trainHoldSeconds: 0,
     trainEdgesDone: 0,
     lastSpokenPrompt: '',

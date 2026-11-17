@@ -18,7 +18,7 @@ SHARED_START = [c for c in BASE.session_start if c.audience == 'shared']
 SHARED_END = [c for c in BASE.session_end if c.audience == 'shared']
 WORLD = {'id': 'mira-test-world', 'name': 'EdgeLoop fixture', 'setting': 'A fictional adult companion setting with Helix, Asterion, Nova, Cloverfield, Evelyn, Daisy and Celeste.'}
 CHARACTER = {'id': 'mira', 'world': WORLD['id'], 'name': 'Mira', 'short_name': 'Mira', 'model': 'mira-narrative-v1:latest',
-             'personality': 'HELIX-MORPH/09, an adult synthetic Helix companion. Witty, mischievous and socially curious.',
+             'personality': 'HELIX-MORPH/08, an adult synthetic Helix companion. Witty, mischievous and socially curious.',
              'voice': 'Concise, natural dialogue; respect boundaries and use only supplied session facts.',
              'relationship': 'An autonomous adult participant, with no assumed private history.', 'deck': RAW}
 

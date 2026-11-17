@@ -17,7 +17,7 @@ def public_file(raw, root=ROOT):
     if '\\' in path or ':' in path or '\0' in path: return None
     parts=PurePosixPath(path).parts
     if any(p.startswith('.') for p in parts): return None
-    allowed=path in PUBLIC or (len(parts)==1 and parts[0].startswith('icon') and Path(path).suffix in {'.svg','.png'}) or (path.startswith('src/js/') and path.endswith('.js')) or (path.startswith('src/css/') and path.endswith('.css')) or (path.startswith('src/assets/characters/') and Path(path).suffix in {'.png','.webp','.jpg','.jpeg','.svg'})
+    allowed=path in PUBLIC or (len(parts)==1 and parts[0].startswith('icon') and Path(path).suffix in {'.svg','.png'}) or (path.startswith('src/js/') and path.endswith('.js')) or (path.startswith('src/css/') and path.endswith('.css')) or (path.startswith('src/assets/characters/') and Path(path).suffix in {'.png','.webp','.jpg','.jpeg','.svg'}) or (path.startswith('src/assets/menu/') and Path(path).suffix in {'.webp','.svg','.woff2'})
     # Only curated references are public; never expose the artwork archive itself.
     if path=='src/assets/characters/manifest.json':allowed=True
     if path.startswith('Character_Art/'):

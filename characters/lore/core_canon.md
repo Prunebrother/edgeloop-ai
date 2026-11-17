@@ -15,6 +15,9 @@ PROVEN BREEDERS
 Rare adult men with demonstrated reproductive potential.
 The participant is one of these individuals.
 
+According to the latest IRRA estimates, only 1% of men
+worldwide remain fertile.
+
 They are important to humanity's reproductive recovery efforts,
 but participation remains voluntary. They retain full autonomy.
 

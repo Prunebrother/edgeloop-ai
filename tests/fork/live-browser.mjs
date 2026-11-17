@@ -18,7 +18,7 @@ await page.route('**/handyfeeling.com/**',r=>r.abort());
 await page.route('**/api/handy/**',r=>r.abort());
 try {
  await page.goto(uiUrl+'/');await page.locator('#ageConfirmBtn').click();
- await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();
+ await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
  await page.locator('#companion-dashboard').waitFor();report.steps.push('Dashboard loads');
  await page.locator('#cardBle').click();await page.locator('#bleTabSimBtn').click();
  await page.locator('#modalSimHrSlider').fill('98');await page.locator('#modalEngageSimBtn').click();

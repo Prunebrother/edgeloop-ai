@@ -568,3 +568,21 @@ def test_reopening_and_resaving_keeps_conditions_the_editor_cannot_edit(tmp_path
     when = again['deck']['cards'][0]['when']
     assert when['requires_hr'] is True and when['hr_trends'] == ['rising', 'steady'] and when['statuses'] == ['RAMPDOWN']
     assert again['deck']['cards'][1]['when']['requires_story_welcome'] is True
+
+
+def test_a_custom_character_cannot_be_activated_during_a_campaign_mission(tmp_path):
+    lib = library(tmp_path)
+    lib.save_world(WORLD)
+    lib.save_character(WREN)
+    app = create_app(TOKEN, tmp_path, transport=ollama([]))
+    app.state.models.config = app.state.models.config.model_copy(update={'model': 'nova-narrative-f29-v011:latest'})
+    with TestClient(app) as client:
+        with client.websocket_connect('/observe', headers={'Origin': ORIGIN}) as ws:
+            auth(ws)
+            ws.send_json({'version': 1, 'type': 'campaign', 'action': 'start', 'campaign_id': 'asterion_initiative', 'mission_id': 'orientation'})
+            assert until(ws, 'campaign_state')['active']['mission'] == 'orientation'
+            refused = send(ws, action='activate', id='wren-calloway')
+            assert not refused['ok'] and 'Freeplay' in refused['errors'][0]['message'] and app.state.models.character is None
+            ws.send_json({'version': 1, 'type': 'campaign', 'action': 'abandon'})
+            assert until(ws, 'campaign_state')['active'] is None
+            assert send(ws, action='activate', id='wren-calloway')['ok']

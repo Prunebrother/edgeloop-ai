@@ -57,8 +57,8 @@
       "executable": false
     },
     "CHANGELOG.md": {
-      "sha256": "5aeb43873c25b9feb91365a8a76506e99ae396953140a207df70a6a6f2421339",
-      "bytes": 15770,
+      "sha256": "39d190c8500cca67d7ba86bf027684290dc1281fa4522ecaab26572b099a4088",
+      "bytes": 17346,
       "executable": false
     },
     "CONTRIBUTING.md": {
@@ -666,6 +666,126 @@
       "bytes": 2556715,
       "executable": false
     },
+    "Character_Art/Vex9/animations/vex9_comforting.webm": {
+      "sha256": "5772a0ebef9a8762eb867ba37bc5bc9b3b3992c3f88e9845e6ad1a13eca0a800",
+      "bytes": 842405,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_concerned.webm": {
+      "sha256": "5368d50a59b27d3c9490b4ad3250aafda2de1c191258707ba310f0c342a56c22",
+      "bytes": 826525,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_disappointed.webm": {
+      "sha256": "1da5b112abd40cd061f7794fe0d0edd57f81806c456ab0b294874992c6549786",
+      "bytes": 816765,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_excited.webm": {
+      "sha256": "660f952adf8cdf7032348391ce9d03705ac16b964e83ad25fbc18f659e3b739f",
+      "bytes": 852096,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_flirty.webm": {
+      "sha256": "ab7a10e2da029b48a6f99b4700fc35e6e0e545414e0ff40859cf3ef9a70cb8e9",
+      "bytes": 809126,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_focused.webm": {
+      "sha256": "ff6a3f1ed2ee88f0dcde8f109f0740d6a23bc7d69319b62efaeec09e379bb92c",
+      "bytes": 764677,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_happy.webm": {
+      "sha256": "b6b40f32c8ce9abb5e78a8b53833fe8e4aac136e394e3387a73d69a4f12a12fd",
+      "bytes": 848007,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_mischievous.webm": {
+      "sha256": "12d9c97639845a5d1e176fbb277720b090c132e5fc41182a5d9591517f604840",
+      "bytes": 826212,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_neutral.webm": {
+      "sha256": "98fbdb0eda66049b8912827ba0bfa01e40c701187e383247397c9d2192810bb6",
+      "bytes": 882797,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_playful.webm": {
+      "sha256": "d20ed1f3795d0722811262607ec37c4ce0a3b461ce44ced7a2bf4e86d732886a",
+      "bytes": 856764,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_proud.webm": {
+      "sha256": "6208d3d60207f94a29c8d29fe6af02f6816099ba72c95ee2d8abdfa6bf99a9ae",
+      "bytes": 819091,
+      "executable": false
+    },
+    "Character_Art/Vex9/animations/vex9_surprised.webm": {
+      "sha256": "4d81c3717d15c3344bfa8e1253ce31c2b4221f6372898e9272f220026cf46c37",
+      "bytes": 833720,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_comforting.png": {
+      "sha256": "ed53a1e2c2250562a4ad1d59edc15473541d38bcd8beac67db35e62f6edb010c",
+      "bytes": 1953159,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_concerned.png": {
+      "sha256": "b5d5df0f3006e442cde4095a4c5aeed28916f7c4e25c37ad1588e57ef062b78c",
+      "bytes": 1948444,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_disappointed.png": {
+      "sha256": "836ad59dd9077d5edbdb5372f99490b672e6e6d19ece71e667797541a3cd31a6",
+      "bytes": 1951097,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_excited.png": {
+      "sha256": "e6af70712c7544aff0022430f040ac9fafb4c988cb62d13f63ccdd88e769c0f7",
+      "bytes": 1943704,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_flirty.png": {
+      "sha256": "7c546ab18935b0ec3b096b99e5a5cba421f0114911f8b502be8b93209ecf1c54",
+      "bytes": 1956739,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_focused.png": {
+      "sha256": "2c82948508300c6bf3f1f9eb24f5ad76fc57ccc1086dcea9dac6bdc278eb76de",
+      "bytes": 1940755,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_happy.png": {
+      "sha256": "34b2fd95428a1bb4f68c4685f0e2b6f7acd2f34459d62c6cb6249ddb6b04fdaf",
+      "bytes": 1987796,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_mischievous.png": {
+      "sha256": "35b73f4666bcd0a09648d3b9de99610103e0ab1376e0a29ad36bc26d994e8d91",
+      "bytes": 1934313,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_neutral.png": {
+      "sha256": "dad557cd6dbb4c70bf513b7f935d3cea7aaeb16fa1722a7a32f19a0002bda1ce",
+      "bytes": 1965631,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_playful.png": {
+      "sha256": "57abcdc1709657ff1265dbc949d62c74482cfc84d834c0098504710c7a16a32a",
+      "bytes": 1949047,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_proud.png": {
+      "sha256": "bced0086a7997a2707aac2ade84936e09cbf076e49834910e281e68821723b06",
+      "bytes": 1972791,
+      "executable": false
+    },
+    "Character_Art/Vex9/expressions/vex9_surprised.png": {
+      "sha256": "6e73bae11d754901aff8f459c04c0d75595f868f997594952053309bc5babcf1",
+      "bytes": 1950193,
+      "executable": false
+    },
     "DEPENDENCY_LICENSES.md": {
       "sha256": "b86b8ee4a4eaa5f9dda18f4afebdab26037f9bffc661b51286c85e550e5fe71b",
       "bytes": 1374,
@@ -677,8 +797,8 @@
       "executable": false
     },
     "INSTALL.md": {
-      "sha256": "5120f7ca0fdbc08e6a1103e075c5d90cb3cc8c362087c0e62171c4371c3669fb",
-      "bytes": 8138,
+      "sha256": "d0d10a400ef4407716ad23e87872379f0c1224e2236125d8f49f93344115b3b0",
+      "bytes": 8144,
       "executable": false
     },
     "KNOWN_ISSUES.md": {
@@ -692,8 +812,8 @@
       "executable": false
     },
     "MODELS_AND_ASSETS.md": {
-      "sha256": "5e9002cb5798faf7603883593f0d0b6e2fc20482a0f0658bd06a46563dc6fc0f",
-      "bytes": 3616,
+      "sha256": "758eec9c161d2735593798409ed2fb84a8edb1dcb2d6cb9c0afdc9aad20776b2",
+      "bytes": 4824,
       "executable": false
     },
     "NOTICE_FORK.md": {
@@ -712,8 +832,8 @@
       "executable": false
     },
     "README.md": {
-      "sha256": "b0a1a064833de746749676c0a537683560bf482d6e03c9c1db2307610fb20c10",
-      "bytes": 4773,
+      "sha256": "3b19f6dbfef15c2db1e54d2cc15aa443cecbb9ff793c774b8f01b21469ff18cc",
+      "bytes": 5636,
       "executable": false
     },
     "RELEASING.md": {
@@ -727,8 +847,8 @@
       "executable": false
     },
     "THIRD_PARTY_NOTICES.md": {
-      "sha256": "32da04c887751a258e94e26f1b01a7b4be3b836ccb46231257733e869a01d9a3",
-      "bytes": 3658,
+      "sha256": "34daf9b794aa7c1a1ce867e63f72f2cd807252aa9037000c3ce075321d077560",
+      "bytes": 4348,
       "executable": false
     },
     "VALIDATION.md": {
@@ -757,13 +877,13 @@
       "executable": false
     },
     "ai_observer/protocol.py": {
-      "sha256": "867bbb216b20d1a02fe7cc9f111f9ee1074c9d589afd6928d0250a73a3e187fb",
-      "bytes": 13276,
+      "sha256": "b91d5349c38ca22e372a5a2035b95f4c67f499c1a5b323f45b9a4e26c4960bab",
+      "bytes": 14668,
       "executable": false
     },
     "ai_observer/server.py": {
-      "sha256": "2c5a76d6dbbbd5b8d12d2df7eb04f608ca9823e016aa5926a2d2a33c7d558001",
-      "bytes": 39673,
+      "sha256": "70876fd5d643e1ed315188cd6cedb1e963404bbac9dc476831a74f2578e28424",
+      "bytes": 43532,
       "executable": false
     },
     "ai_observer/smoke.py": {
@@ -822,8 +942,8 @@
       "executable": false
     },
     "characters/lore/core_canon.md": {
-      "sha256": "aba08b536ae945d9662779e75b7dd3464a0a464eb585affaf83151dc839244f9",
-      "bytes": 1887,
+      "sha256": "8b6e3d4b298ccab91ee9f1d38713b416804d3fcc514a2aa1675216a852ac2069",
+      "bytes": 1969,
       "executable": false
     },
     "characters/lore/edgeloop_universe.md": {
@@ -906,14 +1026,19 @@
       "bytes": 7170,
       "executable": false
     },
+    "characters/models/mira-narrative-f29-v017/Modelfile": {
+      "sha256": "b1afb9434150c3ac7b5d12228335a4a5988e26455bc102743b08a842bb36d14d",
+      "bytes": 7170,
+      "executable": false
+    },
     "characters/models/mira-narrative-v1/Modelfile": {
       "sha256": "ce2ff718de6aae6ceeb3ce62b5cf6a68c350801a09c24568f5572b53869c04b0",
       "bytes": 7429,
       "executable": false
     },
     "characters/models/mira-narrative-v1/README.md": {
-      "sha256": "277c9c0f2c5cd68ba22300fb8016483b987f127e903b4b28f23ad431935d8d81",
-      "bytes": 6539,
+      "sha256": "5d660d2a9f9fff5dbd2f01eebd8f0169722a39d11547b87491d48ca8328acc6e",
+      "bytes": 6969,
       "executable": false
     },
     "characters/models/mira-narrative-v1/SESSION_DECK.md": {
@@ -941,9 +1066,29 @@
       "bytes": 5343,
       "executable": false
     },
+    "characters/models/vex9-narrative-f29-v016/Modelfile": {
+      "sha256": "b7ba6726c5ad83c4808c7aafa27c0cf6bd0aff796e4bf625baf94e0cd95f7748",
+      "bytes": 7058,
+      "executable": false
+    },
+    "characters/models/vex9-narrative-v1/Modelfile": {
+      "sha256": "a31f4b7d0c019ad7d04c4baf5616ffa024b47b9a8935e6b42c985bde168b4554",
+      "bytes": 7351,
+      "executable": false
+    },
+    "characters/models/vex9-narrative-v1/README.md": {
+      "sha256": "9ffa4a49bfe123bbbde2c97b37f1f9283a865ce255d856fe31d749c2198078b4",
+      "bytes": 3423,
+      "executable": false
+    },
     "companion_ai/__init__.py": {
       "sha256": "f7347c36e902f3397f652a045faea9593473520cb3ecdeb62262c46e8a833b36",
       "bytes": 83,
+      "executable": false
+    },
+    "companion_ai/campaign.py": {
+      "sha256": "d950845d201dc32971f8119a75526e1ee181a470dc8192653196305047cf1094",
+      "bytes": 85435,
       "executable": false
     },
     "companion_ai/character_builder.py": {
@@ -957,13 +1102,13 @@
       "executable": false
     },
     "companion_ai/context_compiler.py": {
-      "sha256": "33cc17735a111deaf8b37e78a89e6509080a91f561e64d2b9df415996f4780e4",
-      "bytes": 60314,
+      "sha256": "01460662e58db8221e2e0a816fc1f313719567a5408c7d16289424dd338150c3",
+      "bytes": 61552,
       "executable": false
     },
     "companion_ai/conversation.py": {
-      "sha256": "56c23d7350e14c5dc61abd039ed27b22f264e825fb3aa8575ebc95dae5929e5e",
-      "bytes": 115728,
+      "sha256": "81f9276e9293fe1c8262d9817209fe3249af199d918a9689122d54bc5927cebd",
+      "bytes": 123310,
       "executable": false
     },
     "companion_ai/diagnostics.py": {
@@ -982,8 +1127,8 @@
       "executable": false
     },
     "companion_ai/event_intelligence.py": {
-      "sha256": "3687ac529902c38e961c74dcab3b5c9ff40fc2ee94c0245932039ebcde66b4cd",
-      "bytes": 18812,
+      "sha256": "3289e14a86f9c6e9b6f98aab02b7b5b87dbfaec654a19260f6bfee75c3a7973f",
+      "bytes": 18890,
       "executable": false
     },
     "companion_ai/event_policy.py": {
@@ -1002,8 +1147,8 @@
       "executable": false
     },
     "companion_ai/fidelity.py": {
-      "sha256": "eb820c23368a7401227633ea2e74e2ca5948dad4c491f9c053b3eb93efc65207",
-      "bytes": 81267,
+      "sha256": "d3bbb9712255078f4fcc14b160f60980b86ef05422241fb0428becfa64570638",
+      "bytes": 87412,
       "executable": false
     },
     "companion_ai/grounding.py": {
@@ -1037,8 +1182,8 @@
       "executable": false
     },
     "companion_ai/nova_verified_bridge.py": {
-      "sha256": "0b130a1d76157cd78050566dc468f00a7e5fbf359aa5857e00bb2750e3120865",
-      "bytes": 6111,
+      "sha256": "f58b77e205866d9fc896b5e5165bc1430994233146fb22fced283abf485d8bcd",
+      "bytes": 6143,
       "executable": false
     },
     "companion_ai/player_events.py": {
@@ -1057,13 +1202,13 @@
       "executable": false
     },
     "companion_ai/session_journal.py": {
-      "sha256": "d2280514cf26b7014a5618268b212b242b189909ad22c33d4ca03060151bba82",
-      "bytes": 15426,
+      "sha256": "f1858cf5ae062933ef1951a3eb6d2a83776604a8742c67499a4d390788b3350d",
+      "bytes": 15450,
       "executable": false
     },
     "companion_ai/settings_control.py": {
-      "sha256": "25be1d15e4c0ba9600cea0549411ce85e5934e6c816c2f9baf1c0ee15c7ac2be",
-      "bytes": 18802,
+      "sha256": "eb84b87c195724a41a698a31135df69081bdbc3d36825b5d938a541fce9bc5df",
+      "bytes": 21211,
       "executable": false
     },
     "companion_ai/storage.py": {
@@ -1081,14 +1226,24 @@
       "bytes": 425,
       "executable": false
     },
+    "config/campaigns/asterion_initiative/campaign.json": {
+      "sha256": "6f54fe7d7f8fc2aca818d3bed0cb68ca64abd138bfc8fb0ed7a493bf04ff3a4d",
+      "bytes": 28764,
+      "executable": false
+    },
+    "config/campaigns/asterion_initiative/narrative.json": {
+      "sha256": "3e46fe3ecb66fcccf6474d3cb923d2fe2a8d0e1edabd611ab0a2695bd739f7db",
+      "bytes": 31876,
+      "executable": false
+    },
     "config/event-deck.json": {
-      "sha256": "891493b9a48fa592494d5a756c4579609853934dc53ad57ecbf8455d8a455142",
-      "bytes": 44757,
+      "sha256": "d193b275920260dc0aa1950bf8e3c80409155fe05a45b0a936d1aa9a3f461049",
+      "bytes": 51631,
       "executable": false
     },
     "docs/fork/f2-changes.json": {
-      "sha256": "3b7866347d9e78e0e1f38ef38136260afc6b02ee39e868893ad9ecb156091add",
-      "bytes": 7739,
+      "sha256": "7769a76062db68c0ce72ddc09c3dfe482429a4b9bf3d4aba9d1ae4cbf9df3eee",
+      "bytes": 8035,
       "executable": false
     },
     "docs/fork/f2101-release-privacy.md": {
@@ -1097,8 +1252,8 @@
       "executable": false
     },
     "docs/fork/f22/migration-sources.json": {
-      "sha256": "fc3592a8ada65b51e3a18aa3c7674deb0f7adadda0ae0c0c3922722b39ba7066",
-      "bytes": 4199,
+      "sha256": "2891378d9adf408b551181035c583aaa0716d6adf6bf071c21dfc965ab0f0f67",
+      "bytes": 4373,
       "executable": false
     },
     "docs/fork/release-exclusions.json": {
@@ -1152,18 +1307,23 @@
       "executable": false
     },
     "index.html": {
-      "sha256": "7cd40ad9b8455e4bf7430078c70f672d50073287744389e31403d20b5743ae30",
+      "sha256": "c7d70e8cff761114d982d2a91d1f5c4f01e1519058ad450692c796038073a8f6",
       "bytes": 159209,
       "executable": false
     },
     "install.sh": {
-      "sha256": "46b91f671a8df3aa8787cc13cea2d636c27df166c42cbd2fcefe4028db6fc874",
+      "sha256": "bcd215eeb0ea364c5b8317ce9823450a428956d175f2765a9d7b0e70e8db825a",
       "bytes": 2847,
       "executable": true
     },
     "licenses/ARTWORK.md": {
       "sha256": "fa2891702199f89858f665659611742bd12056a2b9ebb27c4898553d387b220f",
       "bytes": 453,
+      "executable": false
+    },
+    "licenses/CORMORANT-GARAMOND-OFL.txt": {
+      "sha256": "60700d351cac4650c51f3f9db318d2a420f8b45052dba2715eb5fec41f0f6956",
+      "bytes": 4387,
       "executable": false
     },
     "licenses/GCC-RUNTIME-LIBRARY-EXCEPTION.txt": {
@@ -1204,6 +1364,11 @@
     "licenses/TAILWIND-LICENSE": {
       "sha256": "60e0b68c0f35c078eef3a5d29419d0b03ff84ec1df9c3f9d6e39a519a5ae7985",
       "bytes": 1071,
+      "executable": false
+    },
+    "licenses/UNBOUNDED-OFL.txt": {
+      "sha256": "31e5d4e83955e7103c34570dd49b0570ef490800bd65b42923c0dd02445263b3",
+      "bytes": 4392,
       "executable": false
     },
     "licenses/models/huihui_ai_qwen3.5-abliterated_9b.txt": {
@@ -1347,7 +1512,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "e17926854652c312aae8fcfa2c5320fbf7cb926fa547edfd5782ef379e339b03",
+      "sha256": "90cd98bab37520015de7d747fa50844f349cde3c7679d92c5cf18ad234a38a53",
       "bytes": 565,
       "executable": false
     },
@@ -1357,8 +1522,8 @@
       "executable": false
     },
     "release-inputs.json": {
-      "sha256": "d7ad1c0ca1cfa1ed1e21dd485fed3cda1c1ba9b44c36d53f02e3ce06f02ae181",
-      "bytes": 2913,
+      "sha256": "d5732453022bbcbae278968e9dc72c73b6fd87873694e172be39193eb2612159",
+      "bytes": 2969,
       "executable": false
     },
     "requirements.lock": {
@@ -1367,13 +1532,118 @@
       "executable": false
     },
     "src/assets/characters/manifest.json": {
-      "sha256": "3f75de911b7a2f65163dad8ce1ce2a0699daea2a7dac8ed4bc7d0e38a9391e96",
-      "bytes": 13612,
+      "sha256": "f663df68235add898a42bd6887ba9e59255836074ef10b0cf6299a0577ecb96d",
+      "bytes": 16211,
+      "executable": false
+    },
+    "src/assets/menu/backdrop.webp": {
+      "sha256": "190831010c3b9473c8bed345d14ff4837e48385dd4188333e763bd79b1337d65",
+      "bytes": 80166,
+      "executable": false
+    },
+    "src/assets/menu/campaigns/asterion_initiative/chapter-1.webp": {
+      "sha256": "cd2da7eb87f8a727de28dcbe29903fcda77b22211d7f9c7d158a28ba64a57f93",
+      "bytes": 117434,
+      "executable": false
+    },
+    "src/assets/menu/campaigns/asterion_initiative/chapter-2.webp": {
+      "sha256": "10d1c11c79290531d72eb886125961b0b4b05a435e8159fd3329064d996e2af3",
+      "bytes": 125604,
+      "executable": false
+    },
+    "src/assets/menu/campaigns/asterion_initiative/chapter-3.webp": {
+      "sha256": "171983c6ee3baf76485dda4e12ab6676320f8b92ab218347a1f2ce1a8976008d",
+      "bytes": 54526,
+      "executable": false
+    },
+    "src/assets/menu/campaigns/asterion_initiative/chapter-4.webp": {
+      "sha256": "b13f80de6274b29f2014d905d12d46b1424b0a2b06a7e3be635247b3d8dec01b",
+      "bytes": 56190,
+      "executable": false
+    },
+    "src/assets/menu/campaigns/asterion_initiative/key.webp": {
+      "sha256": "0204fce4bf88cf15cbcc95880dcc07657c72c911bfcdb1775948988430ee1caf",
+      "bytes": 84822,
+      "executable": false
+    },
+    "src/assets/menu/companions/celeste-face.webp": {
+      "sha256": "dbdbcd0e031bc6a87f21bed0b4bfe46c7b7e4cbab1e2614a8877436873e66d4f",
+      "bytes": 11928,
+      "executable": false
+    },
+    "src/assets/menu/companions/celeste.webp": {
+      "sha256": "1f4799286d77606a0b0637aea6ff79b3e2ccc73dce873b3e7bdf9e2c86717154",
+      "bytes": 63194,
+      "executable": false
+    },
+    "src/assets/menu/companions/daisy-face.webp": {
+      "sha256": "62d45e74a3e53d7ca24e236732ed76ac7b5c7f949498a7d4dc4362ecef39ee40",
+      "bytes": 14498,
+      "executable": false
+    },
+    "src/assets/menu/companions/daisy.webp": {
+      "sha256": "f5dfb020577273587006b3010836e41e016eeb796ae5c3e12c39a089f37175ba",
+      "bytes": 117824,
+      "executable": false
+    },
+    "src/assets/menu/companions/evelyn-face.webp": {
+      "sha256": "15060a5cfca746d3f2ec1483331455dc351957416f03c87541f09dadcbedc5a0",
+      "bytes": 10268,
+      "executable": false
+    },
+    "src/assets/menu/companions/evelyn.webp": {
+      "sha256": "5c79c2361a081c0048861f71c062a292b4e6c3f5af5163b0187cc8712640f15a",
+      "bytes": 68726,
+      "executable": false
+    },
+    "src/assets/menu/companions/mira-face.webp": {
+      "sha256": "f7b3698c4a96129a39340d7856478689399b01e5959b473ab7a265bee32a9d11",
+      "bytes": 11322,
+      "executable": false
+    },
+    "src/assets/menu/companions/mira.webp": {
+      "sha256": "cd5a9261db23656fc5a1e45c2ba3778e0602826361bb8ae7c2c7f5d074fb32ee",
+      "bytes": 107954,
+      "executable": false
+    },
+    "src/assets/menu/companions/nova-face.webp": {
+      "sha256": "0b959d1113cbfa3eef469bdb7ce013691c1925420b055d3bfb51a6edc2972fed",
+      "bytes": 12422,
+      "executable": false
+    },
+    "src/assets/menu/companions/nova.webp": {
+      "sha256": "0f3cf2a165f1ffd9c93a6a377352bce5627b4beb46473fb37e7bb1dcc9bb32c2",
+      "bytes": 107970,
+      "executable": false
+    },
+    "src/assets/menu/companions/vex9-face.webp": {
+      "sha256": "d94efdb3a146fa40a9c2e8b526d71ef67cb0a9f72d24fb89750a8fa3963259c3",
+      "bytes": 6182,
+      "executable": false
+    },
+    "src/assets/menu/companions/vex9.webp": {
+      "sha256": "2832ff36eb7eb1fc0541018f07bfbc68906973062ba83974b1d7687dddcb5f15",
+      "bytes": 103360,
+      "executable": false
+    },
+    "src/assets/menu/fonts/cormorant-garamond-600.woff2": {
+      "sha256": "223155c68b2efde0d77002df95e783dccb6a0952606b43c2f2714504ea1c48b4",
+      "bytes": 15244,
+      "executable": false
+    },
+    "src/assets/menu/mark.svg": {
+      "sha256": "aaceea4754b3edc0c6287f5516cc1d2fadb05d6a12646189853bd9347d1a222c",
+      "bytes": 679,
+      "executable": false
+    },
+    "src/assets/menu/wordmark.svg": {
+      "sha256": "4659b324d5a31b77b657e50d03b9a5ea718963f260e0201aded40482be034118",
+      "bytes": 2957,
       "executable": false
     },
     "src/css/companion.css": {
-      "sha256": "c18390560d6128a6326bcc61459c2dd7f1ae7b3c8707b0ed3c40efc602d4d399",
-      "bytes": 36009,
+      "sha256": "66ff6f19146e5d54a8bc31097ae31e2f339b4da77ed29b135a0f1b8ac4fd0689",
+      "bytes": 51801,
       "executable": false
     },
     "src/js/ai-settings/control.js": {
@@ -1387,13 +1657,13 @@
       "executable": false
     },
     "src/js/ai-settings/gate.js": {
-      "sha256": "5ca9628cf820e4a15ab40cc2ce1370127796316f24d9d4851f788655e168341e",
-      "bytes": 9424,
+      "sha256": "0f9ef87e83352191a41b1f310dbeeff4476bfa4ad2d1136e398b7daa3e2c8f47",
+      "bytes": 9871,
       "executable": false
     },
     "src/js/ai-settings/gate.test.js": {
-      "sha256": "166e3c263642e5f9a77ad175950c56be59b441adc71585a82765dc503718b7bb",
-      "bytes": 10468,
+      "sha256": "90a4cf6ae622342960d110ed89a9c6cba21bf5bfb2873012d5aa999ad862c436",
+      "bytes": 12024,
       "executable": false
     },
     "src/js/ai-settings/panel.js": {
@@ -1422,13 +1692,13 @@
       "executable": false
     },
     "src/js/ai/companion.js": {
-      "sha256": "e73c5b5462e0fb9bd8df56cdb9d79e9bd545ee35b0b233a6e8f517e86e6e6fef",
-      "bytes": 23752,
+      "sha256": "eb1db08b44716631a172f3b88bf766dcfcc7d109908a0d5ec5060e0966ad7247",
+      "bytes": 27340,
       "executable": false
     },
     "src/js/ai/connection.js": {
-      "sha256": "b3c1f13edb334b825120a9882af4b533cf017674fd376f894cb886727a7f5eef",
-      "bytes": 6387,
+      "sha256": "f6b2f602203531679cdfe9a6253869987d95db4b932539743fe81444bb9472be",
+      "bytes": 6461,
       "executable": false
     },
     "src/js/ai/context-intelligence.js": {
@@ -1451,6 +1721,16 @@
       "bytes": 9310,
       "executable": false
     },
+    "src/js/ai/main-menu.js": {
+      "sha256": "cf07e5088f19ca094fc82c97ec460107876e5a95b9e5f5e426f70d3952de39bf",
+      "bytes": 33566,
+      "executable": false
+    },
+    "src/js/ai/menu-art.js": {
+      "sha256": "dd9e8e174318ea2189347c5026991f51d577f51441d7b8cfcf37aacfd51a4a02",
+      "bytes": 2924,
+      "executable": false
+    },
     "src/js/ai/presentation-controller.js": {
       "sha256": "a6153fdab3132056b4dd20b2a8e52bdb838746b113af947891327d29464a053c",
       "bytes": 9292,
@@ -1462,8 +1742,8 @@
       "executable": false
     },
     "src/js/ai/snapshot.js": {
-      "sha256": "a5d87dd4dade3045dd53cef5a858ff9b46d7c7a931ebc7f852ba94570ccba03a",
-      "bytes": 12175,
+      "sha256": "4b0ddf372ee074aee1e9e8061d04dadfa30818e6582cc7d9986d5ec82b6e0efc",
+      "bytes": 12288,
       "executable": false
     },
     "src/js/alert-banner.js": {
@@ -1477,8 +1757,8 @@
       "executable": false
     },
     "src/js/app.js": {
-      "sha256": "4bf45d7c13729ecf5303911e981fd89d766c0ad9ec3f116661dcd9d9dd128971",
-      "bytes": 338518,
+      "sha256": "66023e7e1c88dc666750c09d0282955ac4a5a93e7fc2eedca6a53f038047fbc4",
+      "bytes": 338810,
       "executable": false
     },
     "src/js/backup.js": {
@@ -1907,8 +2187,8 @@
       "executable": false
     },
     "src/js/state.js": {
-      "sha256": "466495e2b0fd8a55ca618e590c84670c0e81e4b4d2ac6b7dc34791a87baa9016",
-      "bytes": 11975,
+      "sha256": "729ff3776406bd7d9c3f7fa955dfcb536239e0a05d1420b72f98c48a0b5b4188",
+      "bytes": 12003,
       "executable": false
     },
     "src/js/storage.js": {
@@ -1992,8 +2272,8 @@
       "executable": false
     },
     "sw.js": {
-      "sha256": "3a751b88eacbc767d2612d6fbdc1db52798b4c1026d52dd8177eb406f14c84e5",
-      "bytes": 5665,
+      "sha256": "76ae8faaa94f4fad5b3476a6767cc4940d0293e3d24a3752b75e1bd3f6fbbc29",
+      "bytes": 5728,
       "executable": false
     },
     "tests/__init__.py": {
@@ -2017,8 +2297,33 @@
       "executable": false
     },
     "tests/ai/test_arrival_comparison.py": {
-      "sha256": "634b5d433f201acc658ca18d07c5301b4c7dc7f31eb4e47e2c1c3216fe1bbd9d",
+      "sha256": "2c027b5243350a8d5eaf51481522fada2932f209a60c0e0075121e11a732377f",
       "bytes": 39402,
+      "executable": false
+    },
+    "tests/ai/test_campaign.py": {
+      "sha256": "552c197cbada87d696c5d1efcee8df92437caf68ca449c0bedcac9c57e2e97ad",
+      "bytes": 51641,
+      "executable": false
+    },
+    "tests/ai/test_campaign_chapter2.py": {
+      "sha256": "83155204b4759dbc044197722e661f0f3906a8347e6c4162b29d8bd5dba8758f",
+      "bytes": 28577,
+      "executable": false
+    },
+    "tests/ai/test_campaign_chapter3.py": {
+      "sha256": "42a138bc36a60c6dd2e1ddac8fc53c610ab5cf36593843094b7f943791f00edf",
+      "bytes": 15312,
+      "executable": false
+    },
+    "tests/ai/test_campaign_review_ch2.py": {
+      "sha256": "96faa95c1c1c593e66508c0ec56d379d78a59cea29e438e88277df113a2e5ee1",
+      "bytes": 12416,
+      "executable": false
+    },
+    "tests/ai/test_campaign_review_ch3.py": {
+      "sha256": "a3f032ad6a85b8594663feeb3808f4d62969db00ce5c10c640f5b900e491dde5",
+      "bytes": 6237,
       "executable": false
     },
     "tests/ai/test_card_context_separation.py": {
@@ -2027,13 +2332,13 @@
       "executable": false
     },
     "tests/ai/test_card_prompt.py": {
-      "sha256": "dffac71887b8f668103cd86b751a8cc0491f08d8cf086d7ee1467701fd612fe4",
+      "sha256": "4fd1c9cce27719ab784e14239c5c458fdefff21a8aaefda07d2b73c86de16a5b",
       "bytes": 26825,
       "executable": false
     },
     "tests/ai/test_character_builder.py": {
-      "sha256": "2c73e27af1fd315d1bbab2bb367daa3bc6fb384a7424e1dee1c43d7eeec8a020",
-      "bytes": 30643,
+      "sha256": "45ab36b1ec4ba1d95595c60423a22eb89ca253c609dec762f4486961461b28ba",
+      "bytes": 31780,
       "executable": false
     },
     "tests/ai/test_character_cards.py": {
@@ -2072,8 +2377,8 @@
       "executable": false
     },
     "tests/ai/test_development.py": {
-      "sha256": "b84270e4f6f2932ad36439a3937f9bb957cd319a8740b657dc5e9dc6ee111a8b",
-      "bytes": 5758,
+      "sha256": "0d602eaca2777db8e88818a9fe48252dc739d2fd5048d924530188f110b05199",
+      "bytes": 6000,
       "executable": false
     },
     "tests/ai/test_director.py": {
@@ -2097,8 +2402,8 @@
       "executable": false
     },
     "tests/ai/test_event_deck_content.py": {
-      "sha256": "9476ca24e09bb6aa11c86dbbedffc5dfb184750503814bb5893de76e4a7d4376",
-      "bytes": 26087,
+      "sha256": "67c609a4558cd6618bce7ce8cdcb220906bf554fc28d4a46edf07c145251407c",
+      "bytes": 26294,
       "executable": false
     },
     "tests/ai/test_event_deck_integration.py": {
@@ -2402,8 +2707,8 @@
       "executable": false
     },
     "tests/fork/ai-settings-browser.mjs": {
-      "sha256": "8be88168fbd4100621eb245e2ed7517bdfe7afb3cc637fef98b705a958c747f1",
-      "bytes": 14026,
+      "sha256": "14d49cc5cab1e65cb4f96c15884c6e76335bfb426a27161f72a5e293151f5f4a",
+      "bytes": 14082,
       "executable": false
     },
     "tests/fork/bridge.test.mjs": {
@@ -2412,8 +2717,8 @@
       "executable": false
     },
     "tests/fork/browser.mjs": {
-      "sha256": "246836320e93cd1754aa45446e066776f21a29feb4e2474df67f4560f50c50d8",
-      "bytes": 21550,
+      "sha256": "c7a0e36a50ad9ba3e36627cbb0a34de8a58685fad0f2466cb41e37fecbe38941",
+      "bytes": 21606,
       "executable": false
     },
     "tests/fork/browser_service.py": {
@@ -2422,8 +2727,23 @@
       "executable": false
     },
     "tests/fork/bundle-browser.mjs": {
-      "sha256": "3dbeb2a51b6a65712a1f8bc050fe5582f971de9e2525211550fdb4eeaec002cd",
-      "bytes": 6921,
+      "sha256": "a52292bc1a130150794318fb990176a2f699263b0943b254958c0e24bb55772d",
+      "bytes": 6977,
+      "executable": false
+    },
+    "tests/fork/campaign-browser.mjs": {
+      "sha256": "7856a2afe901d62be399a7d2348fc9adc4ae4d98359d9d7924b2804b67548566",
+      "bytes": 29213,
+      "executable": false
+    },
+    "tests/fork/campaign_browser_service.py": {
+      "sha256": "cf8870df3d39518d46b5e78633a7b0c509ba1a30da14d8f35408714e55f7ffb2",
+      "bytes": 4566,
+      "executable": false
+    },
+    "tests/fork/campaign_ui_routing.mjs": {
+      "sha256": "b04fada3f2f5c5c071ca4742986b53c04018b01e7c4ada23e16913d8607ee0ab",
+      "bytes": 3684,
       "executable": false
     },
     "tests/fork/capture_card_context_implementation.py": {
@@ -2432,13 +2752,13 @@
       "executable": false
     },
     "tests/fork/character-browser.mjs": {
-      "sha256": "af7c9c652843ba6d2285078fec9e18feb315eab99072f938148d4bd985f4247f",
-      "bytes": 18438,
+      "sha256": "1a0767b143f5193875d35e46796162f94859f47685f68bfcd110259f1fc0c3c0",
+      "bytes": 18494,
       "executable": false
     },
     "tests/fork/character-builder-browser.mjs": {
-      "sha256": "0f353f32c6f9adbc530b987b99f14bf5af3c3562a0a5152fd5a1a7c84c61afb0",
-      "bytes": 18539,
+      "sha256": "2e83aca5054196ae6915e9e56b244e0836ac03238f7a32764336aba5a9d07e70",
+      "bytes": 18595,
       "executable": false
     },
     "tests/fork/character-builder-regressions-browser.mjs": {
@@ -2452,8 +2772,8 @@
       "executable": false
     },
     "tests/fork/character-menus-browser.mjs": {
-      "sha256": "5f94871b56f08b3ecda196476c33704f213232e95dd6537d4462f5cf56c87da2",
-      "bytes": 12634,
+      "sha256": "19254b92b2056c3cdaac658a8a0325922207957de5f78afbff5b564162682cf0",
+      "bytes": 12690,
       "executable": false
     },
     "tests/fork/character_builder_browser_service.py": {
@@ -2477,8 +2797,8 @@
       "executable": false
     },
     "tests/fork/context-intelligence-browser.mjs": {
-      "sha256": "2db67a7e6ba6fd9e76e388706229d55e4b1d2f8ec63dc8e6c54ac7179f66b1e2",
-      "bytes": 9468,
+      "sha256": "50606bd5024d4b7240bdd6b746a45c9a824188bc3b0b2461a729e3c9354acf0d",
+      "bytes": 9524,
       "executable": false
     },
     "tests/fork/context_evaluation.py": {
@@ -2497,8 +2817,8 @@
       "executable": false
     },
     "tests/fork/desktop-launcher-browser.mjs": {
-      "sha256": "7e2fde55849122cae92caba79a6dcc45c9e5f1697b8a999efe14bd2830b1732c",
-      "bytes": 3638,
+      "sha256": "2393cf0a0e6afcffd858da6361b554b69995ccd1441f0cbac875c9a760c069ec",
+      "bytes": 3754,
       "executable": false
     },
     "tests/fork/desktop-pairing.test.mjs": {
@@ -2532,13 +2852,13 @@
       "executable": false
     },
     "tests/fork/event-intelligence-browser.mjs": {
-      "sha256": "27554f53a699b75083487987758256acbcfdce5893d869bf005a2a90d1983c9e",
-      "bytes": 8605,
+      "sha256": "8b964be0ea06fc73718a2429171361f95919a7433d80433e4370dc2c62fce343",
+      "bytes": 8661,
       "executable": false
     },
     "tests/fork/event-reliability.mjs": {
-      "sha256": "5b78f81f0eb9350543a090565b9e05a176a19d59d1e1e02adac9bf5da4d75d35",
-      "bytes": 12191,
+      "sha256": "5194003e512b301205034394b9cb30fb2a8e3b9904e0621942bbd54dc07e5c4b",
+      "bytes": 12247,
       "executable": false
     },
     "tests/fork/event_intelligence_service.py": {
@@ -2587,8 +2907,8 @@
       "executable": false
     },
     "tests/fork/intelligent-memory-browser.mjs": {
-      "sha256": "3d5482a7ca996adc16a678b5d91d61b9a7c366c306219f4cd20891015748eb87",
-      "bytes": 27140,
+      "sha256": "42bdb30b87f4a13031750bfd334a39ede3b2b322b550565a3665611dae56f40c",
+      "bytes": 27223,
       "executable": false
     },
     "tests/fork/intelligent_memory_evaluation.py": {
@@ -2607,13 +2927,13 @@
       "executable": false
     },
     "tests/fork/live-acceptance.mjs": {
-      "sha256": "2b6fef3b5f19cf45fac625b635132e7e49e22cdf974b2c627ccb9185254728ef",
-      "bytes": 18801,
+      "sha256": "610b65381ad6d5041288e10c0e1a2893a4ce9c620409175e54cf688bb0541b57",
+      "bytes": 18857,
       "executable": false
     },
     "tests/fork/live-browser.mjs": {
-      "sha256": "1e240c470ed29a12e4e5eabbb22d2e67f635e9c1d55ecda1ef14f70d0afccf3b",
-      "bytes": 5074,
+      "sha256": "745d932845c6f06fbf792c62c03c61531918dd058652cb5e2bc1ab0eb60141f6",
+      "bytes": 5130,
       "executable": false
     },
     "tests/fork/live_acceptance_service.py": {
@@ -2662,8 +2982,8 @@
       "executable": false
     },
     "tests/fork/narrative-browser.mjs": {
-      "sha256": "9937fc53d69aabeebda9bfd596cdcea7ee002166effe4f00d3a04141fb6708b3",
-      "bytes": 6723,
+      "sha256": "376329341c7a883b14e89aa97c466ad9601217609665314e65f6bfdb15d9d6d8",
+      "bytes": 6779,
       "executable": false
     },
     "tests/fork/narrative-state.test.mjs": {
@@ -2692,13 +3012,13 @@
       "executable": false
     },
     "tests/fork/player-interactions-browser.mjs": {
-      "sha256": "6b22e91449b76dbbc614dbe8afa5849e70e3269489980f79a42a690bcf6a57f7",
-      "bytes": 10643,
+      "sha256": "5cb6af186d04551e358a1d57fb92cbc9cb51e45677b8fc1d53ed63c1cd2ca780",
+      "bytes": 10699,
       "executable": false
     },
     "tests/fork/player-workspace-browser.mjs": {
-      "sha256": "b8da9dcb831251acfc29c89b9ce1e1119e5886ae5643da7c00fe7f615e588770",
-      "bytes": 27083,
+      "sha256": "9005c96501ab82f31002d10c8ece4e61dc94a1b377693759f796cf53b5b9bd78",
+      "bytes": 27139,
       "executable": false
     },
     "tests/fork/player_interactions_smoke.py": {
@@ -2722,13 +3042,13 @@
       "executable": false
     },
     "tests/fork/session-completion.test.mjs": {
-      "sha256": "c6af4a70b79a4b65809e5930e73e8ff3531e92f40338d2fc491022f5e819e643",
-      "bytes": 5177,
+      "sha256": "bce0ef598b5a3fbb5ec095a32a0efe0452ffa07c7fa7c1776cf92a6eb714fae4",
+      "bytes": 5297,
       "executable": false
     },
     "tests/fork/session-journal-browser.mjs": {
-      "sha256": "ddf9d1ce4da28f2bce9d6c94b98d9cc612ba52902df6afda157269ee27af26db",
-      "bytes": 5496,
+      "sha256": "0231b047d3a7433bbca99a99f9bda904d500e7a51f7adf3e615dfa3b5e9d8f5c",
+      "bytes": 5552,
       "executable": false
     },
     "tests/fork/session-journal.test.mjs": {
@@ -2747,8 +3067,8 @@
       "executable": false
     },
     "tests/fork/test_character_assets.py": {
-      "sha256": "d82cc3954d0b95c87c54dc374311d88ed79871e7ccfcd4aa475baa6efc8e8516",
-      "bytes": 2803,
+      "sha256": "a39731e74bd25ed512265545edc5d3f72024e60539110599a61d5e05cbd0398c",
+      "bytes": 4150,
       "executable": false
     },
     "tests/fork/test_deck_session_benchmark.py": {
@@ -2782,12 +3102,12 @@
       "executable": false
     },
     "tests/fork/test_mira_model.py": {
-      "sha256": "c6e1d2898b974fe33e96f0d2b1f81bd8c44aa2b3e84219de6365e44944b4c4fc",
+      "sha256": "e84a11c8173be52eabacc7a760f4dcf2ec03fbe54e970e50ff050e087be1d9f6",
       "bytes": 4412,
       "executable": false
     },
     "tests/fork/test_mira_session_deck.py": {
-      "sha256": "9b3152b49f7fc3288be6b957c0abd35a85536b2e95bc8cf0708db7f5dd772d56",
+      "sha256": "4a7649bc385b540861b3d39f6fa8fc3c00de62bc6be3735b71415f173491bb87",
       "bytes": 14634,
       "executable": false
     },
@@ -2802,13 +3122,13 @@
       "executable": false
     },
     "tests/fork/test_release_bundle.py": {
-      "sha256": "beecbb3ae807792f29e1539b87403383dfd5626eadce675211f62cbe4fb0eae0",
-      "bytes": 11646,
+      "sha256": "f1b03100812e6ce4fb8afd7c30153442fb0a3492c0d9d6f3c35d64387ad16c12",
+      "bytes": 11709,
       "executable": false
     },
     "tests/fork/test_upstream_sync_guards.py": {
-      "sha256": "efdc82db250d0823e4152ecc6638bbac87228d84d5e04ac534663c2617668d80",
-      "bytes": 10433,
+      "sha256": "c9443df06bee987d15cbfee95619416018181fbff7735eb4580dabecb39d4ca8",
+      "bytes": 10444,
       "executable": false
     },
     "tests/fork/test_windows_installer.py": {
@@ -2817,13 +3137,13 @@
       "executable": false
     },
     "tests/fork/upstream-sync-browser.mjs": {
-      "sha256": "f7e6e56114c607967c3bf7d7064272cd1f683f6e40eeb07bd05845dd5025f433",
-      "bytes": 14179,
+      "sha256": "2c1160acbdcf2862732889b337bb222755dc947e0957e197be13b894e443e247",
+      "bytes": 14235,
       "executable": false
     },
     "tests/fork/upstream-sync-guards.test.mjs": {
-      "sha256": "e485761e28555d0bbdfea30f0977310a7927df5d6e0f0fa3eb151f1e186f569c",
-      "bytes": 14589,
+      "sha256": "5e6a306f5342cabf28f46424594561280f4d7ab4d6d39be7638b0de5fc3235c1",
+      "bytes": 14770,
       "executable": false
     },
     "tools/ai_settings_live_cards.py": {
@@ -2846,6 +3166,11 @@
       "bytes": 2600,
       "executable": false
     },
+    "tools/campaign_live_check.py": {
+      "sha256": "d25251ce409afbe88d5f6136b8488f397cfc32008f6873c53150563a295abde1",
+      "bytes": 11121,
+      "executable": false
+    },
     "tools/characters/build_character.py": {
       "sha256": "cbbaaa42f6a1a0a89a5dfdf1e90387bd8b58a7554600085723220c7525c044e7",
       "bytes": 2294,
@@ -2862,9 +3187,14 @@
       "executable": true
     },
     "tools/check_mira.py": {
-      "sha256": "223a96883074f95490b365bbe41e7eebcf25856cd59c48d98a21d46cca9eaa44",
+      "sha256": "b89ce218eec95bc1ab877f25ebb2ffdc27a4d57d68afbdd6c03ed44e2d2903be",
       "bytes": 12519,
       "executable": false
+    },
+    "tools/check_vex9.py": {
+      "sha256": "d932dd67ec5e44ca09d8470dbe0f1f1c06367e7eaaf611097d10c7de9a81ba45",
+      "bytes": 12363,
+      "executable": true
     },
     "tools/edgeloop-ai": {
       "sha256": "827fce21ae35cb35dfcfa0cfd36d736b555dcd055e7caf8ae9b156455cfe2809",
@@ -2952,8 +3282,8 @@
       "executable": true
     },
     "tools/serve_local.py": {
-      "sha256": "bef633f3203b4a08f226197b8117710f19a6e7660de489c5c0aefa452f3e8621",
-      "bytes": 5635,
+      "sha256": "b72fdd634050078453d78ee9052a15f8d07d98c2c6c755b68332463f71f9a4c1",
+      "bytes": 5727,
       "executable": false
     },
     "tools/setup-ai.sh": {

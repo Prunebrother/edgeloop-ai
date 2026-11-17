@@ -15,7 +15,7 @@ function rig({accept=false,hr=110}={}){
   syncAiObservation:()=>{calls.push('observe');assert.equal(stored[0].completion_status,'user_reported');},
   finishHr:()=>hr,calibrationReading:()=>null,stimulationRoles:()=>({dual:false}),readHrLimits:()=>({maxHr:140}),
   confirm:()=>{calls.push('calibration');assert.equal(stored[0].duration,321);assert.equal(stored[0].completion_status,'user_reported');return accept;},
-  savePrimaryClimax:()=>calls.push('calibrate'),beginSettle:options=>{state.settleEndsSession=options.endsSession;calls.push('settle');}};
+  savePrimaryClimax:()=>calls.push('calibrate'),persistSettings:()=>true,beginSettle:options=>{state.settleEndsSession=options.endsSession;calls.push('settle');}};
  const handler=source.slice(source.indexOf("cameEarlyBtn?.addEventListener('click', () => {"),source.indexOf("\ndocument.getElementById('wipeLearningBtn')"));
  const save=source.slice(source.indexOf('function saveSessionToHistory(outcome)'),source.indexOf('// Build the requested channel script'));
  // Upstream 1.1.4.26+ moved the calibration save into a shared function used by Finished me and Edged.
@@ -32,6 +32,7 @@ test('Finished me persists exact counters and explicit completion before calibra
 test('duplicate click and later stop update one history record',()=>{
  const r=rig({accept:true});r.click();r.click();assert.equal(r.calls.filter(c=>c==='persist').length,1);assert.equal(r.calls.filter(c=>c==='settle').length,1);
  assert.equal(r.state.orgasmCount,1);assert.equal(r.state.lastOrgasmSeconds,321);  // Finished me is one counted orgasm
+ assert.equal(r.state.calibrationSaved,true);  // the campaign's certification reads this fact
  r.state.sessionSeconds=325;r.save('Calibration');assert.equal(r.stored.length,1);assert.equal(r.stored[0].duration,325);assert.equal(r.stored[0].completion_status,'user_reported');
 });
 test('completion is recorded even when no HR reading is available for calibration',()=>{

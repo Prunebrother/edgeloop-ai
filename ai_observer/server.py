@@ -24,8 +24,10 @@ from companion_ai.event_intelligence import preset
 from companion_ai.models import AIConfig, SpeechPolicy, stored_config
 from companion_ai.storage import SettingsStore
 from companion_ai.session_journal import SessionJournal
+from companion_ai.campaign import CampaignService
+from companion_ai.conversation import character_identity
 from .config import RuntimeConfig, validate_ollama_url
-from .protocol import Auth, Messages, Observation, Chat, Select, Models, Cancel, ResetNarrative, CharacterState, ConfigureDirector, ConfigureEvents, ConversationActivity, ConfigureContext, UpdateObjective, JournalCommand, ConfigureCurator, SettingsOutcome, CharacterBuilderCommand, safe_validation_errors
+from .protocol import Auth, Messages, Observation, Chat, Select, Models, Cancel, ResetNarrative, CharacterState, ConfigureDirector, ConfigureEvents, ConversationActivity, ConfigureContext, UpdateObjective, JournalCommand, ConfigureCurator, SettingsOutcome, CharacterBuilderCommand, CampaignCommand, safe_validation_errors
 from .observation import BrowserObservation, ObserverDirector
 from companion_ai.character_builder import Library as CharacterLibrary, BuilderError, load_package, preview as character_preview
 from companion_ai.event_deck import load_definition
@@ -37,13 +39,15 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
     if not 32<=len(token)<=128: raise ValueError('A 32–128 character pairing token is required')
     store=SettingsStore(data_dir)
     journal=SessionJournal(store)
+    campaign=CampaignService(store,identity=character_identity)
     state=BrowserObservation(clock,journal=journal)
     runtime_config=RuntimeConfig.load()
     endpoint=validate_ollama_url(ollama_url) if ollama_url is not None else runtime_config.ollama_url
     manager=ModelManager(endpoint,store=store,transport=transport)
     manager.verified_journal=journal  # trusted internal reference; no new public endpoint
     manager.config=manager.config.model_copy(update={'thinking':False,'explicit_expressions':runtime_config.explicit_expressions})
-    manager.current_summary=state.summary
+    # Refreshed at inference dispatch and validation: telemetry and the campaign brief alike.
+    manager.current_summary=lambda:state.summary()|speech.campaign_fields()
     director=ObserverDirector(DirectorConfig.model_validate(store.read('director.json',{})),clock=clock)
     queues=set();owner=None;expires=clock()+pairing_lifetime;model_lock=asyncio.Lock()
     def publish(message):
@@ -56,6 +60,14 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                 q.put_nowait({'type':'resync_required'})
             else:q.put_nowait(message)
     speech=ConversationService(state,publish,adapter or manager,clock=clock,director=director)
+    # The companion is told about the mission it leads, and reacts to verified mission moments; it never decides them.
+    # A custom character on a built-in companion's model is its own persona: it never plays that companion's missions.
+    def persona():
+        character=getattr(manager,'character',None)
+        return 'custom:'+character.identity if character else manager.config.model
+    speech.campaign_brief=lambda:campaign.model_context(persona(),state.report if state.fresh() else None)
+    speech.campaign_speaker=lambda:character_identity(persona())
+    speech.campaign_cue_valid=campaign.cue_valid;speech.settings.check=campaign.settings_check;speech.campaign_directive_valid=campaign.directive_valid;speech.settings.still_needed=campaign.directive_current
     speech.policy=SpeechPolicy(event_responses=True)
 
     async def interrupt():
@@ -90,7 +102,7 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
 
     app=FastAPI(title='EdgeLoop read-only AI observer',lifespan=lifespan)
     app.add_middleware(TrustedHostMiddleware,allowed_hosts=['127.0.0.1','localhost','testserver'])
-    app.state.journal=journal;app.state.observation=state;app.state.models=manager;app.state.speech=speech;app.state.director=director
+    app.state.journal=journal;app.state.campaign=campaign;app.state.observation=state;app.state.models=manager;app.state.speech=speech;app.state.director=director
     @app.middleware('http')
     async def origin_guard(request:Request,call_next):
         if request.headers.get('origin') not in {None,*origins}:
@@ -130,6 +142,9 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                     library.write_package(composed)
                     package=load_package(composed)
                     builtin_deck()
+                # Campaign missions are played with their own companion; custom characters wait for Freeplay.
+                refusal=campaign.switch_refusal('custom:'+package.identity if package else manager.config.model,persona())
+                if refusal:raise BuilderError([{'path':['model'],'message':refusal}])
                 model=package.model if package else manager.config.model
                 async with model_lock:
                     presets=store.read('model-presets.json',{})
@@ -289,9 +304,27 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                                 'evidence':'Session ended; use only the supplied counters and their completeness. Completion status is explicit user report or unknown, never inferred from measurements.'})
                         speech.process_derived()
                         speech.settings_observe()
+                        accepted_kinds=[e.kind for e in message.events if e.id in state.accepted_event_ids]
+                        for update in campaign.observe(state.report,accepted_kinds,persona()):publish(update)
+                        for cue in campaign.take_cues():speech.campaign_cue(cue)
+                        for directive in campaign.take_directives():speech.campaign_directive(directive)
+                        speech.settings.allowed=campaign.allowed_settings();speech.settings.directed=campaign.settings_directed()
                         publish({'type':'observation_ack','accepted':True,'sequence':message.sequence,'session_id':state.session_id,
                             'rejected_events':[{'id':e.id,'kind':e.kind,'reason':'duplicate_stale_or_unproven'} for e in message.events if e.id not in state.accepted_event_ids],
                             'events':[{'id':e.id,'kind':e.kind,'session_id':state.session_id} | ({'preserve_reaction':True} if e.kind=='stop' and (closing or accepted_release or any(p['kind'] in {'came_early','completion_accepted'} for p in speech.pending) or speech.active_event_kind in {'came_early','completion_accepted'} and speech.task is not None and not speech.task.done()) else {}) for e in message.events if e.id in state.accepted_event_ids]})
+                    elif isinstance(message,CampaignCommand):
+                        try:
+                            if message.action=='answer':
+                                # A puzzle answer is checked by the campaign against its own definition, never by a model.
+                                for update in campaign.answer(message.objective_id,message.answer,state.report if state.fresh() else None,persona()):publish(update)
+                                for cue in campaign.take_cues():speech.campaign_cue(cue)
+                            else:
+                                if message.action=='start':campaign.start(message.campaign_id,message.mission_id,state.report)
+                                elif message.action=='abandon':campaign.abandon()
+                                publish(campaign.state(state.report,persona()))
+                            speech.settings.allowed=campaign.allowed_settings();speech.settings.directed=campaign.settings_directed()
+                        except (ValueError,OSError) as exc:
+                            publish(campaign.state(state.report,persona())|{'command_error':str(exc)[:240] if isinstance(exc,ValueError) else 'Campaign progress could not be saved; nothing changed.'})
                     elif isinstance(message,ConfigureCurator):
                         try:
                             speech.curator.configure(message.config)
@@ -380,6 +413,12 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                     elif isinstance(message,CharacterBuilderCommand):
                         await character_builder(message)
                     elif isinstance(message,Select):
+                        # During a mission only its companion can be selected; Freeplay leaves the mission first.
+                        keeps=manager.character if message.keep_character and manager.character and manager.character.model==message.selection.model else None
+                        refusal=campaign.switch_refusal('custom:'+keeps.identity if keeps else message.selection.model,persona())
+                        if refusal:
+                            publish({'type':'ai_error','code':'campaign_locked','detail':refusal,'selection_failed':True,'active':manager.mode not in {'mock','stopped'}})
+                            continue
                         try:
                             async with model_lock:
                                 presets=store.read('model-presets.json',{})

@@ -54,7 +54,7 @@ try {
     });
     await page.goto(uiUrl+'/',{waitUntil:'load'});
     await page.locator('#ageConfirmBtn').click();
-    await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();
+    await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
     await page.locator('#companion-dashboard').waitFor({timeout:8000}).catch(()=>{throw new Error('Companion did not mount on the upstream page');});
     const missing=await page.evaluate(async()=>{
         const original=new DOMParser().parseFromString(await(await fetch('/index.html')).text(),'text/html');

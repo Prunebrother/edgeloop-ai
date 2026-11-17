@@ -45,3 +45,23 @@ def test_presentation_ack_exposes_only_verified_deduplicated_source_events(tmp_p
             ws.send_json(frame(epoch,1,state,[event]));ack=until(ws,'observation_ack')
             assert ack['events']==[event|{'session_id':state['session_id']}]
             time.sleep(.11);ws.send_json(frame(epoch,2,state,[event]));assert until(ws,'observation_ack')['events']==[]
+
+def test_menu_art_is_public_and_only_its_curated_file_types():
+    for path in ['/src/assets/menu/backdrop.webp','/src/assets/menu/mark.svg','/src/assets/menu/wordmark.svg',
+                 '/src/assets/menu/fonts/cormorant-garamond-600.woff2','/src/assets/menu/companions/mira.webp',
+                 '/src/assets/menu/campaigns/asterion_initiative/chapter-3.webp']:
+        assert static.public_file(path), path
+    for path in ['/src/assets/menu/../../../.git/config','/src/assets/menu/readme.md','/src/assets/menu/x.png','/src/assets/menu/.hidden.webp']:
+        assert static.public_file(path) is None, path
+
+def test_every_menu_art_reference_exists_on_disk():
+    import re
+    source=(ROOT/'src/js/ai/menu-art.js').read_text()
+    files=sorted(p.relative_to(ROOT/'src/assets/menu').as_posix() for p in (ROOT/'src/assets/menu').rglob('*') if p.is_file())
+    for name in ['backdrop.webp','mark.svg','wordmark.svg','fonts/cormorant-garamond-600.woff2']:
+        assert name in files
+    for c in re.search(r"COMPANION_ORDER=Object.freeze\(\[([^\]]+)\]",source)[1].replace("'",'').split(','):
+        assert f'companions/{c}.webp' in files and f'companions/{c}-face.webp' in files
+    for n in range(1,5):
+        assert f'campaigns/asterion_initiative/chapter-{n}.webp' in files
+    assert 'campaigns/asterion_initiative/key.webp' in files

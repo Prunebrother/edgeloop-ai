@@ -222,6 +222,15 @@ class SettingsControl:
         self.nudge_text=None
         self.task=None
         self.diagnostics={'status':'idle'}
+        # A campaign mission may limit which settings the companion can request (None: no limit).
+        self.allowed=None
+        # A directed mission: no unprompted or round decisions at all, only the mission's own steps, and every
+        # request (also one the user asks for) must pass the mission's check(request, report).
+        self.directed=False
+        self.check=None
+        # Is a mission step still needed now, judged on the latest observation (the player may act while the model
+        # thinks)? None: no campaign wired.
+        self.still_needed=None
 
     def nudge(self):
         """An edge makes an unprompted decision due sooner (pacing still applies)."""
@@ -233,7 +242,7 @@ class SettingsControl:
 
     def due(self,report):
         """An unprompted decision: only when the engine's pacing allows one."""
-        if not own_ready(report) or self.in_flight() or self.task and not self.task.done():return False
+        if self.directed or not own_ready(report) or self.in_flight() or self.task and not self.task.done():return False
         wait=self.config.nudged_interval_seconds if self.nudge_text is not None else self.config.decision_interval_seconds
         return self.clock()-self.last_decision>=wait
 
@@ -241,28 +250,49 @@ class SettingsControl:
         return [{'setting':e['request']['setting'],'to':e['outcome'].get('to')} for e in self.ledger.values()
                 if e['status'] in {'applied','announced'} and e['request']['session_id']==session_id]
 
-    async def run(self,adapter,report,model,publish,user_text=None,round_start=False):
+    async def run(self,adapter,report,model,publish,user_text=None,round_start=False,directive=None):
         """One decision. With user_text it answers that message (trigger 'user'); round_start is EdgeLoop's invitation
-        when a new round begins after an orgasm (trigger 'round'); otherwise it is the character's own idea."""
+        when a new round begins after an orgasm (trigger 'round'); directive is a campaign mission step (trigger
+        'mission'), which falls back to the mission's own change when the character proposes nothing usable;
+        otherwise it is the character's own idea."""
         self.last_decision=self.clock();self.nudge_text=None
-        trigger='user' if user_text else 'round' if round_start else 'own'
+        trigger='user' if user_text else 'round' if round_start else 'mission' if directive else 'own'
         content=decision_content(report,user_text,self.recent(report['session_id']),round_start)
+        if self.allowed is not None:
+            content+='\nMission rule from EdgeLoop: during this mission only these changes are possible: '+', '.join(sorted(self.allowed))+'. Anything else is ignored; choose "none" instead.'
+        if self.directed and not directive:
+            content+='\nMission rule from EdgeLoop: during this mission settings change only at the mission\'s own steps; a request that does not fit them is ignored.'
+        if directive:content+='\n'+directive['text']
         self.diagnostics={'status':'deciding'}
         try:
             text=await adapter.decide_settings(content,Proposal.model_json_schema(),self.config.timeout_seconds)
         except asyncio.CancelledError:self.diagnostics={'status':'cancelled'};raise
-        except (ValueError,OSError,TimeoutError) as exc:
-            self.diagnostics={'status':'failed','reason':type(exc).__name__};return None
         except Exception as exc:  # httpx and provider errors stay inside the optional feature
-            self.diagnostics={'status':'failed','reason':type(exc).__name__};return None
+            self.diagnostics={'status':'failed','reason':type(exc).__name__}
+            # A mission step still happens with the mission's own change; the announcement card speaks for it.
+            if not directive:return None
+            text=''
         request=parse(text,report,trigger)
+        if directive and self.still_needed and not self.still_needed(directive):
+            # The player made a fitting change during inference, or the try ended: nothing to do any more.
+            self.diagnostics={'status':'no_change'};return None
+        # A mission step asks for one setting; a proposal for another (even one the mission could use later) is not it.
+        if directive and request is not None and request['setting']!=directive['fallback']['setting']:request=None
+        if directive and (request is None or not self.permitted(request,report)):
+            request=proposal_request(Proposal(change=directive['fallback']['setting'],value=directive['fallback']['value'],reason=directive['fallback']['reason']),report,trigger)
         if request is None:self.diagnostics={'status':'no_change'};return None
+        if not self.permitted(request,report):
+            self.diagnostics={'status':'restricted','setting':request['setting']};return None
         # A chat request is awaited by the reply (settled()), so the card path leaves it alone meanwhile.
         self.ledger[request['id']]={'request':request,'model':model,'sent_at':self.clock(),'status':'sent','outcome':{},'awaited':bool(user_text or round_start)}
         while len(self.ledger)>50:self.ledger.popitem(last=False)
         self.diagnostics={'status':'requested','setting':request['setting']}
         publish(request)
         return request
+
+    def permitted(self,request,report):
+        if self.allowed is not None and request['setting'] not in self.allowed:return False
+        return not self.directed or bool(self.check and self.check(request,report))
 
     def outcome(self,message):
         entry=self.ledger.get(message.id)

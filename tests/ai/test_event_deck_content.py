@@ -16,8 +16,8 @@ from tests.fork.event_replay import Replay
 ROOT=Path(__file__).resolve().parents[2]
 RAW=json.loads((ROOT/'config/event-deck.json').read_text())
 DEFINITION,ERROR=load_definition(RAW)
-SESSION='session';COMPANIONS=['nova','evelyn','daisy','celeste','mira']
-MODELS={'nova':'nova-narrative-v1:latest','evelyn':'evelyn-narrative-v1:latest','daisy':'daisy-narrative-v1:latest','celeste':'celeste-narrative-v2:latest','mira':'mira-narrative-v1:latest'}
+SESSION='session';COMPANIONS=['nova','evelyn','daisy','celeste','mira','vex9']
+MODELS={'nova':'nova-narrative-v1:latest','evelyn':'evelyn-narrative-v1:latest','daisy':'daisy-narrative-v1:latest','celeste':'celeste-narrative-v2:latest','mira':'mira-narrative-v1:latest','vex9':'vex9-narrative-v1:latest'}
 
 def normal():return {card.id:card for card in DEFINITION.normal}
 def missions():return {sequence.id:sequence for sequence in DEFINITION.sequences}
@@ -42,13 +42,13 @@ def drawn(target,ctx,limit=120):
 # Inventory
 
 def test_the_shipped_library_is_valid_and_has_a_new_revision():
- assert ERROR is None and DEFINITION.revision==7 and RAW['schema_version']==1
+ assert ERROR is None and DEFINITION.revision==9 and RAW['schema_version']==1
 
 @pytest.mark.parametrize('intent,count',[('edge_commentary',2),('session_duration',2),('hr_trend',3),('encouragement',2),('performance_observation',2),('playful_challenge',2),('recovery',2),('general_conversation',4),('finish_encouragement',2)])
 def test_every_shared_category_is_present(intent,count):
  assert len([c for c in DEFINITION.normal if c.intent==intent and c.audience=='shared'])==count
 
-@pytest.mark.parametrize('audience,intents',[('nova',{'character_curiosity_nova','character_challenge_nova'}),('evelyn',{'scientific_observation'}),('daisy',{'cloverfield_production','cloverfield_encouragement'}),('celeste',{'diplomatic_evaluation','personal_observation'}),('mira',{'helix_offer','procurement_humor','corporate_rivalry'})])
+@pytest.mark.parametrize('audience,intents',[('nova',{'character_curiosity_nova','character_challenge_nova'}),('evelyn',{'scientific_observation'}),('daisy',{'cloverfield_production','cloverfield_encouragement'}),('celeste',{'diplomatic_evaluation','personal_observation'}),('mira',{'helix_offer','procurement_humor','corporate_rivalry'}),('vex9',{'extraction_protocol','classification_review','discipline','method_rivalry'})])
 def test_every_companion_has_its_requested_themes(audience,intents):
  cards=[c for c in DEFINITION.normal if c.audience==audience]
  assert len(cards)==15 and intents<={c.intent for c in cards}
@@ -57,10 +57,10 @@ def test_every_companion_has_its_requested_themes(audience,intents):
  assert [c.id for c in cards if c.eligibility.phases==['recovery']]==[audience+'-another-load']
  assert len([c for c in cards if c.intent=='orgasm_count' and c.eligibility.min_orgasms==1])==1
 
-def test_opening_and_closing_are_shared_with_only_mira_overriding_them():
+def test_opening_and_closing_are_shared_with_only_mira_and_vex9_overriding_them():
  # One shared opening and closing; a companion may bring its own, which replaces the shared one for it only.
- assert [(c.id,c.audience) for c in DEFINITION.session_start]==[('opening','shared'),('mira-uninvited-company','mira')]
- assert [(c.id,c.audience) for c in DEFINITION.session_end]==[('closing','shared'),('mira-until-next-time','mira')]
+ assert [(c.id,c.audience) for c in DEFINITION.session_start]==[('opening','shared'),('mira-uninvited-company','mira'),('vex9-procedure-commencing','vex9')]
+ assert [(c.id,c.audience) for c in DEFINITION.session_end]==[('closing','shared'),('mira-until-next-time','mira'),('vex9-procedure-logged','vex9')]
 
 def test_the_mission_pack_is_three_counter_milestones_and_a_repeatable_orgasm_reaction():
  assert {k:(v.lane,v.audience,v.trigger.min_edges,v.trigger.min_seconds,v.trigger.event_kinds,len(v.steps),v.repeat) for k,v in missions().items()}=={f'edges-{n}':('mission','shared',n,None,[],1,False) for n in (3,7,10)}|{'orgasm-reported':('mission','shared',None,None,['orgasm_reported'],1,True),'next-round':('mission','shared',None,None,['round_ready'],1,True)}
