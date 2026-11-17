@@ -37,7 +37,7 @@ try {
     });
     await page.goto(uiUrl+'/',{waitUntil:'load'});
     await page.locator('#ageConfirmBtn').click();
-    await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();
+    await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
     await page.locator('#companion-dashboard').waitFor();
     assert(handy.length===0,'Hardware connected automatically');
     const missingIds=await page.evaluate(async()=>{

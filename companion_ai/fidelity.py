@@ -202,10 +202,47 @@ def verified_values(field,canonical,told,trigger,completed,result_key=None):
         values.update(record[result_key or field] for record in completed if record.get(result_key or field) is not None)
     return values
 
-def measurement_violations(clean,canonical,told,trigger,completed,user_text):
+# A campaign mission's target in a target phrase: "two of the five edges", "out of five edges", "the five edges I
+# asked for". Only the number in that phrase is exempt; "five edges for my assessment" is still a count.
+TARGET_BEFORE=re.compile(r"\b(?:out\s+of|of(?:\s+(?:the|my|your|those|these|all))?|short\s+of(?:\s+the)?|toward(?:s)?(?:\s+the)?)\s+$",re.I)
+TARGET_AFTER=re.compile(r"^\s+(?:(?:that\s+)?(?:I|you|we)\s+(?:asked\s+for|required|requested|need(?:ed)?|set)|(?:required|requested|needed|asked\s+for|to\s+go)\b)",re.I)
+
+# "You have reached the five edges I asked for" names the target and also claims it was reached: still a count.
+ACHIEVED=re.compile(r"\b(?:reached|hit|made|got|done|did|completed|logged|banked|scored|earned|managed|delivered|secured|cleared|achieved|have|has)\b|['’]ve\b",re.I)
+
+# A clause about a mission's own clock (the assessment, a stage, a play style's time, a countdown), and one about
+# the whole session's, which only the session clock can verify.
+REMAINING_TIME=re.compile(r"\b(?:left|remaining|to\s+go)\b",re.I)
+MISSION_CLOCK=re.compile(r"\b(?:assessment|stages?|phases?|mission|baseline|development|evaluation|comparison|styles?|countdown|deadline|left|remaining|to\s+go|encounter|delivery)\b",re.I)
+SESSION_CLOCK=re.compile(r"\b(?:session|whole\s+time|all\s+together|in\s+total|overall)\b",re.I)
+
+def mission_clock_values(clause,clocks):
+    """The verified seconds of the mission clocks a clause names, or None when it names none. The most specific
+    name wins ("the final stage" over "the assessment"); a clause naming no clock gets the generic ones (the
+    current stage, a countdown's time left). Time left and time done are different clocks."""
+    if SESSION_CLOCK.search(clause):return None
+    remaining=bool(REMAINING_TIME.search(clause));best=-1;values=set()
+    for clock in clocks:
+        if not isinstance(clock,dict) or not isinstance(clock.get('seconds'),int) or bool(clock.get('remaining'))!=remaining:continue
+        named=any(re.search(r'\b'+re.escape(name)+r'\b',clause,re.I) for name in clock.get('names',()))
+        score=clock.get('rank',0) if named else (0 if clock.get('generic') and MISSION_CLOCK.search(clause) else -1)
+        if score>best:best,values=score,set()
+        if score==best and score>=0:values.add(clock['seconds'])
+    return values if best>=0 else None
+
+def target_phrase(clause,match):
+    if TARGET_BEFORE.search(clause[:match.start()]):return True
+    return bool(TARGET_AFTER.search(clause[match.end():])) and not ACHIEVED.search(clause[:match.start()])
+
+def measurement_violations(clean,canonical,told,trigger,completed,user_text,targets=(),durations=()):
     codes=[];completed=list(completed or ())
+    # "my" marks someone else's numbers ("my patients"), but in a mission "my assessment" is this session's.
+    if targets:clean=re.sub(r"\bmy\s+(?=(?:mission|test|assessment|evaluation|certification|orientation)\b)",'the ',clean,flags=re.I)
     edges=verified_values('edges',canonical,told,trigger,completed);pauses=verified_values('pauses',canonical,told,trigger,completed)
     seconds=verified_values('seconds',canonical,told,trigger,completed,'active_running_seconds')
+    # A mission's own verified clocks (assessment stages, play-style time, a countdown) differ from the
+    # whole-session clock. A clause naming one is checked against that clock only, never another or the session's.
+    clocks=[c for c in durations or () if isinstance(c,dict)]
     for sentence in re.findall(r'[^.!?\n]+(?:\.\d+[^.!?\n]*)*[.!?\n]?',clean):
         tag=re.search(r"(?:,\s*(?:right|haven't you|isn't it|didn't you|aren't you|no|yes|eh)\s*\?)\s*$",sentence,re.I)
         if sentence.rstrip().endswith('?') and not tag:continue
@@ -218,6 +255,7 @@ def measurement_violations(clean,canonical,told,trigger,completed,user_text):
                 for match in pattern.finditer(clause):
                     said=spoken_number(match[1])
                     if said==1 and re.search(r'\bthe\s+$',clause[:match.start()],re.I):continue
+                    if said in targets and target_phrase(clause,match):continue
                     if past_session:
                         if VERIFIABLE_PAST.search(sentence) and said not in {record.get('edges') for record in completed}:codes.append('unsupported_completed_edges')
                         continue
@@ -236,6 +274,10 @@ def measurement_violations(clean,canonical,told,trigger,completed,user_text):
                         if re.search(r'\bby\s+(?:\w+\s+)?$',clause[:match.start(1)],re.I):continue
                         if OTHER_ACTIVITY.search(clause[:match.start(1)]):continue
                         value,tolerance=seconds_said(match[1])
+                        named=mission_clock_values(clause,clocks)
+                        if named is not None:
+                            if not supported(value,direction_of(clause[:match.start(1)]),named,tolerance,past):codes.append('wrong_running_counter')
+                            continue
                         if not seconds:codes.append('unavailable_session_timing')
                         elif not supported(value,direction_of(clause[:match.start(1)]),seconds,tolerance,past):codes.append('wrong_running_counter')
     return codes
@@ -746,6 +788,39 @@ def orgasm_count_violations(text,summary):
         if any(spoken_number(m[1]) not in known for m in ORGASM_COUNT.finditer(sentence)):codes.append('unsupported_orgasm_count')
     return codes
 
+# A mission is complete only when the campaign verified it; the companion must not declare it early.
+_MISSION_WORD=r"(?:mission|test|assessment|orientation|certification|evaluation|campaign|initiative)"
+MISSION_DONE=re.compile(r"\b(?:cleared|passed|completed|finished|aced|nailed|conquered|won|beat(?:en)?|survived|sealed|earned)\s+(?:the|this|that|your|my|our)\s+(?:[\w'’-]+\s+){0,3}?"+_MISSION_WORD+r"\b"
+    r"|\b"+_MISSION_WORD+r"\b[^.!?]{0,30}?\b(?:is|was|['’]s|has been|now)\s+(?:now\s+|officially\s+|finally\s+)?(?:complete|completed|done|passed|over|finished|closed|secured|sealed|wrapped)\b"
+    r"|\b(?:you(?:['’]ve| have)?\s+)?earned\s+(?:that|the|your)\s+(?:certification|title)\b",re.I)
+MISSION_NOT_YET=re.compile(r"\b(?:not|never|yet|almost|nearly|once|when|if|until|till|before|unless|could|would|will|might|let['’]s|see if|whether|close to|on the way|toward|towards)\b|n['’]t\b|['’]ll\b",re.I)
+EARLIER_MISSION=re.compile(r"\b(?:earlier|previous|last|prior|other)\s+(?:\w+\s+)?"+_MISSION_WORD+r"\b",re.I)
+MISSION_CLAUSES=re.compile(r"[,;:—–]|\s(?:but|and|so|yet|while|though|although|whereas)\s",re.I)
+
+def campaign_violations(text,summary):
+    """While a mission is still open, a claim that it is done is false; a mission card must say something.
+    Qualifiers count only in the clause that makes the claim, and a clause about another mission is not this one."""
+    codes=[]
+    if summary.get('campaign_state')=='active':
+        others=[o.casefold() for o in summary.get('campaign_others') or ()]
+        for sentence in re.findall(r'[^.!?\n]+[.!?\n]?',text or ''):
+            if sentence.rstrip().endswith('?'):continue
+            for clause in MISSION_CLAUSES.split(sentence):
+                start=0
+                for match in MISSION_DONE.finditer(clause):
+                    # Each claim is judged on its own words: a qualifier or another mission's name elsewhere in
+                    # the clause belongs to a different assertion.
+                    own=clause[start:match.end()+12];start=match.end()
+                    if MISSION_NOT_YET.search(own):continue
+                    named=clause[max(0,match.start()-24):match.end()].casefold()
+                    if EARLIER_MISSION.search(named) or any(re.search(r'\b'+re.escape(o)+r'\b',named) for o in others):continue
+                    codes.append('premature_mission_complete');break
+                if codes:break
+            if codes:break
+    card=summary.get('deck_card') or {}
+    if card.get('campaign') and len(re.findall(r"[A-Za-z']+",text or ''))<6:codes.append('campaign_card_too_short')
+    return codes
+
 def card_language_violations(text,summary):
     """Unsolicited card turns only: a person who asks about the session can still be answered plainly."""
     card=summary.get('deck_card')
@@ -753,7 +828,7 @@ def card_language_violations(text,summary):
     # A mission can't have a finalized result, which only the closing card receives.
     return (['test_language'] if CARD_TEST_LANGUAGE.search(text) else [])+(['premature_session_end'] if card.get('lane')=='mission' and premature_session_end(text) else [])+(['addressed_by_own_name'] if addresses_by_own_name(text,card.get('speaker')) else [])+(['read_only_control_claim'] if SELECTED_SETTING.search(text) else [])+(['settings_card_off_topic'] if settings_card_off_topic(text,card) else [])+relationship_violations(text,card)+history_violations(text,summary)+orgasm_count_violations(text,summary)
 
-def violations(text,canonical,history=(),trigger=None,completed=(),journal=(),told=(),card=False):
+def violations(text,canonical,history=(),trigger=None,completed=(),journal=(),told=(),card=False,targets=(),durations=()):
     """`card` adds the Director's checks for turns it generated itself. A person's conversation, with
     the deck on or off, keeps exactly the checks it has always had: dialogue such as "we've been walking
     for two hours" isn't a claim about a counter just because it has a number in it."""
@@ -804,7 +879,7 @@ def violations(text,canonical,history=(),trigger=None,completed=(),journal=(),to
     # person's posture, health or physical pulse. Simulation cannot establish it.
     # Scheduled prompts travel in the user role, but nobody said them.
     user_text=' '.join(m.get('content','') for m in history if m.get('role')=='user' and not (card and m.get('content','').startswith(SCHEDULED_PROMPTS)))
-    if card:codes+=measurement_violations(clean,canonical,told,trigger,completed,user_text)
+    if card:codes+=measurement_violations(clean,canonical,told,trigger,completed,user_text,targets,durations)
     simulated_source=card and bool(facts['hr_source']['current'] and facts['hr_source']['value']=='simulator')
     for sentence in re.findall(r'[^.!?\n]+[.!?\n]?',clean):
         historical=bool(re.search(r'\b(?:previous|last|historical)\b',sentence,re.I)) and not re.search(r'\b(?:current|currently|now|still)\b',sentence,re.I)

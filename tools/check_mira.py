@@ -21,10 +21,10 @@ from companion_ai.models import AIConfig
 from companion_ai.system_rules import SYSTEM_RULES
 
 # F2.9 layered standard: the parent holds base + sampling, the f29 child carries the reviewed SYSTEM.
-NAME = 'mira-narrative-f29-v015:latest'
+NAME = 'mira-narrative-f29-v017:latest'
 PARENT = 'mira-narrative-v1:latest'
 BASE = 'huihui_ai/qwen3.5-abliterated:9b'
-SOURCE = ROOT / 'characters/models/mira-narrative-f29-v015/Modelfile'
+SOURCE = ROOT / 'characters/models/mira-narrative-f29-v017/Modelfile'
 PARENT_SOURCE = ROOT / 'characters/models/mira-narrative-v1/Modelfile'
 PARAMETERS = {'temperature': .7, 'top_p': .9, 'top_k': 20, 'num_ctx': 8192}
 CASES = [
@@ -67,7 +67,7 @@ def offline_checks():
     keys = re.findall(r'^([a-z_]+):', template.read_text(), re.M)
     checks = {
         'standard_template_sections': set(definition) == set(keys),
-        'model_identity': definition['metadata']['character_id'] == 'mira' and 'HELIX-MORPH/09' in text,
+        'model_identity': definition['metadata']['character_id'] == 'mira' and 'HELIX-MORPH/08' in text,
         'f29_child_of_parent': re.findall(r'^FROM (.+)$', text, re.M) == [PARENT],
         'parent_on_supported_local_base': re.findall(r'^FROM (.+)$', parent, re.M) == [BASE],
         'inherited_native_template': not any(re.search(r'^(?:TEMPLATE|ADAPTER|MESSAGE)\b|^PARAMETER stop\b', t, re.M) for t in (text, parent)),

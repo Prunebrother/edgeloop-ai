@@ -28,6 +28,9 @@ def test_migrated_modelfile_and_lore_bytes_match_recorded_source():
     for record in source['files']:
         if record['destination'].startswith('characters/') and record['reason']=='byte-for-byte source migration':
             assert hashlib.sha256((ROOT/record['destination']).read_bytes()).hexdigest()==record['source_sha256']
+        elif 'amended_sha256' in record:
+            # An author-approved amendment after migration is pinned to its own hash.
+            assert hashlib.sha256((ROOT/record['destination']).read_bytes()).hexdigest()==record['amended_sha256']
 
 
 def test_process_diagnostics_never_expose_unrelated_environment_values(tmp_path):

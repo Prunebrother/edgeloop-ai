@@ -94,7 +94,7 @@ try {
   if(m.type==='response_delta'&&currentStream?.id===m.id){currentStream.first??=Date.now();currentStream.text+=m.text;currentStream.deltas++;}
   if(m.type==='speech'&&currentStream?.id===m.id){currentStream.done=true;currentStream.final=m.text;currentStream.expression=m.expression;}
  }));
- await page.goto(ui+'/');await page.locator('#ageConfirmBtn').click();await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();await page.locator('#companion-dashboard').waitFor();
+ await page.goto(ui+'/');await page.locator('#ageConfirmBtn').click();await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();await page.locator('#companion-dashboard').waitFor();
  assert(deviceCalls===0,'Hardware attempted automatically');
  await page.locator('#cardBle').click();await page.getByRole('button',{name:/manual simulator/i}).click();await page.locator('#modalSimHrSlider').fill('98');await page.locator('#modalEngageSimBtn').click();
  if(await page.locator('#modalCloseBtn').isVisible())await page.locator('#modalCloseBtn').click();

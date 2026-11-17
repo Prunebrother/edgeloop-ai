@@ -1799,6 +1799,7 @@ let completionHistoryId = null;
 
 function resetSessionCounters() {
     state.completionReported = false;
+    state.calibrationSaved = null;
     state.orgasmCount = 0;
     state.lastOrgasmSeconds = null;
     state.roundsGranted = 0;
@@ -2998,6 +2999,8 @@ function commitCalibrationReading(hr, { edge = false } = {}) {
         if (!confirm(line)) return false;
         savePrimaryClimax(hr);
     }
+    // Read-only fact for the AI observer (campaign certification): the saved max reached the store.
+    state.calibrationSaved = persistSettings();
     // Finished me is an orgasm: count it before the session can end.
     if (edge) countManualEdge();
     else countOrgasm();
@@ -6380,6 +6383,7 @@ function syncAiObservation(readiness = null, terminalOutcome = null) {
             dual_max_bpm: Number.isFinite(dual) && dual > limits.minHr && dual <= 250 ? dual : null,
             warmup_minutes: advancedSettings.warmupMinutes, hr_live: pulseIsLive(),
             completion_reported: Boolean(state.completionReported),
+            calibration_saved: typeof state.calibrationSaved === 'boolean' ? state.calibrationSaved : null,
             orgasm_count: state.orgasmCount || 0,
             last_orgasm_seconds: Number.isFinite(state.lastOrgasmSeconds) ? state.lastOrgasmSeconds : null,
             learning_release_count: advancedSettings.learningProfile?.breakthroughEvents ?? 0, terminal_outcome: terminalOutcome,

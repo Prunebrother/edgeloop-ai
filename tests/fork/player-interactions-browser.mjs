@@ -34,7 +34,7 @@ try{
   if(u.hostname.endsWith('handyfeeling.com')){hardware.push(u.pathname);return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(u.pathname.endsWith('/connected')?{connected:true}:u.pathname.endsWith('/info')?{fwVersion:'3.2.3',model:'Handy 1.1'}:{result:0})});}
   if(!['127.0.0.1','localhost'].includes(u.hostname))return route.abort();return route.continue();
  });
- await page.goto(uiUrl+'/',{waitUntil:'load'});await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();
+ await page.goto(uiUrl+'/',{waitUntil:'load'});await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
  await page.locator('#companion-dashboard').waitFor();
  await page.locator('[data-url]').fill(observerUrl.replace('http:','ws:')+'/observe');await page.locator('[data-token]').fill('browser-fixture-token-'+'x'.repeat(32));await page.locator('[data-connect]').click();
  await page.waitForFunction(()=>document.querySelector('[data-telemetry]').textContent.includes('Authoritative telemetry connected'));

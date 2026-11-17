@@ -112,6 +112,8 @@ CARD_INTERPRETATION=('What the facts mean to you is your own opinion. React as y
  'Health and fitness can be teased or guessed at, never stated as fact.')
 CARD_DIRECTION='Story direction from the participant: {direction}\nLet it shape how you behave here, still as yourself. Show it through what you say, and never describe yourself in its words. It is fiction: the verified facts stay exactly as listed.'
 CARD_QUESTION_INTENTS=frozenset({'playful_challenge','character_challenge_nova'})
+CAMPAIGN_CORRECTIONS={'premature_mission_complete':'Your draft said the mission is complete or passed, but EdgeLoop has not confirmed that: it is still open. Do not say it is done.',
+    'campaign_card_too_short':'Your draft was too short to say anything: write one or two full sentences.'}
 CARD_CORRECTIONS={'test_language':'wording about how the session was produced','premature_session_end':'that the session is over, something','first_session_claim':'that this is a first session, which is not established, and something','invented_history':'a shared past that is not established, or something','unsupported_history_figure':'an earlier-session figure: leave out any figure you are unsure of, and something','wrong_comparison':'a comparison that the verified difference contradicts: use the difference exactly as listed, or compare without figures, and something','unsupported_completion':'a finish that was not reported, or something','reintroduction':'introducing yourself, which is not needed here, and something','read_only_control_claim':'choosing or changing device settings, which only the participant can do, or something','wrong_final_edge':'which edge the session stopped on, or something','wrong_session_figure':'a figure credited to the wrong session, since each session has its own, or something','addressed_by_own_name':'your own name as if it were the name of the person you are speaking to: call them you, and something','wrong_time_since':'how long ago the earlier session was, or something','body_inference':'a statement about health or fitness as fact, or something','objective_standard':'a personal judgment as an objective standard, or something','wrong_edges':'an edge count','wrong_pauses':'a pause count','wrong_running_counter':'a running time','unavailable_session_timing':'a running time','unsupported_completed_edges':'an earlier session','unsupported_bpm':'a heart rate','wrong_current_bpm':'a heart rate','unsupported_unitless_bpm':'a heart rate','simulated_reading_presented_as_physical':'a simulated reading presented as a real body','unmeasured_physiology_from_simulation_or_unknown':'the participant\'s body','unsupported_trend':'a heart-rate trend'}
 
 def named(value):return MODE_NAMES.get(value,str(value).replace('_',' '))
@@ -201,6 +203,8 @@ def mission_facts(data,orgasm=False):
     if live('status') and facts['status'].value=='RUNNING':lines.append('Session status: still running. Completing an objective does not end the session.')
     return lines
 
+CAMPAIGN_FRAME='CAMPAIGN MISSION (verified by EdgeLoop; the story you and the participant are playing, not a session event):'
+
 RELATIONSHIP={'returning':'Relationship: you have had sessions together before. Carry on as people who know each other, with no introduction.',
               'first':'Relationship: this is your first session together. Introduce yourself in a few words.',
               'unknown':'Relationship: unknown to you. Do not introduce yourself as if you are new, and claim no shared past.'}
@@ -277,6 +281,9 @@ def card_instruction(summary,data,selected,brief,history_present,retry,expressio
         known='Verified by EdgeLoop: you yourself just made this setting change through AI Settings Control, inside the limits the user allowed. The user did not make it.'
         status=data.facts['status']
         if status.known and status.current:known+='\nCurrent verified session state: '+str(status.value)+'.'
+    # The mission is the story frame while it is open; once done, only the mission's own card is told, or every remark returns to it.
+    if summary.get('campaign_context') and (card.get('campaign') or summary.get('campaign_state')=='active'):
+        known+='\n'+(CAMPAIGN_FRAME if card.get('campaign') else CAMPAIGN_FRAME+' Mention it only if it fits this remark.')+'\n'+summary['campaign_context']
     relationship=card.get('relationship')
     if relationship:known+='\n'+RELATIONSHIP[relationship]
     if history:
@@ -383,6 +390,7 @@ class ContextCompiler:
         # The canonical validator/factual guard still has every field, independent of selection.
         facts=render_facts(data.model_copy(update={'facts':{k:v for k,v in data.facts.items() if k in selected},'events':[]}),include_timing='seconds' in selected,include_events=False,include_boundaries=operational)
         facts+='\nSession identity: '+str(data.session_id)+'; captured_at_ms '+str(data.captured_at_ms)+'.'
+        if summary.get('campaign_context'):facts+='\n'+CAMPAIGN_FRAME+'\n'+summary['campaign_context']
         if requested&{'physiology','devices'} or safety_relevant:
             facts+='\nMeasurement availability: '+('current validated sample' if data.facts['hr'].current else 'unavailable or stale; do not infer a value')+'.'
         if safety_relevant:facts+='\nCURRENT PROTECTIVE OBSERVATION (original EdgeLoop): '+dump({k:safety[k] for k in ('signal','no_contact','watchdog_paused','fault') if k in safety})
@@ -407,13 +415,16 @@ class ContextCompiler:
         instructions=system_rules(summary)
         if summary.get('narrative_initiative') and not card:instructions+=' This is a bounded narrative opportunity, not a user statement or telemetry. [SILENCE] is allowed.'
         if summary.get('grounding_corrections'):
-            if card:
-                wrong=list(dict.fromkeys(CARD_CORRECTIONS.get(code,'a detail') for code in summary['grounding_corrections']))
+            campaign_fixes=[CAMPAIGN_CORRECTIONS[code] for code in dict.fromkeys(summary['grounding_corrections']) if code in CAMPAIGN_CORRECTIONS]
+            others=[code for code in summary['grounding_corrections'] if code not in CAMPAIGN_CORRECTIONS]
+            if campaign_fixes:instructions+='\nCORRECTION REQUIRED: '+' '.join(campaign_fixes)
+            if card and others:
+                wrong=list(dict.fromkeys(CARD_CORRECTIONS.get(code,'a detail') for code in others))
                 instructions+='\nCORRECTION REQUIRED: your draft stated '+' and '.join(wrong)+' that the known values do not support. Write it again and use only the values listed; if none is listed, mention none.'
                 # Naming the mistake didn't always stop it recurring, so a comparison that went wrong gets the right one to say.
                 plain=comparison_words(card.get('history') or {}) if {'wrong_comparison','wrong_session_figure','unsupported_history_figure'}&set(summary['grounding_corrections']) else None
                 if plain:instructions+=' If you compare the sessions, say exactly this and add no other comparison: "'+plain+'" Keep your own voice in everything else.'
-            else:instructions+='\nCORRECTION REQUIRED: '+', '.join(summary['grounding_corrections'])+'. State only supported facts or uncertainty.'
+            elif others:instructions+='\nCORRECTION REQUIRED: '+', '.join(others)+'. State only supported facts or uncertainty.'
         presentation=FORMAT_INSTRUCTION if config.explicit_expressions else ''
         focus_block='PRIMARY FOCUS: '+dump(focus.__dict__)
         reply=summary.get('settings_reply')

@@ -68,7 +68,7 @@ def test_observer_protocol_is_closed_and_has_no_engine_commands():
     assert types == {'observation', 'select_model', 'chat', 'list_models', 'cancel_generation',
                      'reset_narrative', 'get_character_state', 'configure_director', 'configure_events',
                      'conversation_activity', 'configure_context', 'update_objective', 'session_journal',
-                     'configure_curator','settings_outcome','character_builder'}
+                     'configure_curator','settings_outcome','character_builder','campaign'}
     assert not types & COMMANDS
 
 

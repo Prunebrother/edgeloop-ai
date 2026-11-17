@@ -28,7 +28,7 @@ export class ReadOnlyConnection {
                 this.onStatus('Connected · session controls stay with EdgeLoop');this.flush();
                 this.send({version:1,type:'list_models'});
             } else if(['ai_diagnostics','response_expression','models','model_selected','response_start','response_delta','speech','speech_cancel','conversation_error',
-                'session_journal','character_state','character_menu_error','narrative_reset','response_suppressed','response_cancel','observation_ack','telemetry_status','ai_error','protocol_error','settings_request','character_builder'].includes(m.type))this.onMessage(m);
+                'session_journal','character_state','character_menu_error','narrative_reset','response_suppressed','response_cancel','observation_ack','telemetry_status','ai_error','protocol_error','settings_request','character_builder','campaign_state','mission_result','mission_milestone','campaign_progress'].includes(m.type))this.onMessage(m);
             else if(m.type==='resync_required')socket.close();
             // Unrecognized output, including engine command objects, is ignored.
         };

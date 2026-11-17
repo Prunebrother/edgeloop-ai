@@ -27,7 +27,7 @@ try {
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8780/');
  await page.locator('#ageConfirmBtn').click();
- await page.locator('#wizardSkipBtn').click();
+ await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
  const connected=()=>page.waitForFunction(()=>document.querySelector('#ai-companion')?.dataset.paired==='true');
  await connected();
  await page.locator('[data-model] option[value="evelyn-lite-v1:latest"]').waitFor({state:'attached'});
@@ -36,7 +36,7 @@ try {
  assert(!page.url().includes(credentials.token),'Pairing token leaked into URL');
  await page.reload();await connected();
  // A reopened tab shares desktop identity and can take over safely.
- const reopened=await context.newPage();await reopened.goto('http://127.0.0.1:8780/');
+ const reopened=await context.newPage();await reopened.goto('http://127.0.0.1:8780/');await reopened.locator('[data-menu-tile=freeplay]').click();
  await reopened.waitForFunction(()=>document.querySelector('#ai-companion')?.dataset.paired==='true');
  await reopened.locator('[data-disconnect]').click();await pause(5500);
  assert(await reopened.locator('#ai-companion').getAttribute('data-paired')==='false','Disconnect was undone by automatic pairing');

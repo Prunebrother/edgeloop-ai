@@ -62,7 +62,7 @@ try {
     });
     await page.goto(uiUrl+'/',{waitUntil:'load'});
     await page.locator('#ageConfirmBtn').click();
-    await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();
+    await page.locator('#wizardOverlay').waitFor({state:'visible'});await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();
     await page.locator('#companion-dashboard').waitFor({timeout:8000});
 
     // 1. Closed by default; the stage lives in the workspace, created once.

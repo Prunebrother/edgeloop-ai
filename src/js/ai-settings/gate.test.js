@@ -151,3 +151,21 @@ test('the after-orgasm settings are sanitized into their ranges', () => {
     assert.deepEqual([sanitizeAiSettings({ recovery_seconds: 29 }).recovery_seconds, sanitizeAiSettings({ recovery_seconds: 300 }).recovery_seconds,
         sanitizeAiSettings({ round_rest_seconds: 601 }).round_rest_seconds, sanitizeAiSettings({ round_rest_seconds: 0 }).round_rest_seconds], [90, 300, 180, 0]);
 });
+
+test('mission: a campaign step skips pacing, may switch Force Orgasm on, never pauses or stops, and still obeys the rest', () => {
+    const paced = { lastAiAt: 99000, settings: { enabled: true, pacing: 'rarely' } };
+    assert.equal(authorize(request('intensity', 75), context(paced)).reason, 'paced');
+    const result = authorize(request('intensity', 75, { trigger: 'mission' }), context(paced));
+    assert.equal(result.ok, true, result.reason);
+    assert.equal(result.change.trigger, 'mission');
+    assert.equal(authorize(request('orgasm', true, { trigger: 'mission' }), context({ sinceOrgasm: 10 })).ok, true);
+    for (const setting of ['pause', 'stop'])
+        assert.equal(authorize(request(setting, true, { trigger: 'mission' }), context()).reason, 'invalid_request');
+    assert.equal(authorize(request('intensity', 75, { trigger: 'mission' }), context({ settings: { enabled: true, pacing: 'never' } })).reason, 'own_changes_off');
+    assert.equal(authorize(request('intensity', 75, { trigger: 'mission' }), context({ settings: { enabled: false } })).reason, 'disabled');
+    assert.equal(authorize(request('intensity', 75, { trigger: 'mission' }), context({ lastAppliedAt: 99000 })).reason, 'rate_limited');
+    // The user's own intensity band still holds: 125% (slider 75) is clamped to an 70 maximum.
+    const clamped = authorize(request('intensity', 75, { trigger: 'mission' }), context({ settings: { enabled: true, intensity_max: 70 } }));
+    assert.equal(clamped.change.to, 70);
+    assert.equal(clamped.change.clamped, true);
+});

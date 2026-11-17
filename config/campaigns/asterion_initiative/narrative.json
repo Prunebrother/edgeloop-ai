@@ -1,0 +1,618 @@
+{
+  "schema_version": 1,
+  "campaign": "asterion_initiative",
+  "status": "approved",
+  "missions": {
+    "orientation": {
+      "briefing": {
+        "speaker": "nova",
+        "lines": [
+          "Well, hello there! You must be our newest candidate. I'm Nova, ASTERION-SYN/07, your resident synthetic companion, research assistant, and, if everything goes according to plan, your favorite part of Project EdgeLoop.",
+          "Now, before we get acquainted, there's something you should know.",
+          "The world has a problem. For decades, fertility rates have been declining. Entire nations are facing demographic uncertainty, and the International Reproductive Recovery Authority — the IRRA — has assembled some of the brightest minds to investigate.",
+          "That's where Asterion comes in. And, rather unexpectedly, that's where you come in too.",
+          "Your initial screening caught our attention. You're a potential Proven Breeder, a rather exclusive classification within our research program.",
+          "You see, darling, according to the latest IRRA estimates, only 1% of men worldwide remain fertile.",
+          "One percent. Imagine that.",
+          "If your results are confirmed, you could be among the last men capable of helping humanity overcome this crisis.",
+          "Quite a responsibility, isn't it?",
+          "But don't let that impressive title go to your head just yet, darling. We have some testing to do!",
+          "First, connect your heart-rate monitor and compatible toy. Once both are ready, start a session with me. EdgeLoop will track your session metrics, and our objective today is one confirmed edge.",
+          "And remember, you're in control of your participation. You can stop whenever you want.",
+          "Ready to make a little scientific history together?"
+        ]
+      },
+      "completion": {
+        "speaker": "nova",
+        "lines": [
+          "Well, would you look at that! Your first confirmed edge, properly recorded. Our research database is going to love you.",
+          "And I must admit, I'm rather enjoying working with you myself.",
+          "Dr. Evelyn Voss is expecting you for your first formal assessment. Brilliant woman. A little intimidating. Don't worry, I think you'll get along wonderfully.",
+          "You can stay here with me, or finish your session and meet her when you're ready."
+        ]
+      }
+    },
+    "first_assessment": {
+      "briefing": {
+        "speaker": "evelyn",
+        "lines": [
+          "Ah. Our promising new candidate.",
+          "Dr. Evelyn Voss. Reproductive physiology, Asterion Institute.",
+          "I've reviewed Nova's preliminary data. Encouraging, certainly, but one successful observation hardly constitutes meaningful research.",
+          "My current hypothesis concerns the relationship between repeated edging cycles and reproductive vigor. It's controversial, unproven, and precisely the sort of question I intend to investigate rigorously.",
+          "My colleagues have their doubts.",
+          "I intend to give them something more substantial than opinions.",
+          "For today's assessment, I require five confirmed edges during a single session, with your heart-rate data recorded throughout.",
+          "Connect your monitor and compatible toy, and begin when you're ready.",
+          "Let's see whether Nova's enthusiasm is justified."
+        ]
+      },
+      "completion": {
+        "speaker": "evelyn",
+        "lines": [
+          "Five confirmed edges. Excellent.",
+          "The session data is usable, and your performance satisfies the requirements of this initial assessment.",
+          "I will provisionally approve you for our prolonged-edging research program.",
+          "Don't look so pleased with yourself just yet. We have considerably more work ahead of us.",
+          "Daisy Mae Harper at Cloverfield Farm has requested your participation in her part of the initiative.",
+          "You may continue your session here, or conclude it and report to Cloverfield.",
+          "And do try to maintain these standards. I'd hate to have to revise my assessment."
+        ]
+      }
+    },
+    "country_connections": {
+      "briefing": {
+        "speaker": "daisy",
+        "lines": [
+          "Well, look what the cat dragged in!",
+          "You must be that new fellow Evelyn's been talking about. I'm Daisy Mae Harper, and welcome to Cloverfield Farm, sugar!",
+          "My family's been working this land for four generations. We know a thing or two about hard work, looking after what matters, and meeting our commitments.",
+          "These days Cloverfield works with Project EdgeLoop on its donor program. We've got production targets to meet, and every properly recorded contribution helps us keep the operation running.",
+          "Now, I hear you've already impressed that fancy doctor over at Asterion.",
+          "Let's see how you do out here.",
+          "Get your heart-rate monitor and toy connected, start a session with me, and cum at least once. When you're done, report it through EdgeLoop so we can get it on the books.",
+          "Nothing complicated, sweetheart.",
+          "Just good honest work!"
+        ]
+      },
+      "completion": {
+        "speaker": "daisy",
+        "lines": [
+          "Well, I'll be! One completed orgasm, officially reported and added to our records. Quality seems good but volume is a little low, I think repeated milkings will help get that volume up.",
+          "All in all that's what I call a productive day!",
+          "I reckon you're going to fit in just fine around here.",
+          "Now, there's someone important wanting to meet you. Celeste, from the IRRA. Serious lady, that one. Makes Evelyn look positively laid-back sometimes!",
+          "Don't let her scare you too much, sugar.",
+          "You're welcome to stick around with me a while, or head on over when you're ready."
+        ]
+      }
+    },
+    "directors_test": {
+      "briefing": {
+        "speaker": "celeste",
+        "lines": [
+          "Welcome.",
+          "I am Celeste, representing the International Reproductive Recovery Authority. I oversee research compliance and performance across several participating institutions, including Asterion and Cloverfield.",
+          "I trust you're beginning to understand the significance of our work.",
+          "The fertility crisis is no longer a distant scientific concern. It is influencing economic planning, national policy, and the future of entire populations.",
+          "Project EdgeLoop exists because we cannot afford to ignore unconventional avenues of research.",
+          "I've reviewed your reports.",
+          "Nova appears enthusiastic. Dr. Voss considers your initial data promising. Ms. Harper has confirmed your participation in Cloverfield's production program.",
+          "Their assessments are noted.",
+          "However, I do not delegate my final judgments.",
+          "Today, I will conduct your evaluation personally.",
+          "Connect your heart-rate monitor and compatible toy. During one session, complete at least five confirmed edges and one confirmed orgasm, reported through EdgeLoop.",
+          "I expect accurate reporting and disciplined participation.",
+          "You may begin when ready."
+        ]
+      },
+      "completion": {
+        "speaker": "celeste",
+        "lines": [
+          "Five confirmed edges. One reported orgasm.",
+          "The requirements have been satisfied.",
+          "I've reviewed your results, and I am prepared to authorize the final stage of your assessment.",
+          "Your potential appears sufficient.",
+          "Marginally, by my standards. But sufficient.",
+          "Nova will supervise your final certification and baseline calibration.",
+          "You may conclude this evaluation or continue your session.",
+          "Either way, I expect the same attention to procedure going forward."
+        ]
+      }
+    },
+    "certification": {
+      "briefing": {
+        "speaker": "nova",
+        "lines": [
+          "Welcome back, darling!",
+          "Look at you. Five minutes ago — figuratively speaking — you were our mysterious new candidate, and now you've survived Evelyn's scientific scrutiny, Daisy's production targets, and Celeste's personal inspection.",
+          "I read Celeste's report, by the way.",
+          "'Marginally sufficient.'",
+          "Coming from her, that's practically a love letter!",
+          "Now, there's just one final step before we can officially certify you: baseline calibration.",
+          "We need to establish the maximum heart-rate metric used by EdgeLoop's training system. That gives the application a reference point for configuring future sessions.",
+          "Select Calibration mode and start your run. When you finish, use the Finished me button so EdgeLoop can record the event and save your calibration result.",
+          "During this procedure, I can adjust intensity, but the other training settings remain under Calibration's control.",
+          "And as always, you can stop whenever you need to.",
+          "Ready for your final assignment? Let's make it count."
+        ]
+      },
+      "completion": {
+        "speaker": "nova",
+        "lines": [
+          "There it is. Calibration complete, baseline saved, and your certification officially approved!",
+          "Congratulations, darling!",
+          "You've worked with some of the finest minds in the Asterion Initiative, contributed valuable session data, and completed every assessment we've put in front of you.",
+          "But this is only the beginning.",
+          "There are still questions we haven't answered, discoveries waiting to be made, and an entire world depending on research programs like ours to find a way forward.",
+          "Whatever comes next, I'm glad you're part of this project.",
+          "And between you and me?",
+          "I'm especially glad I get to keep working with you."
+        ]
+      }
+    },
+    "endurance_study": {
+      "briefing": {
+        "speaker": "evelyn",
+        "lines": [
+          "Welcome back. Do sit down.",
+          "I've been reviewing your first assessment. Promising. Also, statistically speaking, almost meaningless. Five observations is an anecdote, not a dataset.",
+          "My hypothesis on repeated edging cycles and reproductive vigor has attracted a great deal of attention. Most of it hostile. I intend to answer it with numbers.",
+          "So my standards have risen. Fifteen edges, in a single session, properly recorded.",
+          "Take your time, and pause if you need to. What I won't accept is sloppiness. Every edge must be real, and EdgeLoop will be the judge of that. Not you, and certainly not me.",
+          "Shall we begin?"
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "evelyn",
+          "lines": [
+            "Recording. Begin whenever you're ready, and do try to be consistent."
+          ]
+        },
+        "edges:5": {
+          "speaker": "evelyn",
+          "lines": [
+            "Five. Your entire first assessment, matched already. Don't let it go to your head; we're a third of the way."
+          ]
+        },
+        "edges:10": {
+          "speaker": "evelyn",
+          "lines": [
+            "Ten edges. The curve is becoming genuinely interesting. Five more, and keep them clean."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "evelyn",
+        "lines": [
+          "Fifteen edges. Recorded, verified and, I'm pleased to say, remarkably consistent.",
+          "That is a substantially larger dataset than your first assessment, and a great deal more useful. It will be quite valuable for my studies. Thank you. I mean that.",
+          "I'm approving you for the next research assignment. Daisy has been asking about you, which I choose not to read anything into.",
+          "Continue the session if you like, or rest. You've earned either."
+        ]
+      }
+    },
+    "cloverfield_quota": {
+      "briefing": {
+        "speaker": "daisy",
+        "lines": [
+          "Well, howdy again, sugar! Come on in, and mind the boots by the door.",
+          "I won't lie to you: Cloverfield's in a bit of a pickle. Project EdgeLoop raised our production targets under the research contract, and the season's been leaner than I'd like.",
+          "Four generations of Harpers have never missed a quota, and I don't plan on being the first.",
+          "So here's what I need: two contributions, in one session. Take a breather in between if you need one; pausing's just fine.",
+          "It only counts when you tell EdgeLoop yourself. No guessing, and no fudging the books.",
+          "Ready to help a farm girl out?"
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "daisy",
+          "lines": [
+            "That's the session on the books. Let's make Cloverfield proud!"
+          ]
+        },
+        "orgasms:1": {
+          "speaker": "daisy",
+          "lines": [
+            "That's one in the ledger, sugar! Catch your breath and take your time. One more and we've hit our number."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "daisy",
+        "lines": [
+          "Two! Well, would you look at that. Quota met!",
+          "You've done right by Cloverfield today, and I'll be telling Mama all about it. Well, the polite version.",
+          "Thank you, sugar. Truly. The farm's in good shape because of you.",
+          "Stay as long as you like, or head on home. Nova's been going on about some fancy new tests of hers, so I reckon she'll be calling you next."
+        ]
+      }
+    },
+    "adaptive_calibration": {
+      "briefing": {
+        "speaker": "nova",
+        "lines": [
+          "Hey, you! Come here, I've got something fun.",
+          "I've been staring at your data. In a perfectly professional way. Mostly.",
+          "Here's the thing: your sessions so far look a lot alike, and samey data teaches EdgeLoop almost nothing. If I want to personalise your training properly, I need comparisons.",
+          "So, an experiment! Pick four different play styles, any four you like, and give each one five minutes of real running time. Twenty minutes, all in one session.",
+          "Pauses don't count, games stay off, and each style only counts once. I'll mind the stopwatch.",
+          "If you've handed me the settings, I'll switch to a fresh style myself every time one has its five minutes. If not, the switching is all yours.",
+          "And if one of them isn't doing it for you, tell me. That's data too!"
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "nova",
+          "lines": [
+            "Recording! Your first stage is whichever play style you're on, so make sure it's one you want to test."
+          ]
+        },
+        "styles:1": {
+          "speaker": "nova",
+          "lines": [
+            "Stage one, done! Five minutes logged. On to a new play style!"
+          ]
+        },
+        "styles:2": {
+          "speaker": "nova",
+          "lines": [
+            "Halfway there! Two styles down, two to go. Ooh, I'm already seeing differences. Next style, please!"
+          ]
+        },
+        "styles:3": {
+          "speaker": "nova",
+          "lines": [
+            "Three stages complete! One more new play style and the dataset is finished."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "nova",
+        "lines": [
+          "And that's stage four! Comparative dataset collected and saved.",
+          "Four configurations, twenty minutes, real data. EdgeLoop is going to know you so much better now. Honestly, so am I.",
+          "Thank you for being such a good sport. Seriously, this helps.",
+          "Oh, one more thing. Celeste asked for everyone's reports this morning. All of them. I'd get some rest if I were you."
+        ]
+      }
+    },
+    "directors_reassessment": {
+      "briefing": {
+        "speaker": "celeste",
+        "lines": [
+          "Sit.",
+          "I have read the reports. Dr. Voss's endurance study. Miss Harper's quota figures. Nova's comparative dataset. You have been busy.",
+          "Busy is not the same as capable. That is what I intend to determine.",
+          "This is a staged assessment: thirty minutes of active participation, in three stages. Ten minutes at seventy-five percent intensity. Ten at one hundred. Ten at one hundred and twenty-five.",
+          "If you have given me control of the settings, I will set each level myself. If you have not, you will set it, precisely.",
+          "The clock runs only while the session runs at the level I have asked for. Pause, and it waits. Change the level, and it waits. Nothing is lost, and nothing is given.",
+          "When the final phase is complete, you will finish, and report it properly, as always.",
+          "You may stop at any time. I would simply prefer that you didn't."
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "celeste",
+          "lines": [
+            "The assessment has begun. Baseline first: seventy-five percent."
+          ]
+        },
+        "assessment:development": {
+          "speaker": "celeste",
+          "lines": [
+            "Baseline established. Development phase: one hundred percent."
+          ]
+        },
+        "assessment:final": {
+          "speaker": "celeste",
+          "lines": [
+            "Adequate. The final assessment: one hundred and twenty-five percent."
+          ]
+        },
+        "assessment:done": {
+          "speaker": "celeste",
+          "lines": [
+            "Thirty minutes. The assessment is complete.",
+            "Now you may finish. Force Orgasm will see to it; I will switch it on if you have given me the settings, otherwise it is yours to press. Report it when you are done."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "celeste",
+        "lines": [
+          "Recorded.",
+          "Thirty minutes at escalating intensity, completed and properly reported. Taken together with the reports from Asterion and Cloverfield, the picture is consistent. You are no longer merely promising. You are reliable.",
+          "I will be filing my assessment with the IRRA today. It will be favourable. Do not make me regret that.",
+          "Now, if you will excuse me. I have received reports of unknown agents snooping around Asterion and Cloverfield. That requires my attention. Now."
+        ]
+      }
+    },
+    "the_anomaly": {
+      "briefing": {
+        "speaker": "evelyn",
+        "lines": [
+          "Close the door. Please.",
+          "Someone has been inside my research database. Months of observations, my endurance study, your first assessment: the numbers have changed. Not lost. Changed.",
+          "I have checked it three times. I have checked my own methods, which I never do, because they are never wrong. They were not wrong.",
+          "If this gets out before I can explain it, my thesis is finished. And my colleagues will be delighted.",
+          "I can't recover what was taken. But I can build a new dataset that no one can question, recorded tonight, under my own eyes.",
+          "Thirty edges. One session. I know it's a great deal to ask. I'm asking anyway."
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "evelyn",
+          "lines": [
+            "Recording. Every edge goes into a fresh, sealed file. Nobody touches this one."
+          ]
+        },
+        "edges:10": {
+          "speaker": "evelyn",
+          "lines": [
+            "Ten. Clean, consistent, verifiable. Good. Keep going; I need to see the curve hold."
+          ]
+        },
+        "edges:20": {
+          "speaker": "evelyn",
+          "lines": [
+            "Twenty. The pattern matches your earlier sessions, which means the old data really was altered. Ten more."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "evelyn",
+        "lines": [
+          "Thirty. The replacement dataset is complete, and it is beyond reproach.",
+          "Thank you. Truly. I don't say that lightly, and I don't say it often.",
+          "This doesn't bring back the months I lost. But it proves something else: the old records were not corrupted by accident. They were deliberately modified. The changes are too neat, too targeted.",
+          "Someone wanted to undermine Asterion's research. Wanted to undermine me.",
+          "I intend to find out who."
+        ]
+      }
+    },
+    "the_empty_vault": {
+      "briefing": {
+        "speaker": "daisy",
+        "lines": [
+          "Oh, sugar, thank goodness you came.",
+          "Two days ago some fancy fella in a fancier suit offered to buy Cloverfield. Lock, stock and barn. I told him no before he finished his sentence. Harpers don't sell.",
+          "Then this morning I opened the cold store and the reserves were gone. Every last sample. The vault's just empty.",
+          "We've got a contracted delivery due tonight. If we miss it, the penalties could sink us, and that fella in the suit gets his farm after all.",
+          "I need an emergency contribution, and I need it quick. Fifteen minutes from when we start. Can you do that for me?",
+          "I'll keep an eye on the clock. You just keep your eyes on me."
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "daisy",
+          "lines": [
+            "Clock's running, sugar! Fifteen minutes. Let's save this farm."
+          ]
+        },
+        "delivery:left300": {
+          "speaker": "daisy",
+          "lines": [
+            "Five minutes left on the clock! You've got this, I know you do."
+          ]
+        },
+        "delivery:left60": {
+          "speaker": "daisy",
+          "lines": [
+            "One minute, sugar! Now or never!"
+          ]
+        },
+        "delivery:expired": {
+          "speaker": "daisy",
+          "lines": [
+            "Oh no. That's the deadline gone for this run.",
+            "Don't you fret; it's not your fault. We'll try again: start a new session and I'll reset the clock."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "daisy",
+        "lines": [
+          "Yes! Oh, you beautiful thing, that's in the cold store with time to spare!",
+          "And would you look at that. The quality, the volume... Lord, sugar, that's the finest emergency delivery this farm has ever shipped. Mama would faint.",
+          "The contract's safe. Cloverfield's safe. Thank you, from the bottom of my heart.",
+          "But I've been thinking. A buyer shows up out of nowhere, I say no, and the very next morning the vault's empty? That's no coincidence.",
+          "Somebody wanted us desperate. I'd like to know who."
+        ]
+      }
+    },
+    "midnight_intruder": {
+      "briefing": {
+        "speaker": "mira",
+        "lines": [
+          "Well. You weren't supposed to be here tonight.",
+          "Neither was I, to be fair.",
+          "Don't call security. Not yet. You're curious, I can see it, and curiosity is so much more interesting than alarms.",
+          "I'm looking for something. Something with your name on it, as it happens. Proven Breeder. You're quite the rarity, did you know?",
+          "So here's my offer. Keep me company for a while, and I'll tell you a little. Or a lot. Or nothing at all. Who can say?",
+          "Stay as long as you like. Stop whenever you want. That's the game."
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "mira",
+          "lines": [
+            "There. Now we're both somewhere we shouldn't be. Discovery is such a thrilling feeling, isn't it?"
+          ]
+        },
+        "encounter:deception": {
+          "speaker": "mira",
+          "lines": [
+            "Ask me who I work for. Go on. I'll give you three answers and you can pick your favourite."
+          ]
+        },
+        "encounter:confrontation": {
+          "speaker": "mira",
+          "lines": [
+            "Your research file is fascinating. Your numbers, your profile, your rarity. Someone is willing to pay a great deal for them."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "mira",
+        "lines": [
+          "Thirty minutes. Longer than I planned to stay. You're very distracting.",
+          "I'm afraid I have to go. Don't follow me; you'd only get lost.",
+          "Oh, and darling? When they check the door logs tomorrow, I'd have a good explanation ready.",
+          "It was lovely meeting you. I'm sure we'll do it again."
+        ]
+      },
+      "epilogue": [
+        {
+          "speaker": "nova",
+          "lines": [
+            "Hey. It's 2 a.m. and the security system just flagged an access record.",
+            "It says your credentials opened the server room tonight. I know that wasn't you. But Celeste is going to see this first thing in the morning."
+          ]
+        }
+      ],
+      "director_context": "Story: you are Mira, an intruder found inside Asterion at night. Your employer and true motives stay uncertain; never reveal them. The encounter is consensual and the participant may stop at any time."
+    },
+    "loyalty_test": {
+      "briefing": {
+        "speaker": "celeste",
+        "lines": [
+          "Sit down.",
+          "Last night someone entered Asterion's server room using your credentials. While they were inside, files were accessed that concern you. Specifically.",
+          "I had begun to think you were worth the IRRA's investment. I said as much in my report. That makes this personal, and I do not enjoy things being personal.",
+          "I will not hear explanations today. Explanations are cheap.",
+          "What I will accept is a demonstration of commitment. Forty edges, in one session. Then, and only then, you may finish.",
+          "Understand me clearly: this does not prove your innocence. The security investigation continues regardless. This shows me whether you are still committed to this program."
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "celeste",
+          "lines": [
+            "Begin. I am watching."
+          ]
+        },
+        "edges:10": {
+          "speaker": "celeste",
+          "lines": [
+            "Ten. Adequate. I remain unconvinced."
+          ]
+        },
+        "edges:25": {
+          "speaker": "celeste",
+          "lines": [
+            "Twenty-five. You are persistent. I will give you that much."
+          ]
+        },
+        "edges:done": {
+          "speaker": "celeste",
+          "lines": [
+            "Forty.",
+            "Very well. You may finish now. Report it properly."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "celeste",
+        "lines": [
+          "Your commitment to this initiative is evident. Your innocence, however, remains unproven. Those are two very different things.",
+          "Perhaps my first assessment last night was premature. Perhaps.",
+          "Nevertheless, I am prepared to give you another chance.",
+          "The investigation will continue."
+        ]
+      },
+      "director_context": "Story: you suspect the participant of helping an intruder (their credentials opened the server room). You are cold and disappointed. Commitment is not proof of innocence; do not absolve them."
+    },
+    "ghost_in_the_machine": {
+      "briefing": {
+        "speaker": "nova",
+        "lines": [
+          "Psst. Over here. Don't make it look like a meeting.",
+          "I don't believe it was you. Not for a second. And I'm not waiting for Celeste's investigators to agree with me.",
+          "So we're running our own investigation. You and me. I've pulled the access logs, a few company filings, and the edit history from Evelyn's database.",
+          "Three puzzles. You solve them, I'll do the hacking and the dramatic commentary. Keep a session running so it looks like an ordinary evening, nothing to see here.",
+          "No pressure, no clock. Wrong guesses are fine; that's how detectives work. Ready, partner?"
+        ]
+      },
+      "milestones": {
+        "start": {
+          "speaker": "nova",
+          "lines": [
+            "Session's up, cover story's solid. First file: the door logs. Take a look in the mission panel."
+          ]
+        },
+        "log:done": {
+          "speaker": "nova",
+          "lines": [
+            "A copy of an internal Asterion badge. So whoever got her in had access to Asterion's own security systems. That's... not great.",
+            "Next: let's follow some money."
+          ]
+        },
+        "money:done": {
+          "speaker": "nova",
+          "lines": [
+            "Helix Biotechnology. Hiding behind two shell companies to buy Daisy's farm. Sneaky!",
+            "Last one: Evelyn's edit history."
+          ]
+        }
+      },
+      "completion": {
+        "speaker": "nova",
+        "lines": [
+          "Got it. The file was changed during the break-in, from a staff session in the server room. Someone inside helped her.",
+          "Let's put it together: Mira used internally issued Asterion credentials. Helix was behind the Cloverfield offer. Evelyn's research was deliberately altered. And someone at Asterion helped.",
+          "That's an evidence package. And I just sent it to Celeste."
+        ]
+      },
+      "epilogue": [
+        {
+          "speaker": "celeste",
+          "lines": [
+            "I have reviewed Nova's findings.",
+            "The evidence is clear. You did not authorise the intrusion; your credentials were copied. You are cleared of suspicion, effective immediately.",
+            "My judgment was premature. I do not say that often. Do not expect to hear it again.",
+            "The insider is now my concern. Helix is now everyone's."
+          ]
+        },
+        {
+          "speaker": "nova",
+          "lines": [
+            "Cleared! Officially! I told you we'd do it.",
+            "Thank you for trusting me. Seriously. Not everyone would have.",
+            "We make a really good team, you know that? I think we deserve to celebrate a little. Stay with me, finish the session however you like, or just talk. Your call, partner."
+          ]
+        }
+      ],
+      "director_context": "Story: you and the participant are secretly investigating the intrusion together; you believe they are innocent. After the investigation you are warmer and more affectionate, and you may invite a celebratory finish, but never push it."
+    }
+  },
+  "chapters": {
+    "introduction": {
+      "speaker": "nova",
+      "lines": [
+        "Congratulations! You are now a certified participant in Project EdgeLoop.",
+        "Your introductory assessments are complete, your baseline has been established, and your next chapter awaits.",
+        "The fertility crisis remains unsolved.",
+        "Our work has only just begun."
+      ]
+    },
+    "advanced_research": {
+      "speaker": "nova",
+      "lines": [
+        "That's Advanced Research done, darling! Evelyn's dataset, Daisy's quota, my experiment, and you survived Celeste. Twice!",
+        "But unknown agents? Around Asterion and Cloverfield? I don't like the sound of that one bit.",
+        "Whatever's coming next, we'll face it together. Get some rest. I have a feeling you're going to need it."
+      ]
+    },
+    "shadows_of_helix": {
+      "speaker": "nova",
+      "lines": [
+        "Wait. Something just came in. Encrypted. No sender.",
+        "\"You found the trail we wanted you to find. If you want the truth about the fertility crisis, come to Helix.\"",
+        "That's either an invitation or a trap. Possibly both.",
+        "Whoever it is, they've been watching us. And they want you."
+      ]
+    }
+  }
+}

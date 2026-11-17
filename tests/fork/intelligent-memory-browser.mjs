@@ -143,7 +143,7 @@ for(const arm of (liveReady?comparisonArms:[])){
    await step('wait for storyline reset',()=>page.waitForFunction(()=>{const d=document.querySelector('#character-story');return d?.querySelector('[data-menu-notice]')?.textContent==='New storyline started. Transcript retained.';}));await closeMenus();
   }
   await step('navigate to EdgeLoop',()=>page.goto(ui+'/?characterPreview=1'));
-  await step('confirm age gate',()=>page.locator('#ageConfirmBtn').click());await step('skip device wizard',()=>page.locator('#wizardSkipBtn').click());
+  await step('confirm age gate',()=>page.locator('#ageConfirmBtn').click());await step('skip device wizard',()=>page.locator('#wizardSkipBtn').click());await step('enter Freeplay',()=>page.locator('[data-menu-tile=freeplay]').click());
   await step('enter isolated observer URL',()=>page.locator('[data-url]').fill(`ws://127.0.0.1:${aiPort}/observe`));
   await step('enter ephemeral pairing credential',()=>page.locator('[data-token]').fill(token));await step('connect isolated observer',()=>page.locator('[data-connect]').click());
   for(let i=0;i<(setupOnly?1:models.length);i++){

@@ -38,7 +38,8 @@
     {
       "destination": "characters/lore/core_canon.md",
       "source_sha256": "aba08b536ae945d9662779e75b7dd3464a0a464eb585affaf83151dc839244f9",
-      "reason": "byte-for-byte source migration"
+      "reason": "source migration, amended 2026-11-16 by the author (campaign canon: IRRA estimate that 1% of men remain fertile)",
+      "amended_sha256": "8b6e3d4b298ccab91ee9f1d38713b416804d3fcc514a2aa1675216a852ac2069"
     },
     {
       "destination": "characters/lore/runtime/session_template.json",

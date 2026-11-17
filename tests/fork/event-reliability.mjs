@@ -50,7 +50,7 @@ try{
  await context.route('**/api/handy/v2/**',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(r.request().url().endsWith('/connected')?{connected:true}:r.request().url().endsWith('/info')?{fwVersion:'3.2.3',model:'Handy 1.1'}:{result:0})}));
  page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));page.on('dialog',d=>dialogAccept?d.accept():d.dismiss());
  page.on('websocket',ws=>{ws.on('framereceived',e=>{try{const m=JSON.parse(e.payload);if(!['models','ready'].includes(m.type))report.frames.push(m);}catch{}});});
- await page.goto(ui+'/?characterPreview=1');await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();await page.locator('#companion-dashboard').waitFor();
+ await page.goto(ui+'/?characterPreview=1');await page.locator('#ageConfirmBtn').click();await page.locator('#wizardSkipBtn').click();await page.locator('[data-menu-tile=freeplay]').click();await page.locator('#companion-dashboard').waitFor();
  assert((await source()).status==='IDLE','Not idle');
  await page.locator('#openParamsBtn').click();await page.locator('#paramsTabGuardsBtn').click();await page.locator('#orgasmSettleSecondsInput').fill('10');await page.locator('#applyParamsBtn').click();
  await page.locator('[data-url]').fill(`ws://127.0.0.1:${aiPort}/observe`);await page.locator('[data-token]').fill('event-reliability-fixture-'+'x'.repeat(32));await page.locator('[data-connect]').click();
