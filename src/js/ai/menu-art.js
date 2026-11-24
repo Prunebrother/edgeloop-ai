@@ -11,26 +11,28 @@ export const MENU_ART=Object.freeze({
 
 // Companion cut-outs of the app's own portraits: the full figure for the host and the mission board,
 // a face crop for the host chips.
-export const COMPANION_ORDER=Object.freeze(['nova','evelyn','daisy','celeste','mira','vex9']);
+export const COMPANION_ORDER=Object.freeze(['nova','evelyn','daisy','celeste','mira','vex9','iris','seraphine']);
 export const figure=id=>COMPANION_ORDER.includes(id)?`${BASE}companions/${id}.webp`:null;
 export const face=id=>COMPANION_ORDER.includes(id)?`${BASE}companions/${id}-face.webp`:null;
 
 // Key art per campaign and per chapter number. A campaign without art falls back to the plain backdrop.
 const CAMPAIGN_ART={
     asterion_initiative:{key:'key.webp',chapters:{1:'chapter-1.webp',2:'chapter-2.webp',3:'chapter-3.webp',4:'chapter-4.webp'}},
+    rise_of_helix:{story:true},
 };
 export function campaignArt(campaign){
     const art=Object.hasOwn(CAMPAIGN_ART,campaign)?CAMPAIGN_ART[campaign]:null;
-    return art?`${BASE}campaigns/${campaign}/${art.key}`:null;
+    return art?.story?storyArt(campaign,'key_art'):art?`${BASE}campaigns/${campaign}/${art.key}`:null;
 }
 export function chapterArt(campaign,number){
     const art=Object.hasOwn(CAMPAIGN_ART,campaign)?CAMPAIGN_ART[campaign]:null;
+    if(art?.story)return storyArt(campaign,`chapter_${number}_splash`);
     const file=art&&Object.hasOwn(art.chapters,number)?art.chapters[number]:null;
     return file?`${BASE}campaigns/${campaign}/${file}`:null;
 }
 
 // The main menu host greets the player with one of her scripted lines (never model output).
-// DRAFT: awaiting the author's review, like campaign narrative text.
+// Approved by the author 2026-11-19.
 export const GREETINGS=Object.freeze({
     nova:['Hey, partner! Systems are warm and so am I. What are we doing tonight?',
         'Welcome back. I kept the lights low and the coffee hypothetical.',
@@ -50,4 +52,49 @@ export const GREETINGS=Object.freeze({
     vex9:['RPU-001. You are four minutes later than projected. Noted.',
         'Select a procedure. Hesitation is an inefficiency.',
         'Stand straight, Specimen. The protocol is ready. Are you?'],
+    // Iris: approved by the author 2026-11-20.
+    iris:['Oh! You’re here. Hello. I had a whole greeting prepared, and it’s gone.',
+        'I read your file again. Twice. What would you like to do tonight?',
+        'Story, freeplay, or we could just talk? Any of them. Sorry, I mean, all of them sound good.'],
+    // Seraphine: approved by the author 2026-11-23.
+    seraphine:['There you are, darling. I was beginning to think you’d found somewhere better to be. You haven’t.',
+        'Sit with me a moment, sweetheart. Then tell me how you’d like to spend my evening.',
+        'Story, freeplay or simply my company? Choose, darling. I’ll make it worth your while.'],
 });
+
+
+// Story registries are loaded on demand; absent/invalid art uses the caller's neutral fallback.
+const STORY_BASE='/src/assets/story/';
+const STORY_ID=/^[a-z0-9][a-z0-9_-]*$(?![\s\S])/;
+const storyRegistries=new Map();
+export async function loadStoryRegistry(campaign){
+    if(typeof campaign!=='string'||!STORY_ID.test(campaign))return null;
+    if(!storyRegistries.has(campaign)){
+        storyRegistries.set(campaign,(async()=>{
+            try{
+                const response=await fetch(`${STORY_BASE}${campaign}/ASSETS.json`,{cache:'no-cache'});
+                if(!response.ok)return null;
+                const registry=await response.json();
+                if(!registry||registry.schema_version!==1||registry.campaign!==campaign||
+                    !registry.slots||typeof registry.slots!=='object'||Array.isArray(registry.slots))return null;
+                const slots=Object.create(null);
+                for(const [slot,item] of Object.entries(registry.slots)){
+                    if(STORY_ID.test(slot)&&item&&typeof item.file==='string'&&/^[a-z0-9][a-z0-9_-]*\.webp$(?![\s\S])/.test(item.file)){
+                        slots[slot]=Object.freeze({file:item.file});
+                    }
+                }
+                return Object.freeze({schema_version:1,campaign,slots:Object.freeze(slots)});
+            }catch{return null;}
+        })().then(registry=>{
+            storyRegistries.set(campaign,registry);
+            return registry;
+        }));
+    }
+    return await storyRegistries.get(campaign);
+}
+export function storyArt(campaign,slot){
+    if(typeof campaign!=='string'||!STORY_ID.test(campaign)||typeof slot!=='string'||!STORY_ID.test(slot))return null;
+    const registry=storyRegistries.get(campaign);
+    const item=registry?.slots&&Object.hasOwn(registry.slots,slot)?registry.slots[slot]:null;
+    return item?`${STORY_BASE}${campaign}/${item.file}`:null;
+}

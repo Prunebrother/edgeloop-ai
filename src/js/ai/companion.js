@@ -81,7 +81,7 @@ export function mountCompanion({refreshObservation=()=>{},settingsControl=null}=
         if(debug)queueMicrotask(updateDiagnostics);
         if(['character_state','narrative_reset','character_menu_error','session_journal'].includes(m.type)){menus.receive(m);return;}
         if(m.type==='character_builder'){builder.receive(m);return;}
-        if(m.type==='campaign_state'||m.type==='mission_result'||m.type==='mission_milestone'||m.type==='campaign_progress'){mainMenu.receive(m);return;}
+        if(m.type==='campaign_state'||m.type==='mission_result'||m.type==='mission_milestone'||m.type==='campaign_progress'||m.type==='mission_text'||m.type==='chapter_text'){mainMenu.receive(m);return;}
         if(m.type==='settings_request'){settingsRequest(m);return;}
         if(m.type==='protocol_error'&&m.errors?.some(e=>['configure_events','configure_context','update_objective'].some(type=>e.path.includes(type)))){menus.receive({type:'character_menu_error',detail:'Invalid companion settings. Check the permitted ranges and selected model; no configuration was applied.'});return;}
         if(m.type==='ai_diagnostics'){if(m.responder?.model&&m.responder.model!==selected||m.id&&m.id!==presentation.lastRequest?.id)return;Object.assign(diagnostic,m);return;}

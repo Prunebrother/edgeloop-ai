@@ -1,0 +1,162 @@
+{
+  "schema_version": 2,
+  "campaigns": {
+    "asterion_initiative": {
+      "missions": {
+        "orientation": {
+          "completions": 2,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-17T00:00:00+00:00"
+        },
+        "first_assessment": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "country_connections": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "directors_test": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "certification": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "endurance_study": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "cloverfield_quota": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "adaptive_calibration": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "directors_reassessment": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "the_anomaly": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "the_empty_vault": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "midnight_intruder": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "loyalty_test": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "ghost_in_the_machine": {
+          "completions": 1,
+          "first_completed_at": "2026-11-16T00:00:00+00:00",
+          "last_completed_at": "2026-11-16T00:00:00+00:00"
+        }
+      },
+      "rewards": {
+        "unlock_companion:evelyn": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "orientation"
+        },
+        "unlock_companion:daisy": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "first_assessment"
+        },
+        "unlock_companion:celeste": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "country_connections"
+        },
+        "milestone:assessments_passed": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "directors_test"
+        },
+        "milestone:baseline_established": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "certification"
+        },
+        "chapter_complete:introduction": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "certification"
+        },
+        "milestone:endurance_dataset": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "endurance_study"
+        },
+        "milestone:cloverfield_quota": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "cloverfield_quota"
+        },
+        "milestone:adaptive_dataset": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "adaptive_calibration"
+        },
+        "chapter_complete:advanced_research": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "directors_reassessment"
+        },
+        "milestone:dataset_reconstructed": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "the_anomaly"
+        },
+        "unlock_companion:mira": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "the_empty_vault"
+        },
+        "milestone:intruder_escaped": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "midnight_intruder"
+        },
+        "milestone:conditional_reinstatement": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "loyalty_test"
+        },
+        "chapter_complete:shadows_of_helix": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "ghost_in_the_machine"
+        },
+        "campaign_complete:asterion_initiative": {
+          "earned_at": "2026-11-16T00:00:00+00:00",
+          "mission": "ghost_in_the_machine"
+        }
+      },
+      "completed_at": "2026-11-16T00:00:00+00:00",
+      "records": {
+        "calibrated_max_bpm": 154,
+        "calibration_pass": "dual"
+      },
+      "chapters": {
+        "introduction": {
+          "completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "advanced_research": {
+          "completed_at": "2026-11-16T00:00:00+00:00"
+        },
+        "shadows_of_helix": {
+          "completed_at": "2026-11-16T00:00:00+00:00"
+        }
+      }
+    }
+  },
+  "active": null
+}

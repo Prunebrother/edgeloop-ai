@@ -1,6 +1,10 @@
 """Isolated browser fixture: real observer classes, mocked local model transport."""
-from pathlib import Path
 import os
+import sys
+from pathlib import Path
+
+# Direct-script launchers put tests/fork, rather than the repository, on sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import asyncio
 import json
 import re
@@ -9,6 +13,7 @@ import httpx
 import uvicorn
 from fastapi import Request
 from ai_observer.server import create_app
+from tests.fork.character_model_fixtures import installed_model_names
 
 UI_PORT=int(os.getenv('EDGELOOP_FIXTURE_UI_PORT','8770'))
 OBSERVER_PORT=int(os.getenv('EDGELOOP_FIXTURE_OBSERVER_PORT','8768'))
@@ -40,7 +45,10 @@ SETTINGS_REPLIES=[]
 async def runtime(request):
     global last_thinking
     if request.url.path=='/api/tags' and ollama_down:raise httpx.ConnectError('fixture unavailable')
-    if request.url.path=='/api/tags':return httpx.Response(200,json={'models':[{'name':name} for name in json.loads((Path(__file__).resolve().parents[1]/'fixtures/character-models.json').read_text())]})
+    if request.url.path=='/api/tags':
+        # Opt-in (Helix suites): also report every model the character manifest names, so new companions count as installed.
+        names=installed_model_names(os.environ.get('EDGELOOP_FIXTURE_EXTRA_MODELS',''))
+        return httpx.Response(200,json={'models':[{'name':name} for name in names]})
     if request.url.path=='/api/show':return httpx.Response(200,json={'system':'Exact fixture Modelfile identity','capabilities':['completion','thinking'],'thinking':{'values':[True,False]},'model_info':{'qwen35.context_length':8192}})
     if request.url.path=='/api/ps':return httpx.Response(200,json={'models':[]})
     body=json.loads(request.content)

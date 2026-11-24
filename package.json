@@ -6,6 +6,7 @@
   "type": "module",
   "license": "AGPL-3.0-only",
   "scripts": {
+    "test:campaign": "node tests/fork/campaign-browser.mjs && node tests/fork/scene-browser.mjs && node tests/fork/choice-browser.mjs && node tests/fork/code-puzzle-browser.mjs && node tests/fork/chapter-intro-browser.mjs && node tests/fork/route-browser.mjs && node tests/fork/helix-safety-browser.mjs && node tests/fork/helix-board-browser.mjs",
     "test": "node --test \"src/js/**/*.test.js\"",
     "smoke": "node tools/smoke.js",
     "start": "./tools/serve-local.sh"

@@ -54,14 +54,61 @@ def test_menu_art_is_public_and_only_its_curated_file_types():
     for path in ['/src/assets/menu/../../../.git/config','/src/assets/menu/readme.md','/src/assets/menu/x.png','/src/assets/menu/.hidden.webp']:
         assert static.public_file(path) is None, path
 
-def test_every_menu_art_reference_exists_on_disk():
+def assert_menu_art_references(root):
     import re
-    source=(ROOT/'src/js/ai/menu-art.js').read_text()
-    files=sorted(p.relative_to(ROOT/'src/assets/menu').as_posix() for p in (ROOT/'src/assets/menu').rglob('*') if p.is_file())
+    source=(root/'src/js/ai/menu-art.js').read_text()
+    files=sorted(p.relative_to(root/'src/assets/menu').as_posix() for p in (root/'src/assets/menu').rglob('*') if p.is_file())
     for name in ['backdrop.webp','mark.svg','wordmark.svg','fonts/cormorant-garamond-600.woff2']:
         assert name in files
     for c in re.search(r"COMPANION_ORDER=Object.freeze\(\[([^\]]+)\]",source)[1].replace("'",'').split(','):
         assert f'companions/{c}.webp' in files and f'companions/{c}-face.webp' in files
-    for n in range(1,5):
-        assert f'campaigns/asterion_initiative/chapter-{n}.webp' in files
-    assert 'campaigns/asterion_initiative/key.webp' in files
+    mapping=re.search(r'const CAMPAIGN_ART=({.*?})\s*;',source,re.S)[1]
+    # The map is a data literal: quote its JS keys and strings for the stdlib JSON parser.
+    mapping=re.sub(r'([{,]\s*)([A-Za-z0-9_-]+)\s*:',r'\1"\2":',mapping).replace("'",'"')
+    mapping=re.sub(r',\s*([}\]])',r'\1',mapping)
+    for campaign,art in json.loads(mapping).items():
+        if art.get('story'):
+            from tools.story_art import load_registry, validate
+            folder=root/'src/assets/story'/campaign
+            registry=validate(load_registry(folder/'ASSETS.json'),folder)
+            assert registry['campaign']==campaign and 'key_art' in registry['slots']
+            continue
+        for name in [art['key'],*art['chapters'].values()]:
+            assert f'campaigns/{campaign}/{name}' in files
+
+
+def test_every_menu_art_reference_exists_on_disk():
+    assert_menu_art_references(ROOT)
+
+
+def test_menu_art_reference_check_detects_missing_campaign_file(tmp_path):
+    import pytest
+    menu=tmp_path/'src/assets/menu';menu.mkdir(parents=True)
+    source=tmp_path/'src/js/ai/menu-art.js';source.parent.mkdir(parents=True)
+    source.write_text("COMPANION_ORDER=Object.freeze(['test']);\nconst CAMPAIGN_ART={\n    another_campaign:{key:'missing.webp',chapters:{8:'eight.webp'}},\n};")
+    for name in ['backdrop.webp','mark.svg','wordmark.svg','fonts/cormorant-garamond-600.woff2']:
+        p=menu/name;p.parent.mkdir(parents=True,exist_ok=True);p.touch()
+    (menu/'companions').mkdir()
+    for name in ['test.webp','test-face.webp']:(menu/'companions'/name).touch()
+    with pytest.raises(AssertionError):assert_menu_art_references(tmp_path)
+    campaign=menu/'campaigns/another_campaign';campaign.mkdir(parents=True)
+    (campaign/'missing.webp').touch()
+    with pytest.raises(AssertionError):assert_menu_art_references(tmp_path)
+    (campaign/'eight.webp').touch()
+    assert_menu_art_references(tmp_path)
+
+
+def test_story_campaign_art_reference_uses_and_validates_the_registry(tmp_path):
+    from tests.fork.test_story_art import fixture
+    import pytest
+    # Reuse the ordinary menu-file fixture before adding a story-backed campaign.
+    test_menu_art_reference_check_detects_missing_campaign_file(tmp_path)
+    source=tmp_path/'src/js/ai/menu-art.js'
+    source.write_text(source.read_text().replace('\n};','\n    test_campaign:{story:true},\n};'))
+    folder,registry=fixture(tmp_path)
+    with pytest.raises(AssertionError):assert_menu_art_references(tmp_path)  # No key-art slot.
+    registry['slots']['key_art']=registry['slots'].pop('arrival')
+    (folder/'ASSETS.json').write_text(json.dumps(registry))
+    assert_menu_art_references(tmp_path)
+    (folder/'arrival.webp').unlink()
+    with pytest.raises(ValueError,match='missing file'):assert_menu_art_references(tmp_path)

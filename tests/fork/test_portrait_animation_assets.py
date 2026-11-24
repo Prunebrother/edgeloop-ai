@@ -32,7 +32,10 @@ def tree(tmp_path, c):
         dest.write_bytes(b'synthetic fixture')
 
 
-def test_both_hosts_allow_only_declared_clips_and_keep_private_paths_closed(tmp_path):
+BOUNDARY_EXPECTED = [True, True, True, False, False, False, False, False, False, False]
+
+
+def boundary_cases(tmp_path):
     c = catalog()
     tree(tmp_path, c)
     # Python and Node run the same boundary cases, including a symlink to an in-root file.
@@ -43,11 +46,23 @@ def test_both_hosts_allow_only_declared_clips_and_keep_private_paths_closed(tmp_
              '/Character_Art/Test/unreferenced.webm', '/Character_Art/Test/link.webm', '/.ai-data/private.webm',
              '/Character_Art/Test/../Test/idle.webm', '/Character_Art/Test/%2e%2e/Test/idle.webm',
              '/Character_Art/Test/idle.webm%00', '/Character_Art/Test\\idle.webm']
+    return paths
+
+
+def test_python_host_allows_only_declared_clips_and_keeps_private_paths_closed(tmp_path):
+    paths = boundary_cases(tmp_path)
     static = load('serve_local')
-    py = [static.public_file(p, tmp_path) is not None for p in paths]
+    assert [static.public_file(p, tmp_path) is not None for p in paths] == BOUNDARY_EXPECTED
+
+
+def test_node_host_matches_python_host_on_the_same_boundary_cases(tmp_path):
+    # The Node host (app/) is upstream's headset app and is not part of the public Linux export.
+    if not (ROOT / 'app/host.mjs').is_file():
+        pytest.skip('app/host.mjs is not part of the public export')
+    paths = boundary_cases(tmp_path)
     script = "import {publicFile} from './app/host.mjs'; console.log(JSON.stringify(JSON.parse(process.argv[1]).map(p=>!!publicFile(p,process.argv[2]))));"
     result = subprocess.run(['node', '--input-type=module', '-e', script, json.dumps(paths), str(tmp_path)], cwd=ROOT, capture_output=True, text=True, check=True)
-    assert py == json.loads(result.stdout) == [True, True, True, False, False, False, False, False, False, False]
+    assert json.loads(result.stdout) == BOUNDARY_EXPECTED
 
 
 @pytest.mark.parametrize('expression,formats', [
@@ -96,6 +111,8 @@ def test_release_inventory_accepts_declared_video_but_preserves_every_png(tmp_pa
     module = load('validate-release')
     monkeypatch.setattr(module, 'ROOT', tmp_path)
     c = json.loads((ROOT / 'src/assets/characters/manifest.json').read_text())
+    # Dev-only placeholder characters fail release validation by design (HELIX-030/032); this test is about clips.
+    c['characters'] = {k: v for k, v in c['characters'].items() if v.get('status') != 'placeholder'}
     for character in c['characters'].values():
         character.pop('animations', None)  # Only the fixture clip below is declared.
         for p in character['expressions'].values():

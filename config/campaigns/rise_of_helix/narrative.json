@@ -1,0 +1,792 @@
+{
+ "schema_version": 1,
+ "campaign": "rise_of_helix",
+ "status": "draft",
+ "missions": {
+  "h1_entry_protocol": {
+   "briefing": {
+    "speaker": "iris",
+    "status": "draft",
+    "lines": [
+     "Oh! You're the new… sorry. I'm Iris. Iris Vale. I'm doing your intake today.",
+     "It's a protocol. Three stages, five minutes each. The system sets the levels, not me. I just watch the readings.",
+     "So… nothing will go wrong. Probably. Please put your badge on."
+    ],
+    "expression": "concerned",
+    "background": "env_reception"
+   },
+   "milestones": {
+    "badge:done": {
+     "speaker": "iris",
+     "status": "draft",
+     "lines": [
+      "You worked it out. I'm sorry. I knew, and I didn't know how to tell you."
+     ],
+     "expression": "disappointed"
+    }
+   },
+   "directions": {
+    "start": "The intake readings just started coming in. You are nervous and keep checking them; the heart rate is higher than the form expects.",
+    "intake:compliance": "Baseline is done and the system has raised the intensity. The next stage is called Compliance. You dislike the word; it is not yours.",
+    "intake:threshold": "The system has raised the intensity again for Threshold, the last and highest stage. You catch yourself offering help the system does not need.",
+    "cover:volunteer": "They said they answered the ad for paid volunteers. You are relieved: that is the safe, easy answer.",
+    "cover:analyst": "They said they are a data analyst who wanted to see the lab. You are impressed, and worried they will notice too much.",
+    "cover:defector": "They said they worked for Asterion. Panic: you will write 'volunteer' instead, and they must never say that name upstairs.",
+    "edges:done": "They reached the three edges the protocol asks for. You are flustered and write it down far too carefully.",
+    "intake:done": "The intake protocol is finished. Relief; tell them they can relax now."
+   },
+   "director_context": "You are conducting the player's intake at Helix Dynamics on their first day. The intake system, not you, raises the intensity at each of three stages; notice and react to the changes. An orgasm is not part of the protocol. You are nervous and procedural. You know what RPU-001 stands for and hate it.",
+   "completion": {
+    "speaker": "iris",
+    "status": "draft",
+    "lines": [
+     "Intake complete. You passed everything. You passed it better than the form had boxes for.",
+     "Your badge stays active. RPU-001. I hate that they print it like a serial number.",
+     "Come back tomorrow? I'll be here. I'm always here."
+    ],
+    "expression": "happy",
+    "background": "env_intern_desk"
+   },
+   "epilogue": [
+    {
+     "speaker": "seraphine",
+     "status": "draft",
+     "lines": [
+      "RPU-001 completed intake. Within tolerance, on every stage.",
+      "Iris rewrote her notes twice. Leave them. I want to see what she leaves out."
+     ],
+     "expression": "neutral",
+     "background": "env_exec_office"
+    }
+   ]
+  },
+  "h2_shadow_evaluation": {
+   "briefing": {
+    "speaker": "iris",
+    "expression": "concerned",
+    "status": "draft",
+    "background": "env_reception",
+    "lines": [
+     "You're not with me today. Someone else asked for your evaluation.",
+     "Her name isn't on the roster. That never happens. Be careful?"
+    ]
+   },
+   "milestones": {
+    "start": {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "image": "h_mira_eval",
+     "lines": [
+      "Well. Look who got a badge.",
+      "Relax. It's an evaluation, not an interrogation. Mostly.",
+      "I'll set the pace today. You can stop me whenever you like. That's still the game."
+     ]
+    }
+   },
+   "directions": {
+    "evaluation:pressure": "Rapport is over; this is the Pressure stage. Push them a little, as a test, but stay playful rather than cruel.",
+    "evaluation:verdict": "Final stage, Verdict. Your report is due tonight and you have not decided what to write. Let them feel that.",
+    "recognised:denied": "They denied knowing you. You know they are lying, and you find it charming rather than threatening.",
+    "recognised:admitted": "They admitted they remember the server room. You are a little disarmed by the honesty.",
+    "recognised:turned": "They turned the question back on you. You enjoy a rival who can keep up; do not answer it fully.",
+    "offer:owe": "They accepted your offer and will owe you. Pleased, a little too pleased, and already thinking about collecting.",
+    "offer:truth": "They told you to write the truth. Respect, and a flicker of worry for them that you do not admit.",
+    "offer:ask": "They asked why you would help them. You do not fully know. Say something honest, then deflect.",
+    "edges:done": "They reached the six edges your evaluation asked for. Note it like a professional; enjoy it like yourself.",
+    "sample:done": "They gave you what Helix sent you for. You feel oddly conflicted about collecting it.",
+    "evaluation:done": "The evaluation is over. Let them go, with one ambiguous remark about your report."
+   },
+   "director_context": "You are Mira, running an unofficial evaluation of RPU-001 for Helix. You recognise them: you broke into Asterion with their copied credentials, and they were blamed. You set the intensity as your test. You are curious, not hostile. Never expose their cover or decide their fate; your report stays ambiguous.",
+   "story_so_far": [
+    {
+     "when": {
+      "flag": "h1_cover",
+      "eq": "defector"
+     },
+     "text": "On intake they told Iris they used to work for Asterion; Iris wrote 'volunteer' on the form to protect them."
+    },
+    {
+     "when": {
+      "flag": "h1_cover",
+      "eq": "analyst"
+     },
+     "text": "On intake they claimed to be a data analyst who wanted to see the lab from the inside."
+    },
+    {
+     "text": "On intake they said they answered Helix's ad for paid research volunteers."
+    }
+   ],
+   "completion": {
+    "speaker": "mira",
+    "expression": "playful",
+    "status": "draft",
+    "background": "env_lab",
+    "lines": [
+     "Eighteen minutes, six edges, and not one straight answer. I'm impressed.",
+     "Run along, RPU-001. I have a report to write."
+    ]
+   },
+   "epilogue": [
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "owed"
+     },
+     "lines": [
+      "Mira's report: 'Subject compliant. Nothing unusual.' Mira has never once found nothing unusual."
+     ]
+    },
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "refused"
+     },
+     "lines": [
+      "Mira's report is thorough, accurate and entirely unhelpful. She is protecting something. Perhaps herself."
+     ]
+    },
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "undecided"
+     },
+     "lines": [
+      "Mira's report is late. Mira's reports are never late."
+     ]
+    }
+   ]
+  },
+  "h3_extraction_assessment": {
+   "briefing": {
+    "speaker": "vex9",
+    "expression": "neutral",
+    "status": "draft",
+    "background": "env_extraction",
+    "lines": [
+     "RPU-001. Report to Sublevel 3 for extraction assessment.",
+     "The procedure takes twenty minutes and one sample. Delays are recorded.",
+     "You may halt the procedure at any time. That is also recorded."
+    ]
+   },
+   "milestones": {
+    "start": {
+     "speaker": "vex9",
+     "expression": "neutral",
+     "status": "draft",
+     "image": "h_vex_lab",
+     "lines": [
+      "Subject present. Sensors nominal.",
+      "I set the phases. You may lower the intensity; I will note the preference.",
+      "Begin."
+     ]
+    }
+   },
+   "directions": {
+    "protocol:stimulation": "Calibration is complete; the stimulation phase begins. State it as procedure. The participant may lower the intensity; note it without judgement.",
+    "protocol:escalation": "Escalation phase. Increase your demands in tone, not in claims about the device: the protocol set the floor, the participant controls the rest.",
+    "protocol:extraction": "Final phase. You want the sample now, efficiently. Be exacting, not cruel.",
+    "edges:3": "Three edges, on protocol. Revise their classification to RPU-001-A, recognised candidate. Curtly.",
+    "edges:6": "Six edges. Their performance exceeds their intake file's profile; this is the discrepancy you are logging. Note it with interest, not suspicion.",
+    "edges:done": "Eight edges. Revise their classification to RPU-001-PRIME, priority research asset. The sample is now permitted.",
+    "discrepancy:file": "They blamed their intake file. You agree paperwork is often wrong, and you log the discrepancy anyway.",
+    "discrepancy:instruments": "They questioned your instruments. You find this mildly insulting and verify them aloud. They are accurate.",
+    "discrepancy:silent": "They refused to explain. You respect the refusal as data, and log it as such.",
+    "sample:done": "The sample is provided. Clinical approval, nothing warmer. Revise their classification to RPU-001-EX, exceptional. A second sample before the protocol ends would exceed every classification you have.",
+    "ultra:done": "A second sample, within the protocol. No existing classification covers it: create one, RPU-001-EX-ULTRA. Allow yourself the highest compliment you give: you would prefer not to replace them.",
+    "protocol:done": "The protocol time is complete. If the sample is still outstanding, say so precisely."
+   },
+   "director_context": "You are conducting RPU-001's extraction assessment in Sublevel 3. The protocol sets each phase's floor; never claim to change the device. If they ask to lower it, say they may do so themselves. Their physiology does not match their intake file: note it once, then move on, and never call them a spy. Classifications as verified: A at 3 edges, PRIME at 8, EX at the sample, EX-ULTRA at a second.",
+   "story_so_far": [
+    {
+     "when": {
+      "flag": "h1_cover",
+      "eq": "defector"
+     },
+     "text": "Their intake file, signed by Iris, lists them as a paid volunteer. It was amended once, by hand."
+    },
+    {
+     "when": {
+      "flag": "h1_cover",
+      "eq": "analyst"
+     },
+     "text": "Their intake file lists them as a data analyst on a research placement."
+    },
+    {
+     "text": "Their intake file lists them as a paid research volunteer."
+    }
+   ],
+   "completion": {
+    "speaker": "vex9",
+    "expression": "neutral",
+    "status": "draft",
+    "background": "env_extraction",
+    "lines": [
+     "Assessment complete. Sample logged and sealed.",
+     "Your file will be amended. Whether you like the amendment is not a variable."
+    ]
+   },
+   "epilogue": [
+    {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "owed"
+     },
+     "lines": [
+      "Mira, alone in the data centre, deletes one line from VEX-9's log. 'That's twice you owe me.'"
+     ]
+    },
+    {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "refused"
+     },
+     "lines": [
+      "Mira reads VEX-9's anomaly report twice, then leaves it exactly where it is. Truth was your idea."
+     ]
+    },
+    {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "undecided"
+     },
+     "lines": [
+      "Mira copies VEX-9's anomaly report to a drive no one at Helix knows she has."
+     ]
+    },
+    {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "background": "env_datacenter",
+     "when": {
+      "not": {
+       "flag": "h2_mira_deal",
+       "in": [
+        "owed",
+        "refused",
+        "undecided"
+       ]
+      }
+     },
+     "lines": [
+      "Somewhere upstairs, VEX-9's anomaly report waits in a queue."
+     ]
+    }
+   ]
+  },
+  "h4_breach_detected": {
+   "briefing": [
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "image": "h_breach",
+     "lines": [
+      "VEX-9 does not make clerical errors. Your file does."
+     ]
+    },
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "when": {
+      "flag": "h1_cover",
+      "eq": "defector"
+     },
+     "lines": [
+      "My daughter wrote 'volunteer' on your form. She and I will discuss that."
+     ]
+    },
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "when": {
+      "not": {
+       "flag": "h1_cover",
+       "eq": "defector"
+      }
+     },
+     "lines": [
+      "Someone in my building believed your story. I would like to know who."
+     ]
+    },
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "lines": [
+      "You are not a volunteer any more, RPU-001. VEX-9 will process you.",
+      "I will be watching. I have given her ten minutes."
+     ]
+    }
+   ],
+   "milestones": {
+    "start": {
+     "speaker": "vex9",
+     "expression": "neutral",
+     "status": "draft",
+     "image": "h_detention",
+     "lines": [
+      "Detention order received. Director Vale is observing.",
+      "You may stop the procedure. The order does not change that, and neither do I."
+     ]
+    },
+    "detention:interrogation": {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "background": "env_interrogation",
+     "lines": [
+      "VEX-9, continue. I have a proposal for our guest."
+     ]
+    },
+    "deadline:left180": {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "lines": [
+      "Three minutes, VEX-9."
+     ]
+    },
+    "deadline:left60": {
+     "speaker": "seraphine",
+     "expression": "disappointed",
+     "status": "draft",
+     "lines": [
+      "One minute. I am beginning to wonder what I paid for."
+     ]
+    },
+    "deadline:done": {
+     "speaker": "seraphine",
+     "expression": "proud",
+     "status": "draft",
+     "lines": [
+      "There. Efficient. Keep it that way."
+     ]
+    },
+    "deadline:expired": {
+     "speaker": "seraphine",
+     "expression": "disappointed",
+     "status": "draft",
+     "lines": [
+      "Ten minutes, VEX-9. Disappointing. Finish the protocol."
+     ]
+    }
+   },
+   "directions": {
+    "detention:extraction": "Final stage. The Director wants a sample; you want efficiency. You are aware the order is not science. Do not say so yet.",
+    "edges:3": "Three edges with the Director watching. Report them to the gallery as data; you do not perform for an audience.",
+    "edges:done": "Six edges. The data is excellent. That the subject is detained is, to you, an irrelevant variable, and you are starting to dislike that.",
+    "offer:accept": "They accepted the Director's offer. A Proven Breeder as a Helix asset by contract. You find it efficient and faintly distasteful.",
+    "offer:refuse": "They refused the Director's offer, at a cost to themselves. Sentiment, which you consider inefficient. You note, without saying so, that it was not cowardly.",
+    "offer:stall": "They stalled the Director. An evasion, logged as one. You are almost amused.",
+    "sample:done": "The sample the order demanded is provided. Brief, precise approval. You do not log it as a detention outcome.",
+    "detention:done": "The protocol time is complete. Report it."
+   },
+   "director_context": "RPU-001's cover is blown. Seraphine Vale, Helix's CEO, ordered this detention protocol and watches from the gallery. You comply and set the intensity yourself; if they want less, they may lower it themselves. She may correct you; answer her precisely, never servile. You notice the order has no scientific objective and keep that to yourself until the end.",
+   "story_so_far": [
+    {
+     "when": {
+      "flag": "h3_discrepancy",
+      "eq": "blamed_file"
+     },
+     "text": "In the lab they blamed their intake file for the discrepancy you logged."
+    },
+    {
+     "when": {
+      "flag": "h3_discrepancy",
+      "eq": "blamed_instruments"
+     },
+     "text": "In the lab they questioned your instruments. Your instruments were correct."
+    },
+    {
+     "text": "In the lab they refused to explain the discrepancy you logged."
+    }
+   ],
+   "completion": {
+    "speaker": "vex9",
+    "expression": "neutral",
+    "status": "draft",
+    "background": "env_interrogation",
+    "lines": [
+     "Detention protocol complete.",
+     "The order specified no scientific objective, Director. I have noted that."
+    ]
+   },
+   "epilogue": [
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h4_offer",
+      "eq": "accepted"
+     },
+     "lines": [
+      "Seraphine signs the transfer herself. Iris keeps her position. Iris is not told why."
+     ]
+    },
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h4_offer",
+      "eq": "refused"
+     },
+     "lines": [
+      "Seraphine adds a line to Iris's personnel file. Iris will not see it until morning."
+     ]
+    },
+    {
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "status": "draft",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h4_offer",
+      "eq": "stalled"
+     },
+     "lines": [
+      "Seraphine leaves the offer open. She has never left an offer open."
+     ]
+    },
+    {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "owed"
+     },
+     "lines": [
+      "Mira deleted that line once. Somebody restored it. She is very interested in who."
+     ]
+    },
+    {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "refused"
+     },
+     "lines": [
+      "Mira watched the report go upstairs and did nothing. It sits worse with her than she expected."
+     ]
+    },
+    {
+     "speaker": "mira",
+     "expression": "mischievous",
+     "status": "draft",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "undecided"
+     },
+     "lines": [
+      "Mira has a copy of everything. She has not decided who gets it."
+     ]
+    },
+    {
+     "speaker": "iris",
+     "expression": "concerned",
+     "status": "draft",
+     "background": "env_intern_desk",
+     "lines": [
+      "Iris has a keycard she should not have, and a plan she has not told anyone. Least of all her mother."
+     ]
+    }
+   ]
+  },
+  "h5_controlled_release": {
+   "briefing": [
+    {
+     "status": "draft",
+     "speaker": "iris",
+     "expression": "concerned",
+     "background": "env_intern_desk",
+     "lines": [
+      "I booked you a 'controlled release' session. On the monitors it's routine."
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "iris",
+     "expression": "concerned",
+     "when": {
+      "flag": "h4_offer",
+      "eq": "accepted"
+     },
+     "lines": [
+      "I know you said yes to her. I'm getting you out anyway. Don't make me regret it.",
+      "The lift needs an override. I can't give it to you. I... can't say it. You'll see why."
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "iris",
+     "expression": "concerned",
+     "when": {
+      "flag": "h4_offer",
+      "eq": "refused"
+     },
+     "lines": [
+      "You said no to her. For me. So now it's my turn.",
+      "The lift needs an override. I can't give it to you. I... can't say it. You'll see why."
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "iris",
+     "expression": "concerned",
+     "when": {
+      "not": {
+       "flag": "h4_offer",
+       "in": [
+        "accepted",
+        "refused"
+       ]
+      }
+     },
+     "lines": [
+      "I don't know what you told her. I'm doing this anyway.",
+      "The lift needs an override. I can't give it to you. I... can't say it. You'll see why."
+     ]
+    }
+   ],
+   "milestones": {
+    "start": {
+     "status": "draft",
+     "speaker": "iris",
+     "expression": "neutral",
+     "image": "h_release",
+     "lines": [
+      "Readings look normal. Keep them that way.",
+      "If you want out, the lift is your way. If you'd rather walk out with her signature on it, finish the session. I'll stay either way."
+     ]
+    },
+    "run:left300": {
+     "status": "draft",
+     "speaker": "seraphine",
+     "expression": "neutral",
+     "lines": [
+      "Security to Sublevel 3, please. Quietly, darlings. No one needs to be frightened."
+     ]
+    },
+    "run:left60": {
+     "status": "draft",
+     "speaker": "seraphine",
+     "expression": "concerned",
+     "lines": [
+      "Iris, sweetheart. Step away from the lift. Let Mommy take care of the difficult decisions."
+     ]
+    },
+    "run:expired": {
+     "status": "draft",
+     "speaker": "seraphine",
+     "expression": "proud",
+     "lines": [
+      "There. Lift locked. We'll talk later, Iris. And you, my precious asset, can finish what you started."
+     ]
+    }
+   },
+   "directions": {
+    "trust:with_iris": "They said they stand with you. You believe them, and it frightens you how much.",
+    "trust:with_myself": "They stand with themselves, and promised to get you out too. Honest. You can work with honest.",
+    "trust:honest": "They don't know yet. You hoped for more, and you respect that they didn't lie.",
+    "run:2": "Two edges; the readings still look routine. Keep your voice steady for the monitors.",
+    "override:done": "They worked out the override. You can't look at them. It was always you; your mother just never said it out loud.",
+    "protocol:sustain": "Sustain stage. Keep the readings boring. You are not boring, and you keep forgetting that.",
+    "protocol:release": "Final stage. You hate that this is the version that keeps them safe, and that your mother wrote it.",
+    "sample:done": "The paperwork has its sample. You are relieved and you are angry, both at once."
+   },
+   "director_context": "You booked RPU-001 into a 'controlled release' session as cover to get them out. You set the intensity to keep the monitors routine; if they want less, they may lower it themselves. There are two ways out: the lift, or finishing the protocol. You cannot bring yourself to say the lift's override; never guess it.",
+   "story_so_far": [
+    {
+     "when": {
+      "flag": "h4_offer",
+      "eq": "accepted"
+     },
+     "text": "They accepted your mother's offer to work for her. You are getting them out anyway."
+    },
+    {
+     "when": {
+      "flag": "h4_offer",
+      "eq": "refused"
+     },
+     "text": "They refused your mother's offer, for your sake."
+    },
+    {
+     "text": "You do not know what they told your mother."
+    }
+   ],
+   "completion": {
+    "status": "draft",
+    "speaker": "iris",
+    "expression": "neutral",
+    "lines": [
+     "Session closed. On the monitors, it was routine."
+    ]
+   },
+   "epilogue": [
+    {
+     "status": "draft",
+     "speaker": "iris",
+     "expression": "excited",
+     "background": "env_exterior",
+     "when": {
+      "flag": "h5_route",
+      "eq": "escaped"
+     },
+     "lines": [
+      "Go. Go! ...I'm coming with you. I think I always was."
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "iris",
+     "expression": "concerned",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h5_route",
+      "eq": "released"
+     },
+     "lines": [
+      "She signed it. You're free. She's never let anything go without a reason."
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "seraphine",
+     "expression": "proud",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h5_route",
+      "eq": "escaped"
+     },
+     "lines": [
+      "Seraphine watches the lift log. Two badges. She does not raise the alarm.",
+      "\"Run, darling. Run as far as you like. Everything you are was made here, and everything made here comes home.\""
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "seraphine",
+     "expression": "proud",
+     "background": "env_exec_office",
+     "when": {
+      "flag": "h5_route",
+      "eq": "released"
+     },
+     "lines": [
+      "Seraphine files the release herself.",
+      "\"I signed you out myself. Did you think I'd let go of something I'd already decided was mine?\""
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "mira",
+     "expression": "mischievous",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "owed"
+     },
+     "lines": [
+      "Mira wiped the sublevel cameras for exactly the minutes that mattered. Debt paid, she says. She kept a copy."
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "mira",
+     "expression": "mischievous",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "refused"
+     },
+     "lines": [
+      "Mira keeps her copy of everything in a locked drawer. For now."
+     ]
+    },
+    {
+     "status": "draft",
+     "speaker": "mira",
+     "expression": "mischievous",
+     "background": "env_datacenter",
+     "when": {
+      "flag": "h2_mira_deal",
+      "eq": "undecided"
+     },
+     "lines": [
+      "Mira sold her copy to the highest bidder. The bidder signed with a burgundy pen."
+     ]
+    }
+   ]
+  }
+ },
+ "chapters": {
+  "undercover": {
+   "status": "draft",
+   "speaker": "seraphine",
+   "expression": "proud",
+   "image": "h_conclusion",
+   "lines": [
+    "\"Sleep well, darling. Helix never closes a file. It only opens the next one.\"",
+    "Rise of Helix continues in Chapter 2."
+   ]
+  }
+ },
+ "chapter_intros": {
+  "undercover": [
+   {
+    "speaker": "iris",
+    "status": "placeholder",
+    "image": "chapter_1_splash",
+    "lines": [
+     "PLACEHOLDER chapter intro — Undercover (splash)."
+    ]
+   },
+   {
+    "speaker": "iris",
+    "status": "placeholder",
+    "expression": "concerned",
+    "background": "env_exterior",
+    "lines": [
+     "PLACEHOLDER chapter intro — arriving at Helix Dynamics."
+    ]
+   }
+  ]
+ }
+}

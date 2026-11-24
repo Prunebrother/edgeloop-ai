@@ -10,7 +10,7 @@ import {claimPorts,ownedReady,isolatedEnv,guardBrowser} from './fixture-isolatio
 const root=path.resolve(new URL('../..',import.meta.url).pathname),out=process.env.CAMPAIGN_BROWSER_REPORT||path.join(tmpdir(),'edgeloop-campaign-browser');
 const uiPort=Number(process.env.EDGELOOP_CAMPAIGN_UI_PORT||8862),aiPort=Number(process.env.EDGELOOP_CAMPAIGN_AI_PORT||8868);
 const ui=`http://127.0.0.1:${uiPort}`,ai=`http://127.0.0.1:${aiPort}`,children=[],report={passed:false,physical_hardware:false,steps:[],screenshots:[]};
-const TOKEN='browser-fixture-token-'+'x'.repeat(32),CID='asterion_initiative';
+const TOKEN='browser-fixture-token-'+'x'.repeat(32),CID='asterion_initiative',HID='rise_of_helix';
 const assert=(x,m)=>{if(!x)throw Error(m);};
 let browser,page,errors=[];
 const step=async(name,fn)=>{await fn();report.steps.push(name);};
@@ -108,12 +108,25 @@ try{
         const card=page.locator('#main-menu .game-menu-card').first();
         await card.waitFor();const text=await card.textContent();
         assert(text.includes('The Asterion Initiative')&&text.includes('0 of 14 missions completed'),'Campaign card '+text);
-        await shot('menu-campaigns.png');await card.click();
+        await shot('menu-campaigns.png');
+        const locked=page.locator(`[data-campaign=${HID}]`);
+        assert(await locked.getAttribute('aria-disabled')==='true'&&(await locked.getAttribute('disabled'))===null,'Locked card must be aria-disabled, not disabled');
+        assert((await locked.textContent()).includes('Complete The Asterion Initiative to unlock.'),'Missing campaign lock reason');
+        assert((await locked.locator('[data-state=locked]').textContent())==='Locked','Missing Locked badge');
+        assert((await locked.locator('[data-state=placeholder]').textContent())==='Placeholder','Missing campaign Placeholder badge');
+        await page.waitForFunction(()=>document.querySelector('[data-campaign=rise_of_helix] img')?.complete);
+        await card.focus();await page.keyboard.press('ArrowDown');
+        assert(await locked.evaluate(el=>el===document.activeElement),'Locked card unreachable with arrows');
+        await page.keyboard.press('Enter');assert(await menuView()==='campaigns','Enter activated locked card');
+        await locked.click({force:true});assert(await menuView()==='campaigns','Click activated locked card');
+        await card.focus();await page.keyboard.press('Tab');
+        assert(await locked.evaluate(el=>el===document.activeElement),'Locked card unreachable with Tab');
+        await shot('helix-locked.png');await card.click();
         // The mission board shows one chapter at a time: Chapter 1, with Orientation picked.
         const states=await page.locator('.mission-board .mission-card').evaluateAll(cards=>cards.map(c=>c.dataset.state));
         assert(JSON.stringify(states)===JSON.stringify(['available',...Array(4).fill('locked')]),'Mission states '+states);
         const chapters=await page.locator('.board-chapters .mission-chapter').evaluateAll(cs=>cs.map(c=>c.querySelector('h2').textContent+':'+c.dataset.state));
-        assert(JSON.stringify(chapters)===JSON.stringify(['Introduction:available','Advanced Research:locked','Shadows of Helix:locked','Rise of Helix:teaser']),'Chapters '+chapters);
+        assert(JSON.stringify(chapters)===JSON.stringify(['Introduction:available','Advanced Research:locked','Shadows of Helix:locked']),'Chapters '+chapters);
         assert((await page.locator('#main-title, .board-hero h1').first().textContent())==='Introduction','Board title');
         assert(await page.locator('.mission-card[data-mission=orientation] button').getAttribute('aria-pressed')==='true','Orientation not picked');
         assert(await page.evaluate(()=>document.activeElement?.closest('.mission-card')?.dataset.mission)==='orientation','Focus not on the picked mission');
@@ -121,9 +134,6 @@ try{
         await page.locator('.mission-card[data-mission=first_assessment] button').click();
         assert((await page.locator('.mission-detail').textContent()).includes('Complete Orientation first'),'Lock reason');
         assert(await page.locator('.mission-card[data-mission=first_assessment] .board-figure').evaluate(e=>getComputedStyle(e).filter.includes('brightness(0)')),'Locked figure is not a silhouette');
-        await page.locator('.board-chapters [data-chapter="4"]').click();
-        assert((await page.locator('.board-teaser').textContent()).includes('Coming soon'),'Teaser board');
-        await page.locator('.board-chapters [data-chapter="1"]').click();
     });
     await step('Mission start shows Nova\'s briefing and Begin selects Nova',async()=>{
         await startFromBoard('orientation');
@@ -159,7 +169,7 @@ try{
     });
     await step('9. Progress survives a reload',async()=>{
         const saved=JSON.parse((await progress()).saved);
-        assert(saved.schema_version===3&&saved.campaigns[CID].missions.orientation.completions===1,'Saved progress');
+        assert(saved.schema_version===4&&saved.campaigns[CID].missions.orientation.completions===1,'Saved progress');
         await page.reload();
         await page.locator('#main-menu').waitFor({state:'visible'});
         await page.locator('[data-menu-tile=freeplay]').click();
@@ -175,7 +185,7 @@ try{
         await page.keyboard.press('Escape');await page.keyboard.press('Escape');await page.keyboard.press('Escape');
         await page.waitForFunction(()=>document.querySelector('#main-menu .game-menu-panel').dataset.view==='home');
         // During a mission the host chips cannot switch companions; only the current one stays enabled.
-        assert(await page.locator('.menu-host-chips button:disabled').count()===4,'Host chips not locked during a mission');
+        assert(await page.locator('.menu-host-chips button:disabled').count()===(await page.locator('.menu-host-chips button').count())-1,'Host chips not locked during a mission');
         // Codex 12: if leaving cannot be saved, the menu stays and says so; the mission's rules still apply.
         await saves(false);
         page.once('dialog',d=>d.accept());await page.locator('[data-menu-tile=freeplay]').click();
@@ -238,13 +248,12 @@ try{
         assert(saved.chapters.advanced_research&&saved.chapters.introduction&&!saved.completed_at,'Saved chapters');
         await page.getByRole('button',{name:'Back to the session'}).click();
     });
-    await step('Chapter 3: the Chapter 4 teaser, the countdown, and Nova\'s puzzles answered in the banner',async()=>{
+    await step('Chapter 3: the countdown, Nova\'s puzzles answered in the banner, and the campaign\'s ending',async()=>{
         await seed('the_empty_vault');
         await page.locator('[data-main-menu]').click();await page.locator('[data-menu-tile=campaign]').click();
         const card=await page.locator('#main-menu .game-menu-card').first().textContent();
-        assert(card.includes('Chapter 3: Shadows of Helix · 20%')&&card.includes('Chapter 4: Rise of Helix · Coming soon'),'Campaign card '+card);
+        assert(card.includes('Chapter 3: Shadows of Helix · 20%')&&!card.includes('Chapter 4'),'Campaign card '+card);
         await page.locator('#main-menu .game-menu-card').first().click();
-        assert((await page.locator('.mission-chapter[data-state=teaser]').textContent()).includes('Coming soon'),'Teaser chapter');
         await startFromBoard('the_empty_vault');
         await page.waitForFunction(()=>document.querySelector('#main-menu .game-menu-panel').dataset.view==='briefing');
         const briefing=await page.locator('#main-menu').textContent();
@@ -282,10 +291,51 @@ try{
         await page.waitForFunction(()=>document.querySelector('#main-menu .game-menu-panel').dataset.view==='results');
         assert(await page.locator('#sessionStopBtn').isDisabled().catch(()=>null)===startDisabled,'Space on a puzzle button reached the engine');
         const results=await page.locator('#main-menu').textContent();
-        assert(results.includes('Chapter 3 complete')&&results.includes('You are cleared of suspicion')&&results.includes('come to Helix'),'Results '+results.slice(0,800));
+        assert(results.includes('Campaign complete')&&results.includes('Shadows of Helix')&&results.includes('You are cleared of suspicion')&&results.includes('come to Helix')&&results.includes('on our terms'),'Results '+results.slice(0,800));
         assert(!(await page.content()).includes('Follow each owner up the chain'),'Hint leaked before a wrong answer');
+        assert(results.includes('New campaign: Rise of Helix'),'Missing campaign unlock in results');
+        assert((await page.locator('.mission-toast').textContent()).includes('New campaign: Rise of Helix'),'Missing campaign unlock toast');
         await shot('chapter3-results.png');
         await page.getByRole('button',{name:'Back to the session'}).click();
+    });
+    await step('HELIX-004/007: unlocked placeholder board, teaser, Intern install gate and Escape',async()=>{
+        await page.locator('[data-main-menu]').click();await page.locator('[data-menu-tile=campaign]').click();
+        const card=page.locator(`[data-campaign=${HID}]`);
+        assert(await card.getAttribute('aria-disabled')===null,'Helix still locked after Mission 14');
+        await card.click();
+        await page.waitForFunction(()=>document.querySelector('#main-menu').dataset.view==='scene');
+        await page.locator('#main-menu').getByRole('button',{name:'Skip',exact:true}).click();
+        await page.waitForFunction(()=>document.querySelector('#main-menu').dataset.view==='missions');
+        assert((await page.locator('.board-hero h1').textContent())==='Chapter 1 (placeholder)','Helix chapter title');
+        const states=await page.locator('.mission-board .mission-card').evaluateAll(cs=>cs.map(c=>c.dataset.state));
+        assert(JSON.stringify(states)===JSON.stringify(['available',...Array(4).fill('locked')]),'Helix states '+states);
+        assert(await page.locator('.mission-board [data-state=placeholder]').count()===0,'No Helix mission should carry a Placeholder badge since H5 got real data (2026-11-24)');
+        assert(await page.locator('.mission-detail [data-state=placeholder]').count()===0,'H1 detail should not read as Placeholder');
+        assert((await page.locator('.mission-detail').textContent()).includes('Iris Vale')&&!(await page.locator('.mission-detail').textContent()).includes('(placeholder)'),'Intern name not displayed as Iris Vale');
+        // Only Iris's author-approved art (2026-11-20) may show for the Intern; never invented art.
+        const intern=await page.locator('.mission-card[data-mission=h1_entry_protocol] img').evaluateAll(es=>es.map(e=>e.getAttribute('src')));
+        assert(intern.length&&intern.every(src=>src==='/src/assets/menu/companions/iris.webp'||/\/Character_Art\/Iris\/expressions\/iris_[a-z]+\.png$/.test(src)),'Unexpected Intern portrait '+intern);
+        await page.waitForFunction(()=>document.querySelector('.board-art')?.complete);
+        assert((await page.locator('.board-art').getAttribute('src'))==='/src/assets/story/rise_of_helix/chapter_1_splash.webp','Wrong story chapter art');
+        await shot('helix-board.png');
+        await page.locator('.board-chapters [data-chapter="2"]').click();
+        assert((await page.locator('.board-teaser').textContent()).includes('Coming soon'),'Missing Helix teaser');
+        assert(await page.locator('.mission-board').count()===0,'Teaser has playable missions');
+        await page.locator('.board-chapters [data-chapter="1"]').click();
+        await startFromBoard('h1_entry_protocol');
+        await page.waitForFunction(()=>document.querySelector('.mission-speech')?.textContent.includes("I'm Iris. Iris Vale."));  // H1's real (draft) briefing
+        assert(await page.locator('#main-menu [data-state=placeholder]').count()===0&&(await page.locator('#main-menu').textContent()).includes('Story draft'),'H1 briefing should read as Story draft');
+        await page.getByRole('button',{name:'Begin with Iris Vale',exact:true}).click();
+        assert((await page.locator('.game-menu-status').textContent()).includes('not installed'),'Missing Intern install error');
+        page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Abandon mission',exact:true}).click();
+        await page.waitForFunction(()=>document.querySelector('#main-menu').dataset.view==='missions');
+        await page.setViewportSize({width:390,height:844});
+        assert(await page.evaluate(()=>{const m=document.querySelector('#main-menu');return m.scrollWidth<=m.clientWidth;}),'Helix board overflows phone');
+        await shot('helix-board-390.png');
+        await page.keyboard.press('Escape');assert(await menuView()==='campaigns','Escape did not return to campaigns');
+        await page.keyboard.press('Escape');assert(await menuView()==='home','Escape did not return home');
+        await page.locator('[data-menu-tile=freeplay]').click();
+        await page.setViewportSize({width:1600,height:1000});
     });
     await step('Phone width: no horizontal scroll',async()=>{
         await page.setViewportSize({width:390,height:844});

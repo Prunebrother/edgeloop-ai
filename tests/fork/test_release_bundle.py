@@ -88,7 +88,7 @@ def test_release_art_and_model_inventory_is_complete():
     catalog = json.loads((ROOT / 'src/assets/characters/manifest.json').read_text())
     assert inputs['characters'] == ['nova-narrative-f29-v011', 'evelyn-narrative-f29-v013',
                                     'daisy-narrative-f29-v014', 'celeste-narrative-f29-v012', 'mira-narrative-f29-v017',
-                                    'vex9-narrative-f29-v016']
+                                    'vex9-narrative-f29-v016', 'iris-narrative-f29-v018', 'seraphine-narrative-f29-v019']
     assert [m['name'] for m in inputs['models']] == ['huihui_ai/qwen3.5-abliterated:9b']
     assert inputs['default_model'] == inputs['characters'][0] + ':latest'
     intermediates = set(inputs['intermediate_characters'])
@@ -101,7 +101,8 @@ def test_release_art_and_model_inventory_is_complete():
                       if l.startswith('FROM '))
         assert parent in {m['name'] for m in inputs['models']} or parent.removesuffix(':latest') in intermediates, (name, parent)
     for character in catalog['characters'].values():
-        assert len(character['expressions']) == 12
+        # Story-only characters (HELIX-030) ship only the portraits they declare, neutral at least.
+        assert len(character['expressions']) == 12 or character.get('role') == 'story' and 'neutral' in character['expressions']
         for image in character['expressions'].values():
             assert (ROOT / image.lstrip('/')).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
 

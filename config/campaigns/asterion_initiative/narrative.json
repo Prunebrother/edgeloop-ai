@@ -552,7 +552,7 @@
         "money:done": {
           "speaker": "nova",
           "lines": [
-            "Helix Biotechnology. Hiding behind two shell companies to buy Daisy's farm. Sneaky!",
+            "Helix Dynamics. Hiding behind two shell companies to buy Daisy's farm. Sneaky!",
             "Last one: Evelyn's edit history."
           ]
         }
@@ -614,5 +614,14 @@
         "Whoever it is, they've been watching us. And they want you."
       ]
     }
+  },
+  "campaign_complete": {
+    "speaker": "celeste",
+    "lines": [
+      "I have read the transmission. So has the IRRA.",
+      "Helix Dynamics wants you inside. Then you will go inside, on our terms, not theirs.",
+      "Your work for the Asterion Initiative is complete. What comes next is not research. It is an operation.",
+      "Rest while you can. Your briefing will follow."
+    ]
   }
 }

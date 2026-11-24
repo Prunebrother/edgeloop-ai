@@ -33,12 +33,24 @@ def committed_files(rev):
     return [n for n in names if n]
 
 
+def public_catalog(catalog):
+    """Dev placeholders are omitted by status, including their model aliases."""
+    placeholders = {cid for cid, c in catalog['characters'].items() if c.get('status') == 'placeholder'}
+    if not placeholders: return catalog
+    characters = {cid: c for cid, c in catalog['characters'].items() if cid not in placeholders}
+    models = {tag: cid for tag, cid in catalog.get('models', {}).items() if cid not in placeholders}
+    return catalog | {'characters': characters, 'models': models}
+
+
 def plan(rev, rules):
     files = committed_files(rev)
     excluded = {}
     patterns = [(glob_regex(p), reason) for p, reason in rules['exclude'].items()]
     keep = set(rules['keep'])
     catalog = json.loads(subprocess.check_output(['git', '-C', str(ROOT), 'show', f"{rev}:{rules['art']['catalog']}"]))
+    placeholders = set(catalog['characters']) - set(public_catalog(catalog)['characters'])
+    placeholder_models = {tag.split(':', 1)[0] for tag, cid in catalog.get('models', {}).items() if cid in placeholders}
+    catalog = public_catalog(catalog)
     portraits = {p.lstrip('/') for c in catalog['characters'].values() for p in c['expressions'].values()}
     animations = set()
     for character in catalog['characters'].values():
@@ -55,6 +67,8 @@ def plan(rev, rules):
         if name in keep:
             continue
         reason = next((r for rx, r in patterns if rx.match(name)), None)
+        if any(name.startswith(f'characters/models/{model}/') for model in placeholder_models):
+            reason = 'Dev-only placeholder model'
         if reason is None and name.startswith(rules['art']['root']) and name not in portraits | animations:
             reason = rules['art']['reason']
         if reason:
@@ -72,6 +86,7 @@ def main():
     parser.add_argument('--rules', type=Path, default=ROOT / 'tools/public-source-rules.json')
     parser.add_argument('--report', type=Path, help='Write the full include/exclude report here (outside --out)')
     parser.add_argument('--no-validate', action='store_true')
+    parser.add_argument('--test-build', action='store_true', help='Validate as a public test build (Draft story text allowed)')
     args = parser.parse_args()
     out = args.out.resolve()
     if out.is_relative_to(ROOT):
@@ -90,19 +105,25 @@ def main():
     for name in included:
         if not (out / name).is_file() or (out / name).is_symlink():
             sys.exit('Export produced a non-regular file: ' + name)
+    catalog_path = out / rules['art']['catalog']
+    catalog = json.loads(catalog_path.read_text())
+    filtered = public_catalog(catalog)
+    if filtered != catalog:
+        catalog_path.write_text(json.dumps(filtered, indent=2) + '\n')
     refresh = subprocess.run([sys.executable, str(out / 'tools/refresh-release-manifest.py')] + [a for n in included for a in ('--include', n)],
                              cwd=out, capture_output=True, text=True)
     if refresh.returncode:
         sys.exit('Manifest refresh failed:\n' + refresh.stderr)
     validation = None
     if not args.no_validate:
-        run = subprocess.run([sys.executable, str(out / 'tools/validate-release.py')], cwd=out, capture_output=True, text=True)
+        run = subprocess.run([sys.executable, str(out / 'tools/validate-release.py')] + (['--test-build'] if args.test_build else []), cwd=out, capture_output=True, text=True)
         validation = json.loads(run.stdout) if run.stdout.strip().startswith('{') else {'passed': False, 'output': run.stdout + run.stderr}
     reasons = {}
     for reason in excluded.values():
         reasons[reason] = reasons.get(reason, 0) + 1
     report = {'rev': rev, 'out': str(out), 'included': len(included), 'excluded': len(excluded), 'portraits': len(portraits),
-              'excluded_by_reason': reasons, 'validation_passed': None if validation is None else validation.get('passed')}
+              'excluded_by_reason': reasons, 'validation_passed': None if validation is None else validation.get('passed'),
+              'test_build': args.test_build}
     if args.report:
         args.report.write_text(json.dumps(report | {'included_files': included, 'excluded_files': excluded, 'validation': validation}, indent=2) + '\n')
     print(json.dumps(report, indent=2))

@@ -32,9 +32,15 @@ test('AI modules contain no hardware, peer, session-command or agent primitives'
     }
 });
 
-test('the AI layer presses only the user-clicked emergency stop and the close-only Player toggle',()=>{
+test('AI-layer click targets are the user emergency stop, close-only Player toggle and focused choice answer',()=>{
     const clicks=aiFiles.flatMap(file=>[...read(file).matchAll(/\.click\(\)/g)].map(()=>file));
-    assert.deepEqual(clicks,['src/js/ai/layout.js','src/js/ai/layout.js']);
+    assert.deepEqual(clicks,['src/js/ai/layout.js','src/js/ai/layout.js','src/js/ai/main-menu.js']);
+    const menu=read('src/js/ai/main-menu.js');
+    assert.match(menu,/banner\.querySelectorAll\('\.mission-choice button:not\(\[disabled\]\)'\)/);
+    assert.match(menu,/else if\(b===0&&i>=0\)\{e\.preventDefault\(\);items\[i\]\.click\(\);\}/);
+    const app=read('src/js/app.js');
+    // Player bindings win: a bound controller button runs its action and is never offered to the choice.
+    assert.match(app,/const action = actionForPad\(advancedSettings\.keybinds, index\);\s*if \(action\) \{ runKeyAction\(action\); return; \}\s*(?:\/\/[^\n]*\n\s*)*document\.dispatchEvent\(new CustomEvent\('campaign-gamepad'/);
     const layout=read('src/js/ai/layout.js');
     // 1. Emergency stop: the original engine Stop, used by the header and the in-stage button alike.
     assert.match(layout,/const emergencyStop=\(\)=>\{const stop=document\.getElementById\('sessionStopBtn'\);stop\.dataset\.safetyStop='true';stop\.click\(\);\};/);
@@ -157,7 +163,7 @@ test('the AI layer forwards settings requests only to the engine-side gate it wa
     assert.match(companion,/settingsControl\?\.mountPanel\?\.\(settingsSlot\)/);
     // character_builder (Character Builder editor results) is display data only; it carries no settings or engine command.
     // campaign_state and mission_result (Campaign screens) are display data only, like character_builder.
-    assert.match(read('src/js/ai/connection.js'),/'settings_request','character_builder','campaign_state','mission_result','mission_milestone','campaign_progress'\]\.includes\(m\.type\)\)this\.onMessage\(m\)/);
+    assert.match(read('src/js/ai/connection.js'),/'settings_request','character_builder','campaign_state','mission_result','mission_milestone','campaign_progress','mission_text','chapter_text'\]\.includes\(m\.type\)\)this\.onMessage\(m\)/);
 });
 
 test('AI Settings modules import only the gate, the engine mode lists and session rules',()=>{

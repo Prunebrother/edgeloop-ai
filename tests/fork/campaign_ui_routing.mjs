@@ -34,7 +34,7 @@ document.getElementById('main-menu').hidden=true;
 for(const message of input.messages)menu.receive(message);
 let engineActions=[];
 if(input.key){
- const button=all(host).find(n=>Object.hasOwn(n.attrs,'data-puzzle-option'));
+ const button=all(host).find(n=>Object.hasOwn(n.attrs,input.choice?'data-choice-option':'data-puzzle-option'));
  if(!button)throw new Error('No puzzle option rendered');
  const e={type:'keydown',key:input.key==='Space'?' ':input.key,code:input.key,target:button,defaultPrevented:false,stopped:false,preventDefault(){this.defaultPrevented=true;},stopPropagation(){this.stopped=true;},stopImmediatePropagation(){this.stopped=true;}};
  for(const f of windowListeners.keydown||[])f(e);

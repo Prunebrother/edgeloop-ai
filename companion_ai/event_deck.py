@@ -1,8 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """Director 2.0 event card deck, driven by ConversationService when a model's deck is enabled.
 
-No provider, character, device, journal, storage or clock access. Callers pass in
-already validated observations and the current time, so behavior is deterministic.
+Loading validates campaign references against the installed Book. The scheduler has no
+provider, character, device, journal, storage or clock access. Callers pass in already
+validated observations and the current time, so behavior is deterministic.
 
 State is in memory only and lasts as long as the process. A deck rebuilt mid-session, by
 a restart or a model switch, can't know what was delivered, so a counter milestone already
@@ -28,9 +29,12 @@ Play lifecycle:
 from collections import Counter, OrderedDict, deque
 from dataclasses import dataclass
 from hashlib import sha256
+import logging
 from typing import Literal, NamedTuple
 from pydantic import ConfigDict, Field, model_validator
 from .models import StrictModel
+
+logger = logging.getLogger(__name__)
 
 Lane = Literal['session_start', 'normal', 'narrative', 'mission', 'session_end', 'arrival']
 # Where the session is in its arc. 'finishing': Force Orgasm is pushing the participant to finish now.
@@ -92,6 +96,15 @@ class Eligibility(_Frozen):
     # Needs something the participant actually said this session, not earlier commentary.
     requires_conversation: bool = False
     phases: list[Phase] | None = Field(default=None, min_length=1)
+    # Omit unused scope rules from serialization to preserve existing custom package hashes.
+    # Only while a mission in one of these campaigns is active.
+    campaigns: list[str] | None = Field(default=None, min_length=1, exclude_if=lambda value: value is None)
+    # Book mission IDs, or <campaign>/<mission> to disambiguate IDs shared by campaigns.
+    missions: list[str] | None = Field(default=None, min_length=1, exclude_if=lambda value: value is None)
+    # All keys must exist in the active campaign's saved flags (any value); without an
+    # active mission, use the union of saved flag keys across all campaigns. No inherited
+    # or unsaved attempt flags are included.
+    flags: list[str] | None = Field(default=None, min_length=1, exclude_if=lambda value: value is None)
     # Orgasms the participant reported: this session, and across all recorded sessions with this companion.
     min_orgasms: int | None = Field(default=None, ge=0)
     max_orgasms: int | None = Field(default=None, ge=0)
@@ -244,6 +257,10 @@ class DeckContext(_Frozen):
     phase: Phase = 'building'
     orgasms: int = Field(default=0, ge=0)
     total_orgasms: int = Field(default=0, ge=0)
+    campaign: str | None = None
+    # The local mission ID from the Book; eligibility may qualify it with campaign/.
+    mission: str | None = None
+    flags: frozenset[str] = frozenset()
 
 
 def session_phase(report):
@@ -320,11 +337,32 @@ class Draw(NamedTuple):
 
 
 def load_definition(raw):
-    """Fail closed: an invalid definition gives no deck and a generic diagnostic."""
+    """Fail closed; unknown campaign/mission references name the card and invalid ID."""
     try:
-        return DeckDefinition.model_validate(raw), None
+        definition = DeckDefinition.model_validate(raw)
     except (ValueError, TypeError):
         return None, 'Invalid or unsupported event deck definition; deck unavailable.'
+    cards = [*definition.session_start, *definition.session_end, *definition.normal, *definition.arrival,
+             *(card for sequence in definition.sequences for card in sequence.steps)]
+    scoped = [card for card in cards if any(getattr(card.eligibility, key) is not None
+                                          for key in ('campaigns', 'missions', 'flags'))]
+    if scoped:
+        from .campaign import Book  # only scoped decks need the Book; keeps the scheduler import-light
+        book = Book.load()
+        campaigns = {campaign.id for campaign in book.campaigns}
+        missions = {mission.id for campaign in book.campaigns for mission in campaign.missions}
+        missions.update(f'{campaign.id}/{mission.id}' for campaign in book.campaigns for mission in campaign.missions)
+        flags = {flag for campaign in book.campaigns for flag in campaign.own_flags()}
+        for card in scoped:
+            rule = card.eligibility
+            for kind, names, known in (('campaign', rule.campaigns, campaigns), ('mission', rule.missions, missions)):
+                for name in names or ():
+                    if name not in known:
+                        return None, f'Event deck card "{card.id}" names unknown {kind} "{name}"; deck unavailable.'
+            for flag in rule.flags or ():
+                if flag not in flags:
+                    logger.warning('Event deck card "%s" names unknown campaign flag "%s"', card.id, flag)
+    return definition, None
 
 
 def scope_key(scope):
@@ -643,6 +681,10 @@ class EventDeck:
         phases = rule.phases or (PHASES if card.kind == 'mission' else DEFAULT_PHASES)
         return (context.phase in phases
                 and context.status in rule.statuses
+                and (rule.campaigns is None or (context.mission is not None and context.campaign in rule.campaigns))
+                and (rule.missions is None or (context.campaign is not None and context.mission is not None
+                     and (context.mission in rule.missions or f'{context.campaign}/{context.mission}' in rule.missions)))
+                and (rule.flags is None or all(flag in context.flags for flag in rule.flags))
                 and (rule.min_seconds is None or context.seconds >= rule.min_seconds)
                 and (rule.max_seconds is None or context.seconds <= rule.max_seconds)
                 and (rule.min_edges is None or context.edges >= rule.min_edges)

@@ -49,6 +49,13 @@ def _attribution(words):
     return words[1] in SPEECH_VERBS
 
 
+def _quoted_term(text):
+    """An opening quote that only names a word or short phrase ("Milking" you dry implies…), not speech.
+    Speech in quotes ends with punctuation before the closing mark ("Good," / "Ready?")."""
+    core = text.strip()
+    return bool(core) and len(core.split()) <= 4 and core[-1] not in TERMINATORS + ',;:—–-'
+
+
 def _words(text):
     return re.findall(r"[a-z0-9']+", text.casefold().replace('’', "'"))
 
@@ -99,6 +106,8 @@ class ReplyCleaner:
         self.max_characters = max_characters
         self.started = False      # first non-space character seen
         self.quoted = False       # reply opened with a quote: keep only speech inside quotes
+        self.open_mark = ''       # the reply's opening quote mark, kept if that quote turns out to be a term
+        self.segments = 0         # quoted segments closed so far
         self.inside = False
         self.joined = False       # a gap between speech segments needs one space
         self.sentence = ''        # current, not yet released sentence (head stage) or held whitespace
@@ -144,6 +153,7 @@ class ReplyCleaner:
             self.started = True
             if self.config.unwrap_quotes and char in QUOTES:
                 self.quoted = self.inside = True
+                self.open_mark = char
                 self.holding = bool(self.hold_limit)
                 return
         if self.skipping:
@@ -161,6 +171,10 @@ class ReplyCleaner:
             if char in QUOTES:
                 self.inside = not self.inside
                 if not self.inside:
+                    self.segments += 1
+                    if self.segments == 1 and self.head and _quoted_term(self.sentence):
+                        self._unquote(char)
+                        return
                     self.joined = True
                 return
             if not self.inside:
@@ -186,11 +200,25 @@ class ReplyCleaner:
             self.skipped = ''
             self.attributed = None
             return
+        if closed and _quoted_term(held):
+            for c in self.open_mark + held:
+                self._text_char(c)
+            self.segments += 1
+            self.quoted = self.inside = False
+            self._text_char('”' if self.open_mark == '“' else self.open_mark)
+            return
         for char in held:
             self._text_char(char)
         if closed:  # later speech segments are joined with a space, as before
+            self.segments += 1
             self.inside = False
             self.joined = True
+
+    def _unquote(self, close_mark):
+        """The opening quote was a quoted term, not speech: the reply is ordinary text, marks included."""
+        self.quoted = self.inside = False
+        self.sentence = self.open_mark + self.sentence
+        self._text_char(close_mark)
 
     def _skip_char(self, char):
         if char.isspace() and self.skipped.rstrip(QUOTES + ')\'')[-1:] in tuple(TERMINATORS):

@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "campaign": "rise_of_helix",
+  "slots": {
+    "h_arrival": {
+      "kind": "illustration",
+      "file": "h_arrival.webp",
+      "status": "placeholder",
+      "sha256": "5ff9a906e2664f06dbee0a086590168c375efc152c42920bafbd3d52813eba57",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Arrival at Helix Dynamics headquarters (draft scene note)"
+    },
+    "h_onboarding": {
+      "kind": "illustration",
+      "file": "h_onboarding.webp",
+      "status": "placeholder",
+      "sha256": "20cc3f7653d2aa5a994fb599eeeb231464d0d681ea4025cd687679d2d2d96d9d",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Onboarding at the headquarters reception area"
+    },
+    "h_mira_eval": {
+      "kind": "illustration",
+      "file": "h_mira_eval.webp",
+      "status": "placeholder",
+      "sha256": "6724ee375c3175ade2af99604969e943291d62d2178cdf4a6b4f8f720d249802",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Evaluation in a clinical assessment room"
+    },
+    "h_vex_lab": {
+      "kind": "illustration",
+      "file": "h_vex_lab.webp",
+      "status": "placeholder",
+      "sha256": "edbe5d0b5ed28d027c9ec12e3a71b385928ec34a52221da391e74ff83bbb7178",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Procedure in an industrial laboratory"
+    },
+    "h_breach": {
+      "kind": "illustration",
+      "file": "h_breach.webp",
+      "status": "placeholder",
+      "sha256": "dc436fb07d7794e40bdbaf2294dd079695e928b1782e1818802bfeef6ca991ec",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "A security breach in the headquarters systems"
+    },
+    "h_detention": {
+      "kind": "illustration",
+      "file": "h_detention.webp",
+      "status": "placeholder",
+      "sha256": "58b9a2bc75309f4b8ae1716e64ccd00b2d89c0ff1341c5ba54d5accf8bfa1189",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Detention in a secure holding room"
+    },
+    "h_release": {
+      "kind": "illustration",
+      "file": "h_release.webp",
+      "status": "placeholder",
+      "sha256": "21eb855d5f248a8f7ac7ce7aa6f3e59bf10816d950aac9a1a582815653a4f5d1",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Release through the headquarters exit"
+    },
+    "h_conclusion": {
+      "kind": "illustration",
+      "file": "h_conclusion.webp",
+      "status": "placeholder",
+      "sha256": "e64b669dca30fd2cd7267a0554b3dd6bfcebd460cc1f0794f71547ad5aa6f761",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Conclusion at the headquarters complex"
+    },
+    "env_exterior": {
+      "kind": "environment",
+      "file": "env_exterior.webp",
+      "status": "placeholder",
+      "sha256": "30004c5c34c0555bae35829ca65538fdc126d5fa062b26a0f1869e11179ed61f",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Exterior of Helix Dynamics headquarters"
+    },
+    "env_reception": {
+      "kind": "environment",
+      "file": "env_reception.webp",
+      "status": "placeholder",
+      "sha256": "a47bcbb9b436bc11d86610278d531a607da3358e35f3087d8be8f72f5b9af656",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Corporate reception area"
+    },
+    "env_lab": {
+      "kind": "environment",
+      "file": "env_lab.webp",
+      "status": "placeholder",
+      "sha256": "ba65d1d8c69c8df1647982b993515e45d7c17a3868690cf994767271d8189e39",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Clinical industrial laboratory"
+    },
+    "env_extraction": {
+      "kind": "environment",
+      "file": "env_extraction.webp",
+      "status": "placeholder",
+      "sha256": "fbef7946adba036c731cb23be6b6a2703beac2e9b7fbde1187a4ce6af32efa3e",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Secure extraction room"
+    },
+    "env_datacenter": {
+      "kind": "environment",
+      "file": "env_datacenter.webp",
+      "status": "placeholder",
+      "sha256": "752c49004ef377c9f2a7635358f0df3a9bfbb3f2f769a9ad25a6b8e475eb7f82",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Datacenter with server racks"
+    },
+    "env_interrogation": {
+      "kind": "environment",
+      "file": "env_interrogation.webp",
+      "status": "placeholder",
+      "sha256": "3cdc17244a520bf29f7ef95f3dc14432ef5815baddb9235dd501eecbb9d783dd",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Secure interrogation room"
+    },
+    "env_intern_desk": {
+      "kind": "environment",
+      "file": "env_intern_desk.webp",
+      "status": "placeholder",
+      "sha256": "3aaf7e3adcec0c72926950f76cb552b1ab51215ebc703811ab0e6630b3ec3068",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Intern workstation in an office"
+    },
+    "env_exec_office": {
+      "kind": "environment",
+      "file": "env_exec_office.webp",
+      "status": "placeholder",
+      "sha256": "1f31239ae2c3ba40353204c832c3b3992b8d83eeafffbe2fe83b726353102fa6",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Executive office at headquarters"
+    },
+    "key_art": {
+      "kind": "key_art",
+      "file": "key_art.webp",
+      "status": "placeholder",
+      "sha256": "303aa22a0c41ba6b17f2dda5c372797855d395199fe3d82c827bd6403786a214",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Helix Dynamics headquarters complex"
+    },
+    "chapter_1_splash": {
+      "kind": "chapter_splash",
+      "file": "chapter_1_splash.webp",
+      "status": "placeholder",
+      "sha256": "b6500e45da82f3f076256662a9b86bf60cdc2f20eae321f55fd2fd3aabcea69e",
+      "source": null,
+      "approved_by": null,
+      "approved_at": null,
+      "explicit": false,
+      "description": "Entrance to Helix Dynamics headquarters"
+    }
+  }
+}

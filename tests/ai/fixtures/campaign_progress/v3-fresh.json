@@ -1,0 +1,15 @@
+{
+  "schema_version": 3,
+  "campaigns": {
+    "asterion_initiative": {
+      "missions": {},
+      "rewards": {},
+      "completed_at": null,
+      "records": {},
+      "chapters": {},
+      "flags": {},
+      "solved": {}
+    }
+  },
+  "active": null
+}

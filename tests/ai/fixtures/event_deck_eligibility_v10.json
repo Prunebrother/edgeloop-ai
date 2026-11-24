@@ -1,0 +1,237 @@
+{
+  "baseline_revision": 10,
+  "definition_sha256_without_revision": "ea86be70afae9b556993527c4ccec1539ad948ce1db8bb23a378f4b6c35171cd",
+  "contexts": [
+    {},
+    {
+      "status": "RAMPDOWN"
+    },
+    {
+      "status": "PAUSED"
+    },
+    {
+      "status": "IDLE"
+    },
+    {
+      "seconds": 59,
+      "edges": 1
+    },
+    {
+      "seconds": 60,
+      "edges": 2
+    },
+    {
+      "seconds": 120,
+      "edges": 3
+    },
+    {
+      "seconds": 300,
+      "edges": 7
+    },
+    {
+      "seconds": 600,
+      "edges": 10
+    },
+    {
+      "seconds": 3600,
+      "edges": 30
+    },
+    {
+      "hr_current": true,
+      "hr_trend": "steady"
+    },
+    {
+      "hr_current": true,
+      "hr_trend": "rising"
+    },
+    {
+      "hr_current": true,
+      "hr_trend": "falling"
+    },
+    {
+      "hr_current": true,
+      "hr_trend": "rising",
+      "fresh": false
+    },
+    {
+      "story_welcome": true
+    },
+    {
+      "has_conversation": true
+    },
+    {
+      "orgasms": 1,
+      "total_orgasms": 1
+    },
+    {
+      "orgasms": 3,
+      "total_orgasms": 20
+    },
+    {
+      "phase": "finishing",
+      "edges": 10,
+      "seconds": 600
+    },
+    {
+      "phase": "recovery",
+      "orgasms": 1,
+      "total_orgasms": 20
+    },
+    {
+      "seconds": 900,
+      "edges": 12,
+      "hr_current": true,
+      "hr_trend": "steady",
+      "has_conversation": true,
+      "story_welcome": true,
+      "orgasms": 2,
+      "total_orgasms": 30
+    }
+  ],
+  "eligible_context_masks": {
+    "opening": 1310707,
+    "mira-uninvited-company": 1310707,
+    "vex9-procedure-commencing": 1310707,
+    "closing": 1310707,
+    "mira-until-next-time": 1310707,
+    "vex9-procedure-logged": 1310707,
+    "edge-count-first": 112,
+    "edge-count-many": 1049472,
+    "duration-settling": 1048960,
+    "duration-long": 512,
+    "hr-rising": 2048,
+    "hr-falling": 4096,
+    "hr-steady": 1049600,
+    "encouragement-warm": 1310705,
+    "encouragement-pace": 1310705,
+    "performance-edges": 1049568,
+    "performance-time": 1049344,
+    "challenge-wager": 1310705,
+    "challenge-imagination": 1310705,
+    "recovery-easing": 0,
+    "recovery-winding-down": 2,
+    "general-remark": 1310705,
+    "general-own-interest": 1310705,
+    "general-curiosity": 1310705,
+    "general-follow-up": 1081344,
+    "nova-curiosity": 1310705,
+    "nova-challenge": 1310705,
+    "evelyn-observation-edges": 1049584,
+    "evelyn-observation-trend": 1055744,
+    "daisy-production": 1049584,
+    "daisy-encouragement": 1310705,
+    "celeste-evaluation": 1049584,
+    "celeste-personal": 1310705,
+    "nova-borrowed-wonder": 1310705,
+    "nova-alien-menu": 1310705,
+    "nova-chosen-name": 1310705,
+    "nova-human-variable": 1310705,
+    "nova-beautiful-error": 1310705,
+    "nova-session-mystery": 1310705,
+    "daisy-farm-future": 1310705,
+    "daisy-recipe-pride": 1310705,
+    "daisy-gate-debate": 1310705,
+    "daisy-prized-volunteer": 1310705,
+    "daisy-friendly-bargain": 1310705,
+    "daisy-farm-quiet": 1310705,
+    "evelyn-research-appetite": 1310705,
+    "evelyn-imagined-seminar": 1310705,
+    "evelyn-human-complexity": 1310705,
+    "evelyn-null-result": 1310705,
+    "evelyn-precision-game": 1310705,
+    "evelyn-after-hours": 1310705,
+    "celeste-mission-challenge": 1310705,
+    "celeste-polished-excuse": 1310705,
+    "celeste-earned-concession": 1310705,
+    "celeste-negotiating-silence": 1310705,
+    "celeste-mission-stakes": 1310705,
+    "celeste-quiet-competence": 1310705,
+    "nova-unfamiliar-stars": 1310705,
+    "nova-mystery-book": 1310705,
+    "nova-research-partner": 1310705,
+    "nova-project-autonomy": 1310705,
+    "daisy-family-legacy": 1310705,
+    "daisy-stubborn-charm": 1310705,
+    "daisy-pie-diplomacy": 1310705,
+    "daisy-hat-contest": 1310705,
+    "evelyn-off-duty-botany": 1310705,
+    "evelyn-research-ambition": 1310705,
+    "evelyn-peer-review": 1310705,
+    "evelyn-composure": 1310705,
+    "celeste-public-promise": 1310705,
+    "celeste-ceremonial-pen": 1310705,
+    "celeste-reluctant-smile": 1310705,
+    "celeste-ambition-wager": 1310705,
+    "finish-urge": 262144,
+    "finish-permission": 262144,
+    "daisy-finish": 262144,
+    "nova-finish": 262144,
+    "evelyn-finish": 262144,
+    "celeste-finish": 262144,
+    "recovery-still-going": 524288,
+    "recovery-afterglow": 524288,
+    "daisy-another-load": 524288,
+    "nova-another-load": 524288,
+    "evelyn-another-load": 524288,
+    "celeste-another-load": 524288,
+    "orgasms-session-count": 1245184,
+    "orgasms-total": 1179648,
+    "daisy-load-tally": 1245184,
+    "nova-orgasm-tally": 1245184,
+    "evelyn-orgasm-tally": 1245184,
+    "celeste-orgasm-tally": 1245184,
+    "mira-helix-quality-control": 1049536,
+    "mira-tempting-offer": 1310705,
+    "mira-slippery-secrets": 1310705,
+    "mira-eyes-on-prize": 262144,
+    "mira-professional-distraction": 1081344,
+    "mira-almost-innocent": 1310705,
+    "mira-competitive-intelligence": 1310705,
+    "mira-unexpected-results": 2,
+    "mira-little-encouragement": 2097137,
+    "mira-procurement-department": 1310705,
+    "mira-off-the-record": 1310705,
+    "mira-unscripted": 1310705,
+    "mira-finish": 262144,
+    "mira-another-load": 524288,
+    "mira-orgasm-tally": 1245184,
+    "vex9-protocol-briefing": 1310705,
+    "vex9-permission-withheld": 1310705,
+    "vex9-yield-projection": 1049536,
+    "vex9-classification-review": 1081344,
+    "vex9-specimen-notes": 1081344,
+    "vex9-adequate-performance": 1049472,
+    "vex9-inefficiency-correction": 1310705,
+    "vex9-breathing-orders": 1572849,
+    "vex9-sentimental-competition": 1310705,
+    "vex9-flattering-titles": 1310705,
+    "vex9-elegant-proof": 1310705,
+    "vex9-leadership-doubts": 1310705,
+    "vex9-finish": 262144,
+    "vex9-another-load": 524288,
+    "vex9-orgasm-tally": 1245184,
+    "iris-watching-closely": 1310705,
+    "iris-frank-question": 1081344,
+    "iris-not-in-the-literature": 1049568,
+    "iris-protocol-slip": 1310705,
+    "iris-neat-notes": 1081344,
+    "iris-checking-in": 1310705,
+    "iris-badly-hidden": 1081344,
+    "iris-braver-now": 1048576,
+    "iris-glasses": 1310705,
+    "iris-mothers-research": 1310705,
+    "iris-small-doubt": 1081344,
+    "iris-ferns": 1310705,
+    "iris-finish": 262144,
+    "iris-another-load": 524288,
+    "iris-orgasm-tally": 1245184,
+    "arrival-returning": 1310707,
+    "arrival-first": 1310707,
+    "arrival-greeting": 1310707,
+    "edges-3-reached": 2097139,
+    "edges-7-reached": 2097139,
+    "edges-10-reached": 2097139,
+    "orgasm-reported-reaction": 2097139,
+    "next-round-invite": 2097139
+  }
+}

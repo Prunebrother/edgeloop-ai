@@ -7,27 +7,27 @@
   "CHANGELOG.md": {
     "base_sha256": "6a6139fe22de0953008e09984134644b1b3dbc8a0b5562ad8cc26c5b906da16d",
     "reason": "F2.10 public release documentation/dependency configuration",
-    "sha256": "39d190c8500cca67d7ba86bf027684290dc1281fa4522ecaab26572b099a4088"
+    "sha256": "7495fc3be44928d596bfc4020c2c51f6bbd2bd864a83dd69399df8e54895c904"
   },
   "README.md": {
     "base_sha256": "31e06342d10aa4d7001bee7f037a1da28587a611d40ed5ca7c22785643de8c8c",
     "reason": "F2.10 public release documentation/dependency configuration; approved Prunebrother source-publication location and status; v0.3.0 includes art, local browser libraries and complete runtime installer",
-    "sha256": "3b19f6dbfef15c2db1e54d2cc15aa443cecbb9ff793c774b8f01b21469ff18cc"
+    "sha256": "1203f0748676f66b17b228e5e5444859c4cbc12014b85b982700a5d8fa7195d6"
   },
   "index.html": {
     "base_sha256": "b5e1bbe949cfdf489219b82bed99c3b3d63b6374f0f3979737073c0dc21b57f0",
     "reason": "F2.1 stylesheet link and accessible viewport zoom; original controls preserved; v0.3.0 includes art, local browser libraries and complete runtime installer; upstream 1.1.4.31 sync: local-app library placeholder uses ~/Videos instead of an absolute home path (release privacy scan); v0.7.0: footer names the fork version (EdgeLoop AI vX) beside the engine version; v0.8.0: I came button in the transport row",
-    "sha256": "c7d70e8cff761114d982d2a91d1f5c4f01e1519058ad450692c796038073a8f6"
+    "sha256": "4714c7db1bf603ebab54402dcbad544fcfe3511c33bca4be5fc3941e54b8b6f0"
   },
   "package.json": {
     "base_sha256": "4530b83fb523fb476390b151a0da7f7d0134d5a38fd4eabdb892c156fc204872",
     "reason": "F2.10 remove deployment command; lock optional browser test dependency; npm start uses existing loopback allowlist server to avoid serving private runtime data; v0.3.0 includes art, local browser libraries and complete runtime installer; upstream 1.1.4.31 sync: engine version 1.1.4.33; upstream local-app and deployment scripts omitted",
-    "sha256": "e2f19559f00101f312c3da86c785d60c22bf95e19a9644ab3e0ff3977e4557ce"
+    "sha256": "fbc0f07525f3acb7eb657de9d17cb85b2f92a423a9118f61bfa3141e78d98f1f"
   },
   "src/js/app.js": {
     "base_sha256": "2efd140221b42013159e93001932e03ffa1b46b768664ec2df21d1c207afe1d8",
     "reason": "Read-only AI observation hook; F2.3 reuses original pure setting sanitizer and watchdog query; engine/control functions unchanged; F2.5.1 projects existing learning-release counter only; original handlers and safety unchanged; F2.8.1 adds post-motor-stop/pre-counter-reset read-only final projection and Survival restart observation only; reset cancellation final projection after stop dispatch; upstream 1.1.4.31 sync: one history record merges the fork completion report with the upstream opt-in session log, and a failed companion mount is logged (the session is unaffected); player workspace: loading or clearing a funscript records the play style it switches to (state.mediaSelection) just before upstream applies it, so the observer can tell that change from a selection; the switch itself is unchanged; v0.7.0-rc3: the local player app sends X-EdgeLoop-App on its state-changing requests (host Origin check); campaign: Calibration records whether the saved maximum reached the settings store (read-only calibration_saved fact for the observer); the save itself is unchanged",
-    "sha256": "66023e7e1c88dc666750c09d0282955ac4a5a93e7fc2eedca6a53f038047fbc4"
+    "sha256": "331c00b11dfad43ee1c46ae047b978d9427f36d050137142d68861b081580425"
   },
   "src/js/backup.test.js": {
     "base_sha256": "1db725797ba3792abe91d18da49950904c5dd395a51089175ad8ce45f645ea56",
@@ -47,12 +47,12 @@
   "sw.js": {
     "base_sha256": "1ad54fe27a2ad00ee8abb242716fcb77ae37326d52ef56e069d6dbb517779c9d",
     "reason": "Public companion modules/manifest precache; F2.4 high-resolution originals use bounded renderer/browser HTTP cache; AI/auth exclusions preserved; F2.5 cache version invalidation only; F2.5.1 cache version only; F2.6 cache version only; F2.6.1 character menu module and cache invalidation; F2.7 event settings module and cache invalidation; F2.8 context tools precache and cache invalidation; F2.8.1 cache invalidation only; F2.8.2 context diagnostics cache invalidation only; free-form objective guidance cache invalidation only; F2.8.3 memory diagnostics cache invalidation; F2.8.4 public journal UI module precache and cache invalidation (journal records remain private observer data); F2.8.4.1 curator controls and memory diagnostics cache invalidation only; Nova character registration cache invalidation only; F2.8.5 Director controls cache invalidation only; v0.3.0 includes art, local browser libraries and complete runtime installer; upstream 1.1.4.31 sync: union of upstream player/page-focus precache and fork modules, cache version invalidation; campaign: main menu module precache and cache version invalidation",
-    "sha256": "76ae8faaa94f4fad5b3476a6767cc4940d0293e3d24a3752b75e1bd3f6fbbc29"
+    "sha256": "e612fe1dfffa62a54c034563db1ac6b6068a4b679a960d299f55c6dd7a3db35a"
   },
   "app/host.mjs": {
     "base_sha256": "da16fce44adafb5e7eb997a480633b478f0fc3a00602907f1c890a2beba88f41",
     "reason": "Complete local-app release packaging; original engine and hardware controls preserved.",
-    "sha256": "1de48708c274ab6985773f553f35cdb3aea6ba0dc8e2a6f9071f6137fe492d36"
+    "sha256": "a1ae5bbb34e9cc4b2f465044539ab81e59205f71716ccb837f63ab1e916c7d45"
   },
   "app/host.test.mjs": {
     "base_sha256": "be7d662865d051466d51f71045cecea3fb77c0f13c33e7a7c9f8f05c77e4a55c",

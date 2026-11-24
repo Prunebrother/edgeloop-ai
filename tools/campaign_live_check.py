@@ -2,7 +2,7 @@
 """Opt-in live-model check for campaign awareness (not part of the test suite).
 
 Starts the real observer on an isolated loopback port with a temporary data directory and the
-real local companion models, then plays each Asterion mission over the real websocket protocol:
+real local companion models, then plays each planned campaign mission over the real websocket protocol:
 earlier missions are seeded as completed, the mission is started, the companion is asked a
 question before the session and during it, and the scripted session reaches the goal. Every
 line the companion says is recorded with the phase it was said in, for review. The snapshots
@@ -13,10 +13,15 @@ claim a Bluetooth strap so the mission counts; no browser, strap, toy or compani
 import argparse
 import asyncio
 import json
+import re
+import sys
 import tempfile
 import time
 from pathlib import Path
 from uuid import uuid4
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 import uvicorn
 import websockets
 from ai_observer.server import create_app
@@ -25,18 +30,31 @@ from companion_ai.campaign import Book, PROGRESS_FILE, SCHEMA_VERSION
 TOKEN = 'live-campaign-check-' + 'x' * 32
 ORIGIN = 'http://127.0.0.1:8770'
 CID = 'asterion_initiative'
-MODELS = {'nova': 'nova-narrative-f29-v011:latest', 'evelyn': 'evelyn-narrative-f29-v013:latest',
-          'daisy': 'daisy-narrative-f29-v014:latest', 'celeste': 'celeste-narrative-f29-v012:latest'}
 ASK_BEFORE = 'What do you need from me today?'
 ASK_DURING = 'How am I doing so far?'
 # What each mission's session does: steps of (seconds to wait, change). The goal is reached in the last steps.
-PLANS = {
+PLANS = {CID: {
     'orientation': [(20, {'edges': 1})],
     'first_assessment': [(15, {'edges': 1}), (15, {'edges': 2}), ('ask', None), (15, {'edges': 3}), (15, {'edges': 4}), (15, {'edges': 5})],
     'country_connections': [(15, {'edges': 1}), ('ask', None), (20, {'orgasm': 1})],
     'directors_test': [(15, {'edges': 2}), ('ask', None), (15, {'edges': 4}), (15, {'edges': 5}), (45, {'orgasm': 1})],
     'certification': [(20, {}), ('ask', None), (20, {'orgasm': 1, 'calibration_saved': True}), (3, {'end': 'calibration_completed'})],
-}
+}}
+
+
+def resolve_models(manifest=ROOT / 'src/assets/characters/manifest.json', overrides=()):
+    """Newest F2.9 narrative version per manifest character, with explicit CLI overrides."""
+    models = {}; versions = {}
+    for tag, character in json.loads(Path(manifest).read_text())['models'].items():
+        version = re.search(r'-f29-v(\d+)(?::[^:]+)?$', tag)
+        if version and int(version[1]) > versions.get(character, -1):
+            versions[character] = int(version[1]); models[character] = tag
+    for override in overrides:
+        character, sep, tag = override.partition('=')
+        if not sep or not character or not tag:
+            raise ValueError('--model must be id=tag')
+        models[character] = tag
+    return models
 
 
 class Session:
@@ -75,9 +93,9 @@ class Session:
             self.value['status'] = 'IDLE'; d['terminal_outcome'] = change['end']; self.events.append('completion_accepted')
 
 
-def seed(directory, mission_id):
+def seed(directory, mission_id, campaign_id=CID):
     """Progress as if every mission before this one was completed."""
-    campaign = Book.load().campaign(CID)
+    campaign = Book.load().campaign(campaign_id)
     ordered = sorted(campaign.missions, key=lambda m: m.order)
     stamp = '2026-11-16T00:00:00+00:00'
     record = {'missions': {}, 'rewards': {}, 'completed_at': None, 'records': {}}
@@ -85,14 +103,14 @@ def seed(directory, mission_id):
         if m.id == mission_id: break
         record['missions'][m.id] = {'completions': 1, 'first_completed_at': stamp, 'last_completed_at': stamp}
         for r in m.rewards: record['rewards'][f'{r.type}:{r.id}'] = {'earned_at': stamp, 'mission': m.id}
-    (Path(directory) / PROGRESS_FILE).write_text(json.dumps({'schema_version': SCHEMA_VERSION, 'campaigns': {CID: record}, 'active': None}))
+    (Path(directory) / PROGRESS_FILE).write_text(json.dumps({'schema_version': SCHEMA_VERSION, 'campaigns': {campaign_id: record}, 'active': None}))
     return next(m for m in ordered if m.id == mission_id)
 
 
-async def run_mission(mission_id, ollama, port, log, run):
+async def run_mission(mission_id, ollama, port, log, run, campaign_id=CID, models=None):
     data = tempfile.mkdtemp(prefix='campaign-live-')
-    mission = seed(data, mission_id)
-    model = MODELS[mission.companion]
+    mission = seed(data, mission_id, campaign_id)
+    model = (resolve_models() if models is None else models)[mission.companion]
     app = create_app(TOKEN, data, ollama_url=ollama, origins={ORIGIN})
     server = uvicorn.Server(uvicorn.Config(app, host='127.0.0.1', port=port, log_level='warning', ws_max_size=16384))
     serving = asyncio.create_task(server.serve())
@@ -145,7 +163,7 @@ async def run_mission(mission_id, ollama, port, log, run):
             observing = asyncio.create_task(observe())
             await ws.send(json.dumps({'version': 1, 'type': 'select_model', 'selection': {'model': model}}))
             assert await wait_for('model_selected', 180), 'model did not load'
-            await ws.send(json.dumps({'version': 1, 'type': 'campaign', 'action': 'start', 'campaign_id': CID, 'mission_id': mission_id}))
+            await ws.send(json.dumps({'version': 1, 'type': 'campaign', 'action': 'start', 'campaign_id': campaign_id, 'mission_id': mission_id}))
             state = await wait_for('campaign_state', 10)
             assert state and state['active'] and state['active']['mission'] == mission_id, state
 
@@ -161,7 +179,7 @@ async def run_mission(mission_id, ollama, port, log, run):
             phase[0] = 'running'
             session.start()
             await asyncio.sleep(20)
-            for wait, change in PLANS[mission_id]:
+            for wait, change in PLANS[campaign_id][mission_id]:
                 if wait == 'ask':
                     await asyncio.sleep(4)  # let the last change reach the observer first
                     await ask(ASK_DURING, 'ask_during'); phase[0] = 'running'; continue
@@ -180,14 +198,31 @@ async def main():
     parser.add_argument('--port', type=int, default=8805)
     parser.add_argument('--out', required=True)
     parser.add_argument('--runs', type=int, default=1)
-    parser.add_argument('missions', nargs='*', default=list(PLANS))
+    parser.add_argument('--campaign', default=CID)
+    parser.add_argument('--model', action='append', default=[], metavar='id=tag')
+    parser.add_argument('missions', nargs='*')
     args = parser.parse_args()
+    try: models = resolve_models(overrides=args.model)
+    except ValueError as exc: parser.error(str(exc))
+    campaign = Book.load().campaign(args.campaign)
+    plans = PLANS.get(args.campaign)
+    if campaign is None or plans is None:
+        print(f'SKIP campaign {args.campaign}: unknown campaign or no live-check plans')
+        return
+    missions = []
+    for mission_id in args.missions or list(plans):
+        mission = next((m for m in campaign.missions if m.id == mission_id), None)
+        if mission is None or mission_id not in plans:
+            print(f'SKIP mission {mission_id}: unknown mission or no live-check plan')
+        elif mission.companion not in models:
+            print(f'SKIP mission {mission_id}: no model for {mission.companion}; use --model id=tag')
+        else: missions.append(mission_id)
     if args.port in {8768, 8770}: raise SystemExit('Refusing a live port')
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     with (out / 'lines.jsonl').open('a') as log:
         for run in range(args.runs):
-            for mission in args.missions:
-                await run_mission(mission, args.ollama, args.port, log, run)
+            for mission in missions:
+                await run_mission(mission, args.ollama, args.port, log, run, args.campaign, models)
 
 
 if __name__ == '__main__':

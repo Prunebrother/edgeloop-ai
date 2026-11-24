@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """Conservative checks for explicit session claims, not a prose/emotion classifier."""
+import functools
 import re
 from .session_history import plain_record
 
@@ -213,7 +214,7 @@ ACHIEVED=re.compile(r"\b(?:reached|hit|made|got|done|did|completed|logged|banked
 # A clause about a mission's own clock (the assessment, a stage, a play style's time, a countdown), and one about
 # the whole session's, which only the session clock can verify.
 REMAINING_TIME=re.compile(r"\b(?:left|remaining|to\s+go)\b",re.I)
-MISSION_CLOCK=re.compile(r"\b(?:assessment|stages?|phases?|mission|baseline|development|evaluation|comparison|styles?|countdown|deadline|left|remaining|to\s+go|encounter|delivery)\b",re.I)
+MISSION_CLOCK=re.compile(r"\b(?:assessment|stages?|phases?|mission|styles?|countdown|deadline|left|remaining|to\s+go)\b",re.I)
 SESSION_CLOCK=re.compile(r"\b(?:session|whole\s+time|all\s+together|in\s+total|overall)\b",re.I)
 
 def mission_clock_values(clause,clocks):
@@ -221,11 +222,15 @@ def mission_clock_values(clause,clocks):
     name wins ("the final stage" over "the assessment"); a clause naming no clock gets the generic ones (the
     current stage, a countdown's time left). Time left and time done are different clocks."""
     if SESSION_CLOCK.search(clause):return None
+    clocks=list(clocks)
+    mentions_clock=bool(MISSION_CLOCK.search(clause)) or any(
+        re.search(r'\b'+re.escape(name)+r'\b',clause,re.I)
+        for clock in clocks if isinstance(clock,dict) for name in clock.get('names',()))
     remaining=bool(REMAINING_TIME.search(clause));best=-1;values=set()
     for clock in clocks:
         if not isinstance(clock,dict) or not isinstance(clock.get('seconds'),int) or bool(clock.get('remaining'))!=remaining:continue
         named=any(re.search(r'\b'+re.escape(name)+r'\b',clause,re.I) for name in clock.get('names',()))
-        score=clock.get('rank',0) if named else (0 if clock.get('generic') and MISSION_CLOCK.search(clause) else -1)
+        score=clock.get('rank',0) if named else (0 if clock.get('generic') and mentions_clock else -1)
         if score>best:best,values=score,set()
         if score==best and score>=0:values.add(clock['seconds'])
     return values if best>=0 else None
@@ -789,12 +794,22 @@ def orgasm_count_violations(text,summary):
     return codes
 
 # A mission is complete only when the campaign verified it; the companion must not declare it early.
+# Generic words for a mission; a campaign adds its own (campaign.json `mission_words`, e.g. "protocol").
 _MISSION_WORD=r"(?:mission|test|assessment|orientation|certification|evaluation|campaign|initiative)"
-MISSION_DONE=re.compile(r"\b(?:cleared|passed|completed|finished|aced|nailed|conquered|won|beat(?:en)?|survived|sealed|earned)\s+(?:the|this|that|your|my|our)\s+(?:[\w'’-]+\s+){0,3}?"+_MISSION_WORD+r"\b"
-    r"|\b"+_MISSION_WORD+r"\b[^.!?]{0,30}?\b(?:is|was|['’]s|has been|now)\s+(?:now\s+|officially\s+|finally\s+)?(?:complete|completed|done|passed|over|finished|closed|secured|sealed|wrapped)\b"
+def _mission_done(word):
+    return re.compile(r"\b(?:cleared|passed|completed|finished|aced|nailed|conquered|won|beat(?:en)?|survived|sealed|earned)\s+(?:the|this|that|your|my|our)\s+(?:[\w'’-]+\s+){0,3}?"+word+r"\b"
+    r"|\b"+word+r"\b[^.!?]{0,30}?\b(?:is|was|['’]s|has been|now)\s+(?:now\s+|officially\s+|finally\s+)?(?:complete|completed|done|passed|over|finished|closed|secured|sealed|wrapped)\b"
     r"|\b(?:you(?:['’]ve| have)?\s+)?earned\s+(?:that|the|your)\s+(?:certification|title)\b",re.I)
+MISSION_DONE=_mission_done(_MISSION_WORD)
 MISSION_NOT_YET=re.compile(r"\b(?:not|never|yet|almost|nearly|once|when|if|until|till|before|unless|could|would|will|might|let['’]s|see if|whether|close to|on the way|toward|towards)\b|n['’]t\b|['’]ll\b",re.I)
 EARLIER_MISSION=re.compile(r"\b(?:earlier|previous|last|prior|other)\s+(?:\w+\s+)?"+_MISSION_WORD+r"\b",re.I)
+
+@functools.lru_cache(maxsize=16)
+def _mission_patterns(extra):
+    """MISSION_DONE and EARLIER_MISSION with a campaign's own mission words added (cached per word set)."""
+    if not extra:return MISSION_DONE,EARLIER_MISSION
+    word=r"(?:mission|test|assessment|orientation|certification|evaluation|campaign|initiative|"+'|'.join(map(re.escape,extra))+r")"
+    return _mission_done(word),re.compile(r"\b(?:earlier|previous|last|prior|other)\s+(?:\w+\s+)?"+word+r"\b",re.I)
 MISSION_CLAUSES=re.compile(r"[,;:—–]|\s(?:but|and|so|yet|while|though|although|whereas)\s",re.I)
 
 def campaign_violations(text,summary):
@@ -803,17 +818,18 @@ def campaign_violations(text,summary):
     codes=[]
     if summary.get('campaign_state')=='active':
         others=[o.casefold() for o in summary.get('campaign_others') or ()]
+        done_pattern,earlier_pattern=_mission_patterns(tuple(sorted({w for w in summary.get('campaign_mission_words') or () if isinstance(w,str) and re.fullmatch(r'[a-z]{3,24}',w)})))
         for sentence in re.findall(r'[^.!?\n]+[.!?\n]?',text or ''):
             if sentence.rstrip().endswith('?'):continue
             for clause in MISSION_CLAUSES.split(sentence):
                 start=0
-                for match in MISSION_DONE.finditer(clause):
+                for match in done_pattern.finditer(clause):
                     # Each claim is judged on its own words: a qualifier or another mission's name elsewhere in
                     # the clause belongs to a different assertion.
                     own=clause[start:match.end()+12];start=match.end()
                     if MISSION_NOT_YET.search(own):continue
                     named=clause[max(0,match.start()-24):match.end()].casefold()
-                    if EARLIER_MISSION.search(named) or any(re.search(r'\b'+re.escape(o)+r'\b',named) for o in others):continue
+                    if earlier_pattern.search(named) or any(re.search(r'\b'+re.escape(o)+r'\b',named) for o in others):continue
                     codes.append('premature_mission_complete');break
                 if codes:break
             if codes:break

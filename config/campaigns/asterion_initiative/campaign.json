@@ -27,13 +27,6 @@
       "id": "shadows_of_helix",
       "title": "Shadows of Helix",
       "summary": "Sabotage at Asterion and Cloverfield, an intruder in the night, and suspicion that falls on you."
-    },
-    {
-      "number": 4,
-      "id": "rise_of_helix",
-      "title": "Rise of Helix",
-      "summary": "Coming soon.",
-      "teaser": true
     }
   ],
   "missions": [
@@ -914,8 +907,8 @@
             "clues": [
               "The offer for Cloverfield came from Greenfield Holdings.",
               "Greenfield Holdings is owned by Meridian Ventures.",
-              "Meridian Ventures is owned by Helix Biotechnology.",
-              "Nobody owns Helix Biotechnology but its founders."
+              "Meridian Ventures is owned by Helix Dynamics.",
+              "Nobody owns Helix Dynamics but its founders."
             ],
             "question": "Who is really behind the offer for Cloverfield?",
             "options": [
@@ -929,7 +922,7 @@
               },
               {
                 "id": "helix",
-                "label": "Helix Biotechnology"
+                "label": "Helix Dynamics"
               },
               {
                 "id": "irra",
@@ -981,6 +974,11 @@
           "type": "chapter_complete",
           "id": "shadows_of_helix",
           "label": "Chapter 3: Shadows of Helix complete"
+        },
+        {
+          "type": "campaign_complete",
+          "id": "asterion_initiative",
+          "label": "The Asterion Initiative complete"
         }
       ],
       "flags": {

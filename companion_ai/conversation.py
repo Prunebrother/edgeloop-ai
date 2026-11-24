@@ -14,7 +14,7 @@ from .expressions import clean_dialogue
 from .reply_cleanup import CleanupConfig, ReplyCleaner, clean_reply
 from .player_events import PLAYER_EVENTS, PLAYER_BRIEFS, player_current
 from .campaign import CAMPAIGN_CARD, card_brief as campaign_card_brief
-from .settings_control import SettingsControl, CARD_KIND as SETTINGS_CARD, card_brief as settings_card_brief, settings_intent, available as settings_available
+from .settings_control import SettingsControl, Proposal, proposal_request, CARD_KIND as SETTINGS_CARD, card_brief as settings_card_brief, settings_intent, available as settings_available
 from .event_policy import SELECTION_EVENTS, REACTION_EVENTS
 from .models import SpeechPolicy, AIConfig, MemoryConfig, stored_config
 from .diagnostics import Metrics
@@ -410,9 +410,11 @@ class ConversationService:
         # Campaign: the observer sets these. campaign_brief() is the mission brief for the current model (or None);
         # campaign_speaker() names the companion of the current model. Cards are verified mission moments.
         self.campaign_brief=lambda:None;self.campaign_speaker=lambda:None;self.campaign_cue_valid=lambda cue:True;self.campaign_cards=deque(maxlen=4)
+        self.campaign_scope=lambda:(None,None,frozenset())
         # Sessions ended by an Emergency stop: no mission remark is ever spoken for them, even one queued later.
         self.campaign_silenced=set()
         # A directed mission's pending settings step (see CampaignService._directive), and whether it is still needed.
+        self.scripted_stage_wait={}
         self.mission_directive=None;self.campaign_directive_valid=lambda directive,report:True
         # Per session: the orgasm count whose next round has been started, and the change made for it.
         self.rounds_started={};self.round_changes={}
@@ -720,7 +722,9 @@ class ConversationService:
     def deck_context(self,now):
         report=self.state.report;safety=report['safety'];config=self.director.config;memory=self.director.memory
         generating=self.task is not None and not self.task.done()
+        campaign,mission,flags=self.campaign_scope()
         return DeckContext(session_id=report['session_id'],status=report['status'],seconds=report['seconds'],edges=report['edges'],
+            campaign=campaign,mission=mission,flags=flags,
             fresh=getattr(self.state,'fresh',lambda:True)(),signal=safety['signal'],no_contact=safety['no_contact'],watchdog_paused=safety['watchdog_paused'],fault=safety['fault'],
             quiet=memory['quiet_requested'],user_active=now<self.director.typing_until or generating and self.active_source=='user' or now-self.last_user<config.reaction_user_grace_seconds,
             output_busy=generating or now<self.busy_until or now<self.deck_hold_until,conversation_active=now-memory['last_user']<config.user_idle_before_spontaneous_seconds,
@@ -985,6 +989,15 @@ class ConversationService:
 
     def campaign_directive(self,directive):
         if directive.get('companion')!=self.campaign_speaker() or directive.get('session_id') in self.campaign_silenced:return
+        if directive.get('scripted'):
+            report=getattr(self.state,'report',None)
+            if not report or self.state.emergency or not getattr(self.state,'fresh',lambda:True)() or not self.campaign_directive_valid(directive,report):return
+            # The campaign's own deterministic fallback, with no model decision or settings card.
+            request=proposal_request(Proposal(change='intensity',value=directive['fallback']['value'],reason=directive['fallback']['reason']),report,'mission')
+            if request:
+                self.scripted_stage_wait[request['id']]={'directive':directive,'request':request,'at':self.clock(),'to':request['value'],'applied':False}
+                self.publish(request)
+            return
         self.mission_directive=directive|{'at':self.clock()}
 
     def maybe_mission_step(self,report):
@@ -1065,6 +1078,11 @@ class ConversationService:
         return task.result()
 
     def settings_outcome(self,message):
+        if message.id in self.scripted_stage_wait:
+            pending=self.scripted_stage_wait[message.id]
+            if message.status=='rejected':self.scripted_stage_wait.pop(message.id,None)
+            elif message.status=='applied' and isinstance(message.to,int) and not isinstance(message.to,bool) and 0<=message.to<=100:pending.update(applied=True,to=message.to)
+            return
         self.settings.outcome(message)
         self.settings_observe()
 
@@ -1105,8 +1123,8 @@ class ConversationService:
         """The mission brief as summary fields, always all three keys: a refresh at dispatch replaces a stale
         brief and clears one that no longer applies."""
         brief=self.campaign_brief()
-        if not brief:return {'campaign_context':None,'campaign_targets':[],'campaign_durations':[],'campaign_state':None,'campaign_others':[]}
-        return {'campaign_context':brief['text'],'campaign_targets':brief.get('targets',[]),'campaign_durations':brief.get('durations',[]),'campaign_state':brief['state'],'campaign_others':brief.get('others',[])}
+        if not brief:return {'campaign_context':None,'campaign_targets':[],'campaign_durations':[],'campaign_state':None,'campaign_others':[],'campaign_mission_words':[]}
+        return {'campaign_context':brief['text'],'campaign_targets':brief.get('targets',[]),'campaign_durations':brief.get('durations',[]),'campaign_state':brief['state'],'campaign_others':brief.get('others',[]),'campaign_mission_words':brief.get('mission_words',[])}
 
     def campaign_cue(self,cue):
         """A verified mission moment from the campaign. Only the mission's own companion reacts to it."""
@@ -1129,6 +1147,16 @@ class ConversationService:
             return cue['kind']=='mission_complete' and (report.get('details') or {}).get('terminal_outcome')!='safety_stop'
         return True
 
+    def scripted_stage_pending(self,report):
+        for rid,pending in list(self.scripted_stage_wait.items()):
+            d=pending['directive']
+            if (not report or report.get('session_id')!=d['session_id'] or self.clock()-pending['at']>300
+                    or not self.campaign_directive_valid(d,report)
+                    or report.get('intensity')==pending['to']+50
+                    or ((report.get('details') or {}).get('ai_settings') or {}).get('last_id')==rid):
+                self.scripted_stage_wait.pop(rid,None)
+        return bool(self.scripted_stage_wait)
+
     def pump_campaign_card(self,now):
         """The companion reacts, in its own words, to a mission moment the campaign verified. Like other commentary
         it waits for quiet requests, safety, an active turn and the card spacing; a stale or switched-away cue is dropped."""
@@ -1136,11 +1164,12 @@ class ConversationService:
         while self.campaign_cards and (not report or self.campaign_cards[0]['session_id']!=report['session_id'] or now-self.campaign_cards[0]['sent_at']>120
                                        or self.campaign_cards[0]['companion']!=self.campaign_speaker() or not self.campaign_cue_valid(self.campaign_cards[0])):
             self.campaign_cards.popleft()
+        if self.scripted_stage_pending(report):return False
         if not self.campaign_cards or now<self.deck_hold_until or not self.campaign_card_allowed(self.campaign_cards[0]):return False
         if self.task is not None and not self.task.done():return False
         cue=self.campaign_cards[0]
         event={'kind':CAMPAIGN_CARD,'at':now,'priority':30,'session_id':cue['session_id'],'source_status':report['status'],
-               'observer_epoch':getattr(self.state,'connection_epoch',None),'event_id':'campaign:'+cue['mission']+':'+cue['kind']+':'+str(cue.get('objective')),
+               'observer_epoch':getattr(self.state,'connection_epoch',None),'event_id':'campaign:'+cue['mission']+':'+cue['kind']+':'+str(cue.get('key') or cue.get('objective')),
                'deck_card':{'lane':'normal','memory':'none','card_id':CAMPAIGN_CARD,'brief':campaign_card_brief(cue,report['status']),
                    'campaign':cue,'speaker':self.deck_speaker()}}
         prompt='Observed application event (not a user request): '+json.dumps({'kind':CAMPAIGN_CARD,'event':cue['kind'],'mission':cue['mission_title']})
@@ -1170,7 +1199,7 @@ class ConversationService:
     def safety(self, reason):
         # A safety event outranks a mission remark: goal cards are dropped, and everything after an Emergency stop.
         self.campaign_cards=deque((c for c in self.campaign_cards if c['kind']=='mission_complete' and reason!='emergency_stop'),maxlen=4)
-        if reason=='emergency_stop':self.campaign_silenced.add(getattr(self.state,'session_id',None));self.mission_directive=None
+        if reason=='emergency_stop':self.campaign_silenced.add(getattr(self.state,'session_id',None));self.mission_directive=None;self.scripted_stage_wait.clear()
         self.sync_narrative()
         self.narrative.event(reason)
         retained=[e for e in self.pending if reason=='stop' and e['kind'] in {'came_early','completion_accepted','session_ended'}]

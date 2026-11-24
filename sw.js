@@ -114,6 +114,7 @@ self.addEventListener('fetch', (event) => {
     // Portraits use the browser HTTP cache; never accumulate the whole high-res archive in SW caches.
     if (url.origin === self.location.origin && url.pathname.startsWith('/Character_Art/')) return;
 
+    // Menu and story art (including story registries) use the same network-first runtime cache below.
     // Same-origin files always revalidate with the server, so a cached older stylesheet is
     // never combined with newer scripts after an update. Navigations keep their own request.
     const fresh = url.origin === self.location.origin && request.mode !== 'navigate' ? new Request(request, { cache: 'no-cache' }) : request;

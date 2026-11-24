@@ -129,7 +129,9 @@ def test_module_is_cpu_only():
     imported = {node.module if isinstance(node, ast.ImportFrom) else alias.name
                 for node in ast.walk(tree) if isinstance(node, (ast.Import, ast.ImportFrom))
                 for alias in node.names}
-    assert imported == {'collections', 'dataclasses', 'hashlib', 'typing', 'pydantic', 'models'}
+    # 'campaign' is imported lazily inside load_definition(), only for decks with scoped cards.
+    assert imported - {'campaign'} == {'collections', 'dataclasses', 'hashlib', 'logging', 'typing', 'pydantic', 'models'}
+    assert not any(isinstance(node, ast.ImportFrom) and node.module == 'campaign' for node in tree.body)
 
 
 # Seeded shuffle and sequential drawing

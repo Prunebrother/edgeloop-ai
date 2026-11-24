@@ -3603,8 +3603,11 @@ function pollGamepads() {
                 assignBind(bindFromPad(index));
                 return;
             }
+            // A button the player bound always does its own action (Stop, Start/Pause, ...); only unbound
+            // buttons are offered to a campaign choice in the mission banner.
             const action = actionForPad(advancedSettings.keybinds, index);
-            if (action) runKeyAction(action);
+            if (action) { runKeyAction(action); return; }
+            document.dispatchEvent(new CustomEvent('campaign-gamepad', { detail: { button: index }, cancelable: true }));
         });
     }
     requestAnimationFrame(pollGamepads);

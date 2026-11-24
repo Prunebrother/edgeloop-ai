@@ -1,0 +1,844 @@
+{
+ "schema_version": 1,
+ "id": "rise_of_helix",
+ "order": 2,
+ "title": "Rise of Helix",
+ "description": "PLACEHOLDER — undercover at Helix Dynamics. Story, missions and art are not final.",
+ "available_from_start": false,
+ "requires_campaigns": [
+  "asterion_initiative"
+ ],
+ "inherits_flags_from": [
+  "asterion_initiative"
+ ],
+ "starting_companions": [
+  "iris",
+  "mira",
+  "vex9",
+  "seraphine"
+ ],
+ "mission_words": [
+  "protocol",
+  "procedure",
+  "operation"
+ ],
+ "chapters": [
+  {
+   "number": 1,
+   "id": "undercover",
+   "title": "Chapter 1 (placeholder)",
+   "summary": "PLACEHOLDER — Chapter 1."
+  },
+  {
+   "number": 2,
+   "id": "helix_ch2",
+   "title": "Chapter 2",
+   "summary": "PLACEHOLDER — Chapter 2.",
+   "teaser": true
+  }
+ ],
+ "missions": [
+  {
+   "id": "h1_entry_protocol",
+   "order": 1,
+   "title": "Entry Protocol",
+   "summary": "Your first day inside Helix Dynamics. A shy intern named Iris runs your intake, and your visitor badge is not a visitor badge.",
+   "companion": "iris",
+   "difficulty": "standard",
+   "prerequisites": [],
+   "story": {
+    "chapter": 1,
+    "tags": [
+     "iris",
+     "helix",
+     "intake"
+    ]
+   },
+   "settings_control": {
+    "allowed": [
+     "intensity"
+    ],
+    "directed": true
+   },
+   "objectives": [
+    {
+     "id": "hr",
+     "type": "hr_monitor_connected",
+     "label": "Connect your heart-rate monitor"
+    },
+    {
+     "id": "toy",
+     "type": "toy_connected",
+     "label": "Connect your toy"
+    },
+    {
+     "id": "start",
+     "type": "session_started",
+     "label": "Start the intake session with Iris"
+    },
+    {
+     "id": "intake",
+     "type": "stage_sequence",
+     "label": "Complete the 15-minute intake protocol",
+     "tolerance": 2,
+     "stages": [
+      {
+       "id": "baseline",
+       "label": "Baseline",
+       "seconds": 300,
+       "intensity": 70,
+       "set_to": true
+      },
+      {
+       "id": "compliance",
+       "label": "Compliance",
+       "seconds": 300,
+       "intensity": 90,
+       "set_to": true
+      },
+      {
+       "id": "threshold",
+       "label": "Threshold",
+       "seconds": 300,
+       "intensity": 110,
+       "set_to": true
+      }
+     ]
+    },
+    {
+     "id": "edges",
+     "type": "edge_count",
+     "count": 3,
+     "label": "Reach 3 edges during intake"
+    },
+    {
+     "id": "cover",
+     "type": "choice",
+     "label": "Answer Iris's question",
+     "after_stage": "intake:compliance",
+     "choice": {
+      "prompt": "The intake form has a blank field. How did you come to Helix?",
+      "options": [
+       {
+        "id": "volunteer",
+        "label": "I answered the ad for paid research volunteers.",
+        "sets": {
+         "h1_cover": "volunteer"
+        }
+       },
+       {
+        "id": "analyst",
+        "label": "I'm a data analyst. I wanted to see the lab from the inside.",
+        "sets": {
+         "h1_cover": "analyst"
+        }
+       },
+       {
+        "id": "defector",
+        "label": "I worked for Asterion. I want a fresh start.",
+        "sets": {
+         "h1_cover": "defector"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "badge",
+     "type": "puzzle_solved",
+     "label": "Puzzle: your badge",
+     "puzzle": {
+      "title": "Your badge",
+      "clues": [
+       "Your visitor badge reads RPU-001.",
+       "Visitor badges at Helix Dynamics begin with VIS-. Staff badges begin with HDX-.",
+       "The lift directory lists RPU: Reproductive Production Units, Extraction Programme, Sublevel 3.",
+       "Iris, not looking at you: \"I wasn't told to give anyone else a badge like that.\""
+      ],
+      "question": "What does your badge really make you?",
+      "options": [
+       {
+        "id": "visitor",
+        "label": "A visitor with a misprinted badge"
+       },
+       {
+        "id": "staff",
+        "label": "A new member of staff"
+       },
+       {
+        "id": "subject",
+        "label": "The first subject of a Helix programme"
+       },
+       {
+        "id": "security",
+        "label": "A security escort"
+       }
+      ],
+      "answer": "subject",
+      "hint": "Compare your prefix with the visitor and staff prefixes, then read the lift directory again."
+     }
+    }
+   ],
+   "rewards": [
+    {
+     "type": "milestone",
+     "id": "helix_badge_rpu001",
+     "label": "Helix badge RPU-001"
+    }
+   ],
+   "flags": {
+    "h1_entry": "completed",
+    "rpu_designation": "discovered"
+   },
+   "hints": [
+    "Three stages of 5 minutes of running time each. The intake protocol sets the intensity at the start of each stage (70%, 90%, 110%, within your limits); time counts only at that level. If AI Settings Control is off, set it yourself.",
+    "Iris does not change any settings in this mission. Lowering the intensity simply pauses the stage clock.",
+    "The question about your cover story opens during the Compliance stage. Every answer is valid.",
+    "You can pause or stop at any time."
+   ]
+  },
+  {
+   "id": "h2_shadow_evaluation",
+   "order": 2,
+   "title": "Shadow Evaluation",
+   "summary": "Helix wants a second opinion on RPU-001, off the books. The evaluator is Mira, and she has seen your face before.",
+   "companion": "mira",
+   "difficulty": "standard",
+   "prerequisites": [
+    "h1_entry_protocol"
+   ],
+   "story": {
+    "chapter": 1,
+    "tags": [
+     "mira",
+     "helix",
+     "evaluation"
+    ]
+   },
+   "settings_control": {
+    "allowed": [
+     "intensity"
+    ]
+   },
+   "objectives": [
+    {
+     "id": "hr",
+     "type": "hr_monitor_connected",
+     "label": "Connect your heart-rate monitor"
+    },
+    {
+     "id": "toy",
+     "type": "toy_connected",
+     "label": "Connect your toy"
+    },
+    {
+     "id": "start",
+     "type": "session_started",
+     "label": "Start the evaluation with Mira"
+    },
+    {
+     "id": "evaluation",
+     "type": "stage_sequence",
+     "label": "Complete Mira's 18-minute evaluation",
+     "stages": [
+      {
+       "id": "rapport",
+       "label": "Rapport",
+       "seconds": 300
+      },
+      {
+       "id": "pressure",
+       "label": "Pressure",
+       "seconds": 480
+      },
+      {
+       "id": "verdict",
+       "label": "Verdict",
+       "seconds": 300
+      }
+     ]
+    },
+    {
+     "id": "edges",
+     "type": "edge_count",
+     "count": 6,
+     "label": "Reach 6 edges during the evaluation"
+    },
+    {
+     "id": "recognised",
+     "type": "choice",
+     "label": "Answer Mira",
+     "after_stage": "evaluation:rapport",
+     "choice": {
+      "prompt": "Mira tilts her head. \"We've met. A server room, two in the morning. Don't tell me you've forgotten.\"",
+      "options": [
+       {
+        "id": "denied",
+        "label": "You must have me confused with someone else.",
+        "sets": {
+         "h2_recognised": "denied"
+        }
+       },
+       {
+        "id": "admitted",
+        "label": "I remember. You left me to explain the door logs.",
+        "sets": {
+         "h2_recognised": "admitted"
+        }
+       },
+       {
+        "id": "turned",
+        "label": "Funny. I was about to ask what you're doing here.",
+        "sets": {
+         "h2_recognised": "turned"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "offer",
+     "type": "choice",
+     "label": "Answer Mira's offer",
+     "after_stage": "evaluation:verdict",
+     "choice": {
+      "prompt": "\"My report is due tonight. I can write what I saw, or what's convenient. What's it worth to you?\"",
+      "options": [
+       {
+        "id": "owe",
+        "label": "Write convenient. I'll owe you.",
+        "sets": {
+         "h2_mira_deal": "owed"
+        }
+       },
+       {
+        "id": "truth",
+        "label": "Write what you saw. I have nothing to hide.",
+        "sets": {
+         "h2_mira_deal": "refused"
+        }
+       },
+       {
+        "id": "ask",
+        "label": "Why would you help me?",
+        "sets": {
+         "h2_mira_deal": "undecided"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "sample",
+     "type": "orgasm_count",
+     "count": 1,
+     "optional": true,
+     "label": "Optional: give Mira what Helix sent her for"
+    }
+   ],
+   "rewards": [
+    {
+     "type": "milestone",
+     "id": "helix_shadow_evaluation",
+     "label": "Shadow evaluation: passed"
+    }
+   ],
+   "flags": {
+    "h2_evaluation": "completed"
+   },
+   "hints": [
+    "Three stages of running time: Rapport 5 minutes, Pressure 8, Verdict 5. Pausing stops the clock.",
+    "With AI Settings Control on, Mira sets the intensity during the evaluation, within your own AI limits. Stop, pause and emergency stop stay yours, and you can lower the intensity at any time.",
+    "Mira asks two questions in the mission panel: one from the start, one in the Verdict stage. Every answer is valid.",
+    "The orgasm is optional and never needed to finish. If you report one in EdgeLoop (I came keeps the session running), it counts."
+   ]
+  },
+  {
+   "id": "h3_extraction_assessment",
+   "order": 3,
+   "title": "Extraction Assessment",
+   "summary": "Sublevel 3, and the procedure Helix built VEX-9 for. She classifies everything she measures, and something about you does not match your file.",
+   "companion": "vex9",
+   "difficulty": "challenge",
+   "prerequisites": [
+    "h2_shadow_evaluation"
+   ],
+   "story": {
+    "chapter": 1,
+    "tags": [
+     "vex9",
+     "helix",
+     "extraction"
+    ]
+   },
+   "settings_control": {
+    "allowed": [
+     "intensity"
+    ],
+    "directed": true
+   },
+   "objectives": [
+    {
+     "id": "hr",
+     "type": "hr_monitor_connected",
+     "label": "Connect your heart-rate monitor"
+    },
+    {
+     "id": "toy",
+     "type": "toy_connected",
+     "label": "Connect your toy"
+    },
+    {
+     "id": "start",
+     "type": "session_started",
+     "label": "Begin the extraction protocol with VEX-9"
+    },
+    {
+     "id": "protocol",
+     "type": "stage_sequence",
+     "label": "Complete VEX-9's 20-minute extraction protocol",
+     "stages": [
+      {
+       "id": "calibration",
+       "label": "Calibration",
+       "seconds": 240,
+       "raise_to": 80,
+       "set_to": true
+      },
+      {
+       "id": "stimulation",
+       "label": "Stimulation",
+       "seconds": 360,
+       "raise_to": 100,
+       "set_to": true
+      },
+      {
+       "id": "escalation",
+       "label": "Escalation",
+       "seconds": 360,
+       "raise_to": 115,
+       "set_to": true
+      },
+      {
+       "id": "extraction",
+       "label": "Extraction",
+       "seconds": 240,
+       "raise_to": 125,
+       "set_to": true
+      }
+     ]
+    },
+    {
+     "id": "edges",
+     "type": "edge_count",
+     "count": 8,
+     "milestones": [
+      3,
+      6
+     ],
+     "label": "Reach 8 edges during the protocol"
+    },
+    {
+     "id": "discrepancy",
+     "type": "choice",
+     "label": "Answer VEX-9",
+     "after_stage": "protocol:calibration",
+     "choice": {
+      "prompt": "VEX-9 does not look up from her console. \"Your intake file and your physiology disagree, RPU-001. One of them is inaccurate. Explain.\"",
+      "options": [
+       {
+        "id": "file",
+        "label": "Then the file is wrong. Paperwork usually is.",
+        "sets": {
+         "h3_discrepancy": "blamed_file"
+        }
+       },
+       {
+        "id": "instruments",
+        "label": "Maybe your instruments need calibrating.",
+        "sets": {
+         "h3_discrepancy": "blamed_instruments"
+        }
+       },
+       {
+        "id": "silent",
+        "label": "I don't owe you an explanation.",
+        "sets": {
+         "h3_discrepancy": "refused"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "sample",
+     "type": "orgasm_count",
+     "count": 1,
+     "after": "edges",
+     "label": "Provide the sample (after the 8 edges)"
+    },
+    {
+     "id": "ultra",
+     "type": "orgasm_count",
+     "count": 2,
+     "after": "edges",
+     "optional": true,
+     "label": "Optional: a second sample before the protocol ends"
+    }
+   ],
+   "rewards": [
+    {
+     "type": "milestone",
+     "id": "helix_extraction_assessment",
+     "label": "Extraction assessment: classified"
+    }
+   ],
+   "flags": {
+    "h3_assessment": "completed"
+   },
+   "hints": [
+    "Four phases of running time: Calibration 4 minutes, Stimulation 6, Escalation 6, Extraction 4. Pausing stops the clock.",
+    "With AI Settings Control on, the protocol raises the intensity to a minimum at the start of each phase, within your own AI limits. You can lower it at any time; the phase time keeps counting at any intensity. Stop, pause and emergency stop stay yours.",
+    "The sample counts only after the 8 edges. An earlier orgasm does not count toward it; the session carries on. Report it in EdgeLoop (I came keeps the session running).",
+    "VEX-9 asks one question in the mission panel, from the Stimulation phase. Every answer is valid.",
+    "A second sample counts only while the protocol is still running: once every goal is met, the mission completes."
+   ]
+  },
+  {
+   "id": "h4_breach_detected",
+   "order": 4,
+   "title": "Breach Detected",
+   "summary": "Your file reached the top floor. Seraphine Vale has come down to watch VEX-9 work, and she has a proposal.",
+   "companion": "vex9",
+   "difficulty": "challenge",
+   "prerequisites": [
+    "h3_extraction_assessment"
+   ],
+   "story": {
+    "chapter": 1,
+    "tags": [
+     "vex9",
+     "seraphine",
+     "helix",
+     "detention"
+    ]
+   },
+   "settings_control": {
+    "allowed": [
+     "intensity"
+    ]
+   },
+   "objectives": [
+    {
+     "id": "hr",
+     "type": "hr_monitor_connected",
+     "label": "Connect your heart-rate monitor"
+    },
+    {
+     "id": "toy",
+     "type": "toy_connected",
+     "label": "Connect your toy"
+    },
+    {
+     "id": "start",
+     "type": "session_started",
+     "label": "Submit to VEX-9's detention protocol"
+    },
+    {
+     "id": "detention",
+     "type": "stage_sequence",
+     "label": "Complete the 18-minute detention protocol",
+     "stages": [
+      {
+       "id": "processing",
+       "label": "Processing",
+       "seconds": 300
+      },
+      {
+       "id": "interrogation",
+       "label": "Interrogation",
+       "seconds": 480
+      },
+      {
+       "id": "extraction",
+       "label": "Extraction",
+       "seconds": 300
+      }
+     ]
+    },
+    {
+     "id": "edges",
+     "type": "edge_count",
+     "count": 6,
+     "milestones": [
+      3
+     ],
+     "label": "Reach 6 edges during the protocol"
+    },
+    {
+     "id": "deadline",
+     "type": "edge_count",
+     "count": 6,
+     "within_seconds": 600,
+     "warnings": [
+      180,
+      60
+     ],
+     "optional": true,
+     "label": "Optional: Seraphine's deadline, 6 edges within 10 minutes"
+    },
+    {
+     "id": "offer",
+     "type": "choice",
+     "label": "Answer Seraphine",
+     "after_stage": "detention:processing",
+     "choice": {
+      "prompt": "Seraphine, from the gallery: \"Asterion sent you to find something. You found me instead. Work for me, and Iris keeps her position. Refuse, and she answers for whoever let you in.\"",
+      "options": [
+       {
+        "id": "accept",
+        "label": "Fine. I work for you now.",
+        "sets": {
+         "h4_offer": "accepted"
+        }
+       },
+       {
+        "id": "refuse",
+        "label": "Leave Iris out of this. The answer's no.",
+        "sets": {
+         "h4_offer": "refused"
+        }
+       },
+       {
+        "id": "stall",
+        "label": "Ask me again when I can feel my legs.",
+        "sets": {
+         "h4_offer": "stalled"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "sample",
+     "type": "orgasm_count",
+     "count": 1,
+     "after": "edges",
+     "optional": true,
+     "label": "Optional: the sample the order demands"
+    }
+   ],
+   "rewards": [
+    {
+     "type": "milestone",
+     "id": "helix_breach_detected",
+     "label": "Breach detected: detained"
+    }
+   ],
+   "flags": {
+    "h4_exposed": "true"
+   },
+   "hints": [
+    "Three stages of running time: Processing 5 minutes, Interrogation 8, Extraction 5. Pausing stops the clock.",
+    "With AI Settings Control on, VEX-9 sets the intensity herself, within your own AI limits. Stop, pause and emergency stop stay yours, and you can lower the intensity at any time.",
+    "Seraphine gives VEX-9 ten minutes from the session start for 6 edges. It is optional: if time runs out, the protocol simply carries on.",
+    "Seraphine asks one question in the mission panel, from the Interrogation stage. Every answer is valid.",
+    "The sample is optional. If you report an orgasm after the 6 edges in EdgeLoop (I came keeps the session running), it counts."
+   ]
+  },
+  {
+   "id": "h5_controlled_release",
+   "order": 5,
+   "title": "Controlled Release",
+   "summary": "Iris has booked you a routine 'controlled release' session. It is not routine. It is your way out, if you can find it.",
+   "companion": "iris",
+   "difficulty": "challenge",
+   "prerequisites": [
+    "h4_breach_detected"
+   ],
+   "story": {
+    "chapter": 1,
+    "tags": [
+     "iris",
+     "seraphine",
+     "helix",
+     "escape"
+    ]
+   },
+   "settings_control": {
+    "allowed": [
+     "intensity"
+    ]
+   },
+   "objectives": [
+    {
+     "id": "hr",
+     "type": "hr_monitor_connected",
+     "label": "Connect your heart-rate monitor"
+    },
+    {
+     "id": "toy",
+     "type": "toy_connected",
+     "label": "Connect your toy"
+    },
+    {
+     "id": "start",
+     "type": "session_started",
+     "label": "Start the 'controlled release' session with Iris"
+    },
+    {
+     "id": "trust",
+     "type": "choice",
+     "label": "Answer Iris",
+     "choice": {
+      "prompt": "Iris: \"Before we do this. I need to know where you stand. With me, or with her?\"",
+      "options": [
+       {
+        "id": "with_iris",
+        "label": "With you. Always was.",
+        "sets": {
+         "h5_trust": "iris"
+        }
+       },
+       {
+        "id": "with_myself",
+        "label": "With me. But I'll get you out too.",
+        "sets": {
+         "h5_trust": "self"
+        }
+       },
+       {
+        "id": "honest",
+        "label": "I don't know yet. Ask me at the lift.",
+        "sets": {
+         "h5_trust": "unsure"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "id": "override",
+     "type": "puzzle_solved",
+     "label": "Question: the lift override",
+     "puzzle": {
+      "kind": "code",
+      "title": "The lift override",
+      "clues": [
+       "The lift panel: OVERRIDE ____ (4 letters). Iris's keycard opens the door, not the lift.",
+       {
+        "text": "Iris: \"My mother uses one password for everything that matters to her. She thinks that's sentimental of her.\"",
+        "reveal_at": "run:2"
+       },
+       {
+        "text": "Seraphine's tablet, from the gallery: a lock-screen photo of a girl with thick-rimmed glasses, holding a fern.",
+        "reveal_at": "protocol:sustain"
+       },
+       {
+        "text": "Iris, very quietly: \"It's me. It was always me.\"",
+        "reveal_at": "run:4"
+       }
+      ],
+      "question": "The sublevel lift wants a four-letter override. What is it?",
+      "answer_code": "IRIS",
+      "max_length": 4,
+      "hint": "What, or who, matters most to Seraphine Vale?"
+     }
+    },
+    {
+     "id": "run",
+     "type": "edge_count",
+     "count": 5,
+     "milestones": [
+      2,
+      4
+     ],
+     "within_seconds": 720,
+     "warnings": [
+      300,
+      60
+     ],
+     "label": "Keep the readings convincing: 5 edges within 12 minutes"
+    },
+    {
+     "id": "protocol",
+     "type": "stage_sequence",
+     "label": "Complete the 20-minute controlled release protocol",
+     "stages": [
+      {
+       "id": "warmup",
+       "label": "Warm-up",
+       "seconds": 300
+      },
+      {
+       "id": "sustain",
+       "label": "Sustain",
+       "seconds": 600
+      },
+      {
+       "id": "release",
+       "label": "Release",
+       "seconds": 300
+      }
+     ]
+    },
+    {
+     "id": "sample",
+     "type": "orgasm_count",
+     "count": 1,
+     "after": "protocol",
+     "label": "The release the paperwork records"
+    }
+   ],
+   "completion": {
+    "any_of": [
+     {
+      "id": "escape",
+      "label": "Escape: the lift, with Iris",
+      "objectives": [
+       "override",
+       "run"
+      ],
+      "sets": {
+       "h5_route": "escaped"
+      }
+     },
+     {
+      "id": "release",
+      "label": "Release: Seraphine's signature",
+      "objectives": [
+       "protocol",
+       "sample"
+      ],
+      "sets": {
+       "h5_route": "released"
+      }
+     }
+    ]
+   },
+   "rewards": [
+    {
+     "type": "milestone",
+     "id": "helix_undercover_out",
+     "label": "Undercover: out"
+    },
+    {
+     "type": "chapter_complete",
+     "id": "undercover",
+     "label": "Chapter 1 complete"
+    }
+   ],
+   "flags": {
+    "h5_release": "completed"
+   },
+   "hints": [
+    "Two ways out. Escape: solve the lift override and reach 5 edges within 12 minutes of the session start. Release: finish the 20-minute protocol (Warm-up 5, Sustain 10, Release 5 minutes of running time), then one orgasm. The first route you finish ends the mission.",
+    "With AI Settings Control on, Iris sets the intensity to keep the monitors looking routine, within your own AI limits. Stop, pause and emergency stop stay yours, and you can lower the intensity at any time.",
+    "The override clues arrive as you reach edges and as the protocol runs. Wrong codes only show the hint; try again as often as you like.",
+    "If the 12 minutes run out, the escape window closes for this try. The Release route stays open, and the next session starts a fresh clock.",
+    "Iris asks one question in the mission panel, from the start. Every answer is valid.",
+    "If you report an orgasm after the protocol in EdgeLoop (I came keeps the session running), it counts."
+   ]
+  }
+ ]
+}

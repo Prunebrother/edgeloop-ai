@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 """Chapter 3 of the Asterion Initiative (docs/fork/campaign/README.md): the timed delivery, Mira's staged encounter,
-Celeste's 40 edges then the finish, Nova's puzzles (checked by the campaign, saved), story flags and the Chapter 4 teaser."""
+Celeste's 40 edges then the finish, Nova's puzzles (checked by the campaign, saved), story flags and the campaign's ending (Rise of Helix is its own campaign)."""
 import json
 import pytest
 from pydantic import ValidationError
@@ -16,13 +16,13 @@ def answer(svc, oid, option, r, companion='nova'):
 
 # ---- chapter and unlocking
 
-def test_chapter_3_opens_after_chapter_2_and_chapter_4_is_a_teaser(tmp_path):
+def test_chapter_3_opens_after_chapter_2_and_is_the_last_chapter(tmp_path):
     svc = seed(tmp_path, 'the_anomaly')
     campaign = svc.state()['campaigns'][0]
     chapters = {c['id']: c for c in campaign['chapters']}
     assert chapters['advanced_research']['completed'] and chapters['shadows_of_helix']['available']
     assert chapters['shadows_of_helix']['progress'] == {'completed': 0, 'total': 5}
-    assert chapters['rise_of_helix']['teaser'] and not chapters['rise_of_helix']['available'] and chapters['rise_of_helix']['progress']['total'] == 0
+    assert list(chapters) == ['introduction', 'advanced_research', 'shadows_of_helix'] and not any(c['teaser'] for c in chapters.values())
     assert not campaign['completed']
     assert not any(m['narrative_draft'] for m in campaign['missions'])
     locked = seed(tmp_path / 'b', 'directors_reassessment')
@@ -225,7 +225,7 @@ def test_a_correct_answer_that_cannot_be_saved_is_not_solved(tmp_path):
 def test_the_answer_command_is_strict():
     ok = {'version': 1, 'type': 'campaign', 'action': 'answer', 'objective_id': 'log', 'answer': 'internal'}
     assert CampaignCommand.model_validate(ok).answer == 'internal'
-    for bad in ({'answer': None}, {'objective_id': None}, {'answer': 'x<script>'}, {'action': 'get'}):
+    for bad in ({'answer': None}, {'objective_id': None}, {'answer': 'x' * 4097}, {'action': 'get'}):
         with pytest.raises(ValidationError): CampaignCommand.model_validate(ok | bad)
 
 
@@ -258,7 +258,7 @@ def test_version_2_progress_reopens_a_campaign_completed_at_mission_9(tmp_path):
     assert svc.error is None and not campaign['completed'] and campaign['flags'] == {} and states(svc)['the_anomaly'] == 'available'
     svc.start(CID, 'the_anomaly')
     saved = json.loads((tmp_path / PROGRESS_FILE).read_text())
-    assert saved['schema_version'] == 3 and 'campaign_complete:asterion_initiative' not in saved['campaigns'][CID]['rewards']
+    assert saved['schema_version'] == 4 and 'campaign_complete:asterion_initiative' not in saved['campaigns'][CID]['rewards']
     assert saved['active'] == {'campaign': CID, 'mission': 'the_anomaly', 'started_at': saved['active']['started_at']}
 
 

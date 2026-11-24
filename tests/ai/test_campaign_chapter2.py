@@ -284,7 +284,7 @@ def test_version_1_progress_becomes_chapter_1_complete(tmp_path):
     assert campaign['chapters'][0]['completed'] and campaign['chapters'][0]['completed_at'] == STAMP
     svc.start(CID, 'endurance_study')
     saved = json.loads((tmp_path / PROGRESS_FILE).read_text())
-    assert saved['schema_version'] == 3 and saved['campaigns'][CID]['completed_at'] is None
+    assert saved['schema_version'] == 4 and saved['campaigns'][CID]['completed_at'] is None
     assert set(saved['campaigns'][CID]['rewards']) == {'unlock_companion:evelyn', 'chapter_complete:introduction'}
 
 

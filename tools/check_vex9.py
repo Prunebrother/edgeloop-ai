@@ -58,28 +58,45 @@ def source_system(text):
     return match[1]
 
 
-def offline_checks():
+# Authoring drafts stay in the dev repo; the public export leaves them out
+# (tools/public-source-rules.json), so their checks only run where they exist.
+CANDIDATE = SOURCE.parent / 'SYSTEM.CANDIDATE.txt'
+REVIEW = SOURCE.parent / 'character.REVIEW.yaml'
+TEMPLATE = ROOT / 'Characters_F2.9_update/Empty_Templates/character.template.yaml'
+AUTHORING_FILES = (CANDIDATE, REVIEW, TEMPLATE)
+
+
+def authoring_files_present():
+    return all(path.is_file() for path in AUTHORING_FILES)
+
+
+def offline_checks(include_authoring=None):
+    """Shipped-file checks always; authoring-draft checks when the drafts are present (or forced)."""
+    if include_authoring is None:
+        include_authoring = authoring_files_present()
     text = SOURCE.read_text()
     parent = PARENT_SOURCE.read_text()
-    candidate = SOURCE.parent / 'SYSTEM.CANDIDATE.txt'
-    definition = json.loads((SOURCE.parent / 'character.REVIEW.yaml').read_text())
-    template = ROOT / 'Characters_F2.9_update/Empty_Templates/character.template.yaml'
-    keys = re.findall(r'^([a-z_]+):', template.read_text(), re.M)
     checks = {
-        'standard_template_sections': set(definition) == set(keys),
-        'model_identity': definition['metadata']['character_id'] == 'vex9' and 'HELIX-VEX/09' in text,
+        'model_identity': 'HELIX-VEX/09' in text,
         'f29_child_of_parent': re.findall(r'^FROM (.+)$', text, re.M) == [PARENT],
         'parent_on_supported_local_base': re.findall(r'^FROM (.+)$', parent, re.M) == [BASE],
         'inherited_native_template': not any(re.search(r'^(?:TEMPLATE|ADAPTER|MESSAGE)\b|^PARAMETER stop\b', t, re.M) for t in (text, parent)),
         'sampling_in_parent_only': {k: float(v) for k, v in re.findall(r'^PARAMETER (\w+) ([0-9.]+)$', parent, re.M)} == PARAMETERS
                                    and not re.search(r'^PARAMETER\b', text, re.M),
-        'system_candidate_matches': candidate.is_file() and candidate.read_text().rstrip('\n') == source_system(text),
         'twelve_existing_expressions': len(EXPRESSIONS) == 12 and 'disappointed' in EXPRESSIONS,
         'six_required_dialogue_cases': [c.get('expression') for c in CASES[:6]] == ['neutral','flirty','mischievous','focused','concerned','comforting'],
         'standalone_system_present': len(source_system(text)) > 1000,
-        'external_scoped_memory': definition['memory']['strategy'] == 'external' and definition['memory']['character_isolation'] is True,
-        'adult_character': definition['identity']['adult_status'] == 'adult-presenting',
     }
+    if include_authoring:
+        definition = json.loads(REVIEW.read_text())
+        keys = re.findall(r'^([a-z_]+):', TEMPLATE.read_text(), re.M)
+        checks.update({
+            'standard_template_sections': set(definition) == set(keys),
+            'review_identity': definition['metadata']['character_id'] == 'vex9',
+            'system_candidate_matches': CANDIDATE.read_text().rstrip('\n') == source_system(text),
+            'external_scoped_memory': definition['memory']['strategy'] == 'external' and definition['memory']['character_isolation'] is True,
+            'adult_character': definition['identity']['adult_status'] == 'adult-presenting',
+        })
     return checks
 
 

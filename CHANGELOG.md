@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.12.0-rc1 — Rise of Helix, Iris and Seraphine, a new look for the cast (public test build)
+
+<!-- Public test build, published as Latest. Linux and Windows (Windows experimental). Same as v0.11.0-rc1 plus the changes below. New models: iris-narrative-v1 and seraphine-narrative-v1 (intermediates), iris-narrative-f29-v018 and seraphine-narrative-f29-v019; the other companions' models are unchanged. Rise of Helix story text is Draft and its story art is placeholder (badged in the game; validated with --test-build). -->
+
+- New campaign: Rise of Helix, Chapter 1 "Undercover" (five missions). Unlocks after The Asterion Initiative. You go undercover inside Helix Dynamics as RPU-001. New in this campaign: choices that change later text and endings, a code puzzle with clues that arrive as you play, two ways to finish the final mission, story scenes with portraits and backgrounds, chapter intro and closing scenes, and a scripted intensity ramp in some missions. The story text is a draft and the story pictures are placeholders; both are marked in the game. Feedback very welcome.
+- New companion: Iris Vale, the shy, brilliant Helix intern who runs your intake. Nervous, curious and slow-burn, with twelve animated portraits in a dark executive office, fifteen personal cards, menu greetings and a place on the main menu.
+- New companion: Seraphine Vale, Helix's CEO and Iris's mother. A velvet-glove seductress: gracious on the surface, dominant and possessive underneath. Twelve animated portraits in her penthouse suite, fifteen personal cards, menu greetings and a place on the main menu.
+- New art for Celeste, Evelyn, Daisy, Nova and Mira: redesigned in the same CGI style as the Helix cast, twelve new animated portraits each, new menu cut-outs. Personalities and models are unchanged.
+- The Asterion Initiative now ends properly after Mission 14 with a closing scene from Celeste (the old Chapter 4 teaser is gone). Helix's name is now consistently Helix Dynamics.
+- Character cards can be limited to one campaign (used by campaign-specific cards).
+- Fixes: VEX-9 no longer sometimes answers with a single quoted word; companions no longer repeat the player's chosen answer word for word or the mission's title; a mission's text is loaded on demand, so large campaigns stay well inside the connection limit.
+
 ## v0.11.0-rc1 — campaign mode, new menus and VEX-9 (public test build)
 
 <!-- Public test build (pre-release). Linux and Windows (Windows experimental). Same as v0.10.0-rc1 plus the changes below. New models: vex9-narrative-v1 (intermediate) and vex9-narrative-f29-v016; mira-narrative-f29-v017 replaces v015; the other companions' models are unchanged. -->

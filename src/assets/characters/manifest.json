@@ -364,6 +364,120 @@
           "webm": "/Character_Art/Vex9/animations/vex9_comforting.webm"
         }
       }
+    },
+    "iris": {
+      "name": "Iris Vale",
+      "expressions": {
+        "neutral": "/Character_Art/Iris/expressions/iris_neutral.png",
+        "happy": "/Character_Art/Iris/expressions/iris_happy.png",
+        "playful": "/Character_Art/Iris/expressions/iris_playful.png",
+        "flirty": "/Character_Art/Iris/expressions/iris_flirty.png",
+        "mischievous": "/Character_Art/Iris/expressions/iris_mischievous.png",
+        "focused": "/Character_Art/Iris/expressions/iris_focused.png",
+        "excited": "/Character_Art/Iris/expressions/iris_excited.png",
+        "surprised": "/Character_Art/Iris/expressions/iris_surprised.png",
+        "disappointed": "/Character_Art/Iris/expressions/iris_disappointed.png",
+        "concerned": "/Character_Art/Iris/expressions/iris_concerned.png",
+        "proud": "/Character_Art/Iris/expressions/iris_proud.png",
+        "comforting": "/Character_Art/Iris/expressions/iris_comforting.png"
+      },
+      "animations": {
+        "neutral": {
+          "webm": "/Character_Art/Iris/animations/iris_neutral.webm"
+        },
+        "happy": {
+          "webm": "/Character_Art/Iris/animations/iris_happy.webm"
+        },
+        "playful": {
+          "webm": "/Character_Art/Iris/animations/iris_playful.webm"
+        },
+        "flirty": {
+          "webm": "/Character_Art/Iris/animations/iris_flirty.webm"
+        },
+        "mischievous": {
+          "webm": "/Character_Art/Iris/animations/iris_mischievous.webm"
+        },
+        "focused": {
+          "webm": "/Character_Art/Iris/animations/iris_focused.webm"
+        },
+        "excited": {
+          "webm": "/Character_Art/Iris/animations/iris_excited.webm"
+        },
+        "surprised": {
+          "webm": "/Character_Art/Iris/animations/iris_surprised.webm"
+        },
+        "disappointed": {
+          "webm": "/Character_Art/Iris/animations/iris_disappointed.webm"
+        },
+        "concerned": {
+          "webm": "/Character_Art/Iris/animations/iris_concerned.webm"
+        },
+        "proud": {
+          "webm": "/Character_Art/Iris/animations/iris_proud.webm"
+        },
+        "comforting": {
+          "webm": "/Character_Art/Iris/animations/iris_comforting.webm"
+        }
+      },
+      "fit": "contain",
+      "position": "50% 50%"
+    },
+    "seraphine": {
+      "name": "Seraphine Vale",
+      "expressions": {
+        "neutral": "/Character_Art/Seraphine/expressions/seraphine_neutral.png",
+        "happy": "/Character_Art/Seraphine/expressions/seraphine_happy.png",
+        "playful": "/Character_Art/Seraphine/expressions/seraphine_playful.png",
+        "flirty": "/Character_Art/Seraphine/expressions/seraphine_flirty.png",
+        "mischievous": "/Character_Art/Seraphine/expressions/seraphine_mischievous.png",
+        "focused": "/Character_Art/Seraphine/expressions/seraphine_focused.png",
+        "excited": "/Character_Art/Seraphine/expressions/seraphine_excited.png",
+        "surprised": "/Character_Art/Seraphine/expressions/seraphine_surprised.png",
+        "disappointed": "/Character_Art/Seraphine/expressions/seraphine_disappointed.png",
+        "concerned": "/Character_Art/Seraphine/expressions/seraphine_concerned.png",
+        "proud": "/Character_Art/Seraphine/expressions/seraphine_proud.png",
+        "comforting": "/Character_Art/Seraphine/expressions/seraphine_comforting.png"
+      },
+      "animations": {
+        "neutral": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_neutral.webm"
+        },
+        "happy": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_happy.webm"
+        },
+        "playful": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_playful.webm"
+        },
+        "flirty": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_flirty.webm"
+        },
+        "mischievous": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_mischievous.webm"
+        },
+        "focused": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_focused.webm"
+        },
+        "excited": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_excited.webm"
+        },
+        "surprised": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_surprised.webm"
+        },
+        "disappointed": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_disappointed.webm"
+        },
+        "concerned": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_concerned.webm"
+        },
+        "proud": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_proud.webm"
+        },
+        "comforting": {
+          "webm": "/Character_Art/Seraphine/animations/seraphine_comforting.webm"
+        }
+      },
+      "fit": "contain",
+      "position": "50% 50%"
     }
   },
   "models": {
@@ -397,7 +511,11 @@
     "mira-narrative-f29-v015:latest": "mira",
     "mira-narrative-f29-v017:latest": "mira",
     "vex9-narrative-v1:latest": "vex9",
-    "vex9-narrative-f29-v016:latest": "vex9"
+    "vex9-narrative-f29-v016:latest": "vex9",
+    "iris-narrative-v1:latest": "iris",
+    "iris-narrative-f29-v018:latest": "iris",
+    "seraphine-narrative-v1:latest": "seraphine",
+    "seraphine-narrative-f29-v019:latest": "seraphine"
   },
   "presentation": {
     "animated_characters_enabled": true,

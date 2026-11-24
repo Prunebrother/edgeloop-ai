@@ -1,5 +1,5 @@
 {
-  "version": "v0.11.0-rc1",
+  "version": "v0.12.0-rc1",
   "platform": "linux-x86_64",
   "ollama": {
     "version": "0.40.13",
@@ -30,7 +30,9 @@
     "daisy-narrative-v1",
     "celeste-narrative-v2",
     "mira-narrative-v1",
-    "vex9-narrative-v1"
+    "vex9-narrative-v1",
+    "iris-narrative-v1",
+    "seraphine-narrative-v1"
   ],
   "characters": [
     "nova-narrative-f29-v011",
@@ -38,7 +40,9 @@
     "daisy-narrative-f29-v014",
     "celeste-narrative-f29-v012",
     "mira-narrative-f29-v017",
-    "vex9-narrative-f29-v016"
+    "vex9-narrative-f29-v016",
+    "iris-narrative-f29-v018",
+    "seraphine-narrative-f29-v019"
   ],
   "default_model": "nova-narrative-f29-v011:latest",
   "third_party_sources": [

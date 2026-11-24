@@ -30,6 +30,18 @@ def public_file(raw, root=ROOT):
                         and re.fullmatch(r'/Character_Art/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.'+fmt,asset)}
             allowed=(path in referenced and Path(path).suffix.lower() in {'.png','.jpg','.jpeg','.webp'}) or path in animations
         except (OSError,ValueError,KeyError,TypeError,AttributeError):allowed=False
+    if path.startswith('src/assets/story/'):
+        allowed=False
+        match=re.fullmatch(r'src/assets/story/([a-z0-9][a-z0-9_-]*)/(ASSETS\.json|[a-z0-9][a-z0-9_-]*\.webp)',path)
+        if match:
+            campaign,filename=match.groups()
+            registry=root/'src/assets/story'/campaign/'ASSETS.json'
+            try:
+                if registry.absolute()!=registry.resolve():return None
+                data=json.loads(registry.read_text())
+                if type(data['schema_version']) is int and data['schema_version']==1 and data['campaign']==campaign and isinstance(data['slots'],dict):
+                    allowed=filename=='ASSETS.json' or any(isinstance(item,dict) and item.get('file')==filename for item in data['slots'].values())
+            except (OSError,ValueError,KeyError,TypeError):pass
     target=root/path
     if target.absolute()!=target.resolve():return None
     if not allowed or target.is_symlink() or not target.resolve().is_relative_to(root.resolve()): return None

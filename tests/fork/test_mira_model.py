@@ -14,8 +14,18 @@ mira = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mira)
 
 
-def test_authoring_follows_standard_template_and_existing_parameter_conventions():
-    assert all(mira.offline_checks().values())
+def test_shipped_modelfiles_follow_parameter_and_identity_conventions():
+    checks = mira.offline_checks(include_authoring=False)
+    assert all(checks.values()), {k: v for k, v in checks.items() if not v}
+
+
+def test_authoring_drafts_follow_standard_template():
+    present = [path.is_file() for path in mira.AUTHORING_FILES]
+    if not any(present):
+        pytest.skip('authoring drafts are not part of the public export')
+    assert all(present), 'authoring drafts must be all present or all absent'
+    checks = mira.offline_checks(include_authoring=True)
+    assert all(checks.values()), {k: v for k, v in checks.items() if not v}
 
 
 def test_missing_base_never_invokes_build_or_download(monkeypatch):

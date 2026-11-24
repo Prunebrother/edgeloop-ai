@@ -67,6 +67,7 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
         return 'custom:'+character.identity if character else manager.config.model
     speech.campaign_brief=lambda:campaign.model_context(persona(),state.report if state.fresh() else None)
     speech.campaign_speaker=lambda:character_identity(persona())
+    speech.campaign_scope=campaign.deck_scope
     speech.campaign_cue_valid=campaign.cue_valid;speech.settings.check=campaign.settings_check;speech.campaign_directive_valid=campaign.directive_valid;speech.settings.still_needed=campaign.directive_current
     speech.policy=SpeechPolicy(event_responses=True)
 
@@ -306,21 +307,24 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                         speech.settings_observe()
                         accepted_kinds=[e.kind for e in message.events if e.id in state.accepted_event_ids]
                         for update in campaign.observe(state.report,accepted_kinds,persona()):publish(update)
-                        for cue in campaign.take_cues():speech.campaign_cue(cue)
                         for directive in campaign.take_directives():speech.campaign_directive(directive)
+                        for cue in campaign.take_cues():speech.campaign_cue(cue)
                         speech.settings.allowed=campaign.allowed_settings();speech.settings.directed=campaign.settings_directed()
                         publish({'type':'observation_ack','accepted':True,'sequence':message.sequence,'session_id':state.session_id,
                             'rejected_events':[{'id':e.id,'kind':e.kind,'reason':'duplicate_stale_or_unproven'} for e in message.events if e.id not in state.accepted_event_ids],
                             'events':[{'id':e.id,'kind':e.kind,'session_id':state.session_id} | ({'preserve_reaction':True} if e.kind=='stop' and (closing or accepted_release or any(p['kind'] in {'came_early','completion_accepted'} for p in speech.pending) or speech.active_event_kind in {'came_early','completion_accepted'} and speech.task is not None and not speech.task.done()) else {}) for e in message.events if e.id in state.accepted_event_ids]})
                     elif isinstance(message,CampaignCommand):
                         try:
-                            if message.action=='answer':
+                            if message.action=='mission_text':publish(campaign.mission_text(message.campaign_id,message.mission_id))
+                            elif message.action=='chapter_text':publish(campaign.chapter_text(message.campaign_id,message.chapter_id))
+                            elif message.action=='answer':
                                 # A puzzle answer is checked by the campaign against its own definition, never by a model.
                                 for update in campaign.answer(message.objective_id,message.answer,state.report if state.fresh() else None,persona()):publish(update)
                                 for cue in campaign.take_cues():speech.campaign_cue(cue)
                             else:
                                 if message.action=='start':campaign.start(message.campaign_id,message.mission_id,state.report)
                                 elif message.action=='abandon':campaign.abandon()
+                                elif message.action=='intro_seen':campaign.intro_seen(message.campaign_id,message.chapter_id)
                                 publish(campaign.state(state.report,persona()))
                             speech.settings.allowed=campaign.allowed_settings();speech.settings.directed=campaign.settings_directed()
                         except (ValueError,OSError) as exc:

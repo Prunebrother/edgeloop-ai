@@ -58,7 +58,7 @@ def finish_orientation(svc):
 def test_the_shipped_campaign_loads_and_is_available_from_the_start(tmp_path):
     book = Book.load()
     assert book.errors == []
-    assert [c.id for c in book.campaigns] == [CID]
+    assert [c.id for c in book.campaigns] == [CID, 'rise_of_helix']
     state = service(tmp_path).state()
     campaign = state['campaigns'][0]
     assert campaign['title'] == 'The Asterion Initiative' and campaign['available'] and not campaign['completed']
@@ -67,7 +67,7 @@ def test_the_shipped_campaign_loads_and_is_available_from_the_start(tmp_path):
                                                               'evelyn', 'daisy', 'mira', 'celeste', 'nova']
     assert campaign['progress'] == {'completed': 0, 'total': 14}
     assert campaign['narrative_status'] == 'approved'
-    assert all(m['briefing'] for m in campaign['missions'])
+    assert all('briefing' not in m for m in campaign['missions'])  # fetched per mission (mission_text)
 
 
 def test_a_second_campaign_registers_from_data_alone(tmp_path):
@@ -305,7 +305,7 @@ def test_progress_survives_a_restart(tmp_path):
     assert states(again)['orientation'] == 'completed' and states(again)['first_assessment'] == 'active'
     assert again.attempt and again.attempt.session_id is None  # a session never resumes across restarts
     saved = json.loads((tmp_path / PROGRESS_FILE).read_text())
-    assert saved['schema_version'] == 3 and saved['active']['mission'] == 'first_assessment'
+    assert saved['schema_version'] == 4 and saved['active']['mission'] == 'first_assessment'
     assert set(saved['campaigns'][CID]['rewards']) == {'unlock_companion:evelyn'}
 
 

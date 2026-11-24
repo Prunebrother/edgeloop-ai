@@ -14,9 +14,41 @@ from companion_ai.campaign import PROGRESS_FILE
 DATA = os.environ['EDGELOOP_CAMPAIGN_FIXTURE_DATA']
 app = create_app(TOKEN, DATA, transport=httpx.MockTransport(runtime), origins={f'http://127.0.0.1:{UI_PORT}'})
 import time
+if os.environ.get('EDGELOOP_CHOICE_FIXTURE') == '1':
+    from companion_ai.campaign import Book, Campaign
+    from tests.ai.test_campaign_choice import definition
+    from copy import deepcopy
+    data = definition()
+    choice = data['missions'][0]['objectives'][-1]
+    data['missions'][0]['objectives'] += [dict(deepcopy(choice), id=oid) for oid in ('cover_space', 'cover_pad')]
+    app.state.campaign.book = Book([Campaign.model_validate(data)])
+if os.environ.get('EDGELOOP_CODE_PUZZLE_FIXTURE') == '1':
+    from companion_ai.campaign import Book, Campaign
+    from tests.ai.test_campaign_code_puzzle import definition
+    app.state.campaign.book = Book([Campaign.model_validate(definition())])
+if os.environ.get('EDGELOOP_ROUTE_FIXTURE') == '1':
+    from companion_ai.campaign import Book, Campaign
+    from tests.ai.test_campaign_routes import definition
+    app.state.campaign.book = Book([Campaign.model_validate(definition())])
 LAST = {}
 _answer = app.state.campaign.answer
 _observe = app.state.campaign.observe
+_mission_text = app.state.campaign.mission_text
+SCENES = os.environ.get('EDGELOOP_SCENE_FIXTURE') == '1'
+
+
+def scene_block(label, **art):
+    return {'speaker': 'mira', 'lines': ['PLACEHOLDER scene fixture — ' + label], 'status': 'placeholder', **art}
+
+
+def mission_text(campaign, mission):
+    message = _mission_text(campaign, mission)
+    if SCENES:
+        message = dict(message, briefing=scene_block('briefing', expression='concerned', image='h_arrival', background='env_reception'), narrative_status='placeholder')
+    return message
+
+
+app.state.campaign.mission_text = mission_text
 
 
 def observe(report, events, model, fixture=False):
@@ -25,7 +57,16 @@ def observe(report, events, model, fixture=False):
     stand_in = LAST.get('report')
     if not fixture and stand_in and stand_in.get('status') == 'RUNNING' and time.monotonic() - LAST['at'] < 15 \
             and (report or {}).get('session_id') != stand_in.get('session_id'): return []
-    return _observe(report, events, model)
+    messages = _observe(report, events, model)
+    if SCENES:
+        for message in messages:
+            if message['type'] == 'mission_result':
+                message.update(completion=scene_block('background', expression='concerned', background='env_reception'),
+                               epilogue=[scene_block('illustration', image='h_arrival'),
+                                         scene_block('missing slot', image='not_a_slot'),
+                                         scene_block('load failure', image='h_breach'),
+                                         scene_block('plain')])
+    return messages
 
 
 def answer(objective_id, option_id, report, model):

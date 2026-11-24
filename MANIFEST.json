@@ -57,8 +57,8 @@
       "executable": false
     },
     "CHANGELOG.md": {
-      "sha256": "39d190c8500cca67d7ba86bf027684290dc1281fa4522ecaab26572b099a4088",
-      "bytes": 17346,
+      "sha256": "7495fc3be44928d596bfc4020c2c51f6bbd2bd864a83dd69399df8e54895c904",
+      "bytes": 19674,
       "executable": false
     },
     "CONTRIBUTING.md": {
@@ -67,603 +67,843 @@
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_comforting.webm": {
-      "sha256": "95a730eb4b549edb1b6feef8f4aa8096893155344876de4f78be3f8210f510ef",
-      "bytes": 640297,
+      "sha256": "076bfb700f7719f256e90cc1cc57eaaad98c94b16f41387a178a709078234b20",
+      "bytes": 710366,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_concerned.webm": {
-      "sha256": "432e9df5df469b925b8d4c0dd55cbf62f1aed2d601dcfe65571de341806184d0",
-      "bytes": 654200,
+      "sha256": "d8729b81747becb845f35d156c81bf7ab2826231fbfa8f41f77ec285ae6a523d",
+      "bytes": 698592,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_disappointed.webm": {
-      "sha256": "d04d223f90b598a9f7896ffda369c9f964be71910cb3b6d0f9c6f2a29e2485bd",
-      "bytes": 611754,
+      "sha256": "d4e6ffa6ad595ffb68e96c535915ea91d67682e8d68d7d0e71426a5d3c965d3c",
+      "bytes": 705602,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_excited.webm": {
-      "sha256": "00ae0807ad1ebbacaef63ad02e7df508ccdbe33d54f65932c8b4f20d587d20f8",
-      "bytes": 653921,
+      "sha256": "31472ad870da92aeb0f24380753c7df156fd773bf0d2808a05554c432d5f5b60",
+      "bytes": 729744,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_flirty.webm": {
-      "sha256": "da03b9ac592b2ed6c74e28933db8fc48cca1c8619bfb571811a827e4baa8ae0f",
-      "bytes": 624149,
+      "sha256": "e594cf7a30b3d045468bb923d409076b2a59bce6b219eabd2f87360296d06dcd",
+      "bytes": 707306,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_focused.webm": {
-      "sha256": "409185675a4a121a8be30532c7eb52bcaa455ab7ff14fe40e309a3c83580369d",
-      "bytes": 628035,
+      "sha256": "d7620375a8d0f1327baa89caaef07f7a1426fd0d7ebf4c65748cee73128e9d39",
+      "bytes": 684726,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_happy.webm": {
-      "sha256": "b2f3670c45c7507fca59d6371f996eb6e89d196ef8c71afecda5709383ae3ce5",
-      "bytes": 435791,
+      "sha256": "5d7121823c414d64b9d5be3eaa1e105b3f5ab328c849ae94bda77b05065ed977",
+      "bytes": 714022,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_mischievous.webm": {
-      "sha256": "a89528f13c2a744a960d61656b1c41b8e9a05b0bd4adc2a08c75fc75209339d4",
-      "bytes": 632152,
+      "sha256": "65dae942686b45b6bdad48edf74b41216f0978536f6e25ef6f51c496140c2561",
+      "bytes": 710223,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_neutral.webm": {
-      "sha256": "184e486d237a454225c45579b9c8190b89692ad64c73c78ee057a50aa6f62940",
-      "bytes": 432381,
+      "sha256": "cf4bb7a85f2ca8d6e53e8df91f9f806c942d431722e1d0adfd539612bf9ea6fe",
+      "bytes": 730375,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_playful.webm": {
-      "sha256": "da91a4515bf34f2c0e25cc26e84f1644023a99a137c89f97f584053934921d5e",
-      "bytes": 438068,
+      "sha256": "5fc1cef920401151253c26b7ecb7ab94ef51f51b009b05ec07406605647852a7",
+      "bytes": 721758,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_proud.webm": {
-      "sha256": "1cb5f76e1d2d46d931a37277518c2e52f58c2f31fde84baac8381439f4a6c816",
-      "bytes": 655886,
+      "sha256": "c9efa5e416e1410f35f13cbd2c8e9d3418a06e12c088b389d7f276c6750fa271",
+      "bytes": 710203,
       "executable": false
     },
     "Character_Art/Celeste/animations/celeste_surprised.webm": {
-      "sha256": "e79efc9438b4859a9596a8ade415e0a9fdbe2d309a4f30af4928e7525ef3905e",
-      "bytes": 648097,
+      "sha256": "4c6f0fe51f0f701d5509ddec5c50a03c671dcf6b40cbba2da68f1e587dbd9c2d",
+      "bytes": 704099,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_comforting.png": {
-      "sha256": "5ce0dc9237407508b24ae983de811d1ed6fca920256b7c51f8ba22c6ebc7c31d",
-      "bytes": 1821463,
+      "sha256": "77eca031990f3e54c5aa7d8503008769bfd17fb4015942b7c01529d1384d9d23",
+      "bytes": 1900135,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_concerned.png": {
-      "sha256": "b7637ffa6a82c689228d9695f10f3d466994e147a3cceb5d1893a934b4506aaa",
-      "bytes": 1837716,
+      "sha256": "1680cf0ccf65fdfb6df368864bb59bafeb4f27c79bcd3be1842f25a12f5af156",
+      "bytes": 1906833,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_dissapointed.png": {
-      "sha256": "d525897bd051bffe8c35cd12c65d1faaed37085a7c6f841b9190eaf43acad48d",
-      "bytes": 1788759,
+      "sha256": "d89bfff315eb78ffc0841a8161c9d8a522bed67a3830f476eabe6f5cc0e86c28",
+      "bytes": 1899947,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_excited.png": {
-      "sha256": "f1aee84bb4a021874349a03b37e0a3af4e8ca99ec64f585d258f1a330629e084",
-      "bytes": 1838741,
+      "sha256": "0053ba70af3faa249dcc08cc892decba8a7812332cfe93db5e68b197cd5c7716",
+      "bytes": 1913373,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_flirty.png": {
-      "sha256": "d10756169dcfce2b9dae04bcd52ecb2000d9eea686f11b656f2ff81c13d98eee",
-      "bytes": 1817051,
+      "sha256": "9158c9c313de873b1695c361d4783eceb82b61fecf1b4df7d296e09d3df026f9",
+      "bytes": 1905422,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_focused.png": {
-      "sha256": "6b29fed3e99f9e0c56779821751d17099c9f4129cc7b7f2d8f1007822a233f17",
-      "bytes": 1835092,
+      "sha256": "ad7c3729457583e763a311c219b77e15c3f97ee1f242dc4ebe812330d0bc078e",
+      "bytes": 1897029,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_happy.png": {
-      "sha256": "7faae415fe60a3fda1649be02511b98ed5fd5deceec963e717c4e7a4740ec38a",
-      "bytes": 1818763,
+      "sha256": "da99073e507698212352816a7e4d2862ef04af2f17265fb26c1f5c27433770f3",
+      "bytes": 1904877,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_mischievous.png": {
-      "sha256": "c87b38d192b995e5d4d6e8e33b420172578205b5f10bcd36e165c632f48b98b9",
-      "bytes": 1837265,
+      "sha256": "0d2475b156e9fc413d0afeae0ca3a610a7b541ae304bb56c4e313c540c6546b4",
+      "bytes": 1881915,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_neutral.png": {
-      "sha256": "7545f48bb4b06a8af4710aece26c5b2f69394b5e099b265b191de2c83d6b8c59",
-      "bytes": 1865507,
+      "sha256": "4bada0a0c5b16faad80aa4379bc28fe1eb803e7c2d5a8146bf5b23fd9f3f6ed9",
+      "bytes": 1906929,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_playful.png": {
-      "sha256": "65743bb75808edce75c54605e5c41eb8370d2c5195c0a46d5dbd4a5c5cc397f1",
-      "bytes": 1827941,
+      "sha256": "c587470bcafa70514c6702fd78fcfca188be232076b528d389f80bde77dedbe6",
+      "bytes": 1917100,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_proud.png": {
-      "sha256": "b0ecdbc3c2775e0cd23a32c9a8dc09369128d5afed4684c578b1df23e72f6b56",
-      "bytes": 1837137,
+      "sha256": "fc51eef4d1312cc125a9c5be2e2a0153bf423709e88fb3d3c0dfed244da9b231",
+      "bytes": 1914700,
       "executable": false
     },
     "Character_Art/Celeste/expressions/celeste_surprised.png": {
-      "sha256": "c39453a888f9743a764e28b5b767381291e2cde3d5a488f74982289dabdb9794",
-      "bytes": 1826649,
+      "sha256": "28078a6f5a86ad8bafada346ee566fe1caaf1f631ee79f3bf97006e4bea1a8ff",
+      "bytes": 1912179,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_comforting.webm": {
-      "sha256": "804f6cfc494a79fb2b0905df2c06ba014390291b71d412a0f70d4b0ce7d5a586",
-      "bytes": 1026385,
+      "sha256": "552f741ba5d224ae6524857dff9a7b5b1d7b6648be5e5bc08db65f4aafa10b05",
+      "bytes": 1004795,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_concerned.webm": {
-      "sha256": "a4d10756feb4e82bfa81634ded633d70fa192bf9f05574eacace7a496d2bf19e",
-      "bytes": 953271,
+      "sha256": "f9aaf412a1694fe4df6e081f29ef4a5cec5e58d6d686d1341f4f5613fd5fb591",
+      "bytes": 982733,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_disappointed.webm": {
-      "sha256": "b8358e17456e5269154fd686b7b40745bee93c30ac7812b81972ac3adaa8f3c7",
-      "bytes": 1075351,
+      "sha256": "6341b519c5978d41a247f543b3386359fafddb82faf5f65bb8a55f100b5523ba",
+      "bytes": 989163,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_excited.webm": {
-      "sha256": "5b05faa7bdf55dc4bab96ed3244fff72441592619ba277c0f9919a92419f0ba6",
-      "bytes": 1002055,
+      "sha256": "8f51d683e91145bd1c024bed4bd50cd7391fa60e8727af654e6e558aa943ad06",
+      "bytes": 1014505,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_flirty.webm": {
-      "sha256": "851a6419aff7ce93bdad435fb9951cad740266fad42aa30c9c83e634fd34fe56",
-      "bytes": 1105270,
+      "sha256": "af3604ebf0986d012bcb54892ec4c21381fcd7cf8b2d27ecfb49039067f880f7",
+      "bytes": 989501,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_focused.webm": {
-      "sha256": "3cd15186cd1ab62c7d5d8166108a37b0ed0ab86544098f3e7cb7b8203668966a",
-      "bytes": 1007837,
+      "sha256": "21c700e5ba274c7a0fcc51eb473ad38104b736e84a5534cd8912ebb106d1afab",
+      "bytes": 967430,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_happy.webm": {
-      "sha256": "830456d2155873b88b7a9282b07b6a863818aa1f743d47effdbad76fe6a6c14b",
-      "bytes": 1060235,
+      "sha256": "54434417a446f6af43bd812f843144fcd553780f870cff6a7f720b5c2105711c",
+      "bytes": 1006732,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_mischievous.webm": {
-      "sha256": "bb0e59726030cba9ea36b89e05750603a00bec7856ff2ea09306170df9c5ac08",
-      "bytes": 959465,
+      "sha256": "348f7eb2e257aea693ed823d1a963767b571bcafd29ec716f7b390f2cf6de238",
+      "bytes": 990387,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_neutral.webm": {
-      "sha256": "c8979036959a235def12d7c59f16fed8a786a7465e7af9ab8d78062e41be532e",
-      "bytes": 1197080,
+      "sha256": "aa6ee6ed8d4991c7fe26733f8b226579e201365be7119649392f20e510573eb2",
+      "bytes": 1046640,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_playful.webm": {
-      "sha256": "4700cb3d631c5fa896b8d1ff9d66db2e2bd7d454cdc667e04738834a75844231",
-      "bytes": 1075088,
+      "sha256": "ff65e904cfebaa7a13847f18d0a47744b1d8a2beba6f24d6449a40e00a6016f6",
+      "bytes": 1055683,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_proud.webm": {
-      "sha256": "26c1478c3677f07ad9bec618cf9fd76bc9e428e85c0fbfd7f5b17d8d8fbe81bc",
-      "bytes": 1021411,
+      "sha256": "f3a150d7ed25d05613961c9e228bb29d4ab0eeb5ec72b6295ac842aee38b6317",
+      "bytes": 1026089,
       "executable": false
     },
     "Character_Art/Daisy/animations/daisy_surprised.webm": {
-      "sha256": "0cab06c5def826c54fe45d17c6e4395eb8e3eb0182632db6f92163466f24d279",
-      "bytes": 1060378,
+      "sha256": "0146c9232d886f3bab94308cf68a0ebd382114983f98347731bbfa6399d4d5ac",
+      "bytes": 1032738,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_comforting.png": {
-      "sha256": "c371b944ba34060fe5086f884438be7ef214135d9e24995225af07621f6544b7",
-      "bytes": 2645405,
+      "sha256": "01a9dcfec122abef4af50165c3c01a22cb7fdefa8b573b5bfeab48da375b8abc",
+      "bytes": 2479259,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_concerned.png": {
-      "sha256": "fc9be31c148bf2a93e37ceb7bc3d630ac6cd2117e227e1fcf53ed51d55f84fcf",
-      "bytes": 2494951,
+      "sha256": "2467ccd2d36bb5fa6dc671e623840d8450c98c196b4b57dc7d911aa6e69b2848",
+      "bytes": 2464869,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_disappointed.png": {
-      "sha256": "d8fbc4aa92cfec5c36792676356d121e6357634f81b7f2693cee83ab676d10ef",
-      "bytes": 2677601,
+      "sha256": "5f1d5b4e44988282ed658b78ece62807fea27910fc195a8e19b4aa6e5bcd41bb",
+      "bytes": 2477932,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_excited.png": {
-      "sha256": "15be8578b9d87459b12e512e9eb0e6697ddab7fe419abfde4541034f66a865b8",
-      "bytes": 2491065,
+      "sha256": "5b40241cd9d02734c994d551965a9fb7cc5a6f7da3c17fe9039d37c47609bd0b",
+      "bytes": 2483260,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_flirty.png": {
-      "sha256": "4f2081b3496a3f33777da3bac265cc16e66f3da16fd691f7e495279f5adf2c81",
-      "bytes": 2756299,
+      "sha256": "c55514f95781fb5f7bbdf4b7c1f3aab5ef5ad1577b933b7aacb8013698ca8f35",
+      "bytes": 2486682,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_focused.png": {
-      "sha256": "af3941cf4c32c30767e28163ea45c18002d09cf151e16a8d5320593e7573ddf4",
-      "bytes": 2539483,
+      "sha256": "723fe6a70308efc793347896bc8153cab00203411dff375f8b69725e536fa1a5",
+      "bytes": 2468648,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_happy.png": {
-      "sha256": "1ad26e2463bb3fc1eb93f2761be197f326671c63272585394e65a927f1016ba6",
-      "bytes": 2662193,
+      "sha256": "162eb5d6a24c973ec64b3b488a888fdfdac099f2112b37cdac7664e020913a79",
+      "bytes": 2468363,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_mischievous.png": {
-      "sha256": "8612816e12c9bf6102e8a527c2ff83565b708e146a866f1603f7585197e32ec8",
-      "bytes": 2448164,
+      "sha256": "88ed2b82f1a7838fab690b4ce5be643bf74c3b030756a0c70a420b4ccd9dec1e",
+      "bytes": 2482681,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_neutral.png": {
-      "sha256": "656eb0067a52af73165a985056bba8ae60229763fc924393030262778877418e",
-      "bytes": 2809836,
+      "sha256": "f8ae6eec49f1bb4f2472fa9aaadcf2bec71eddf31a0c8c4d335653bf8efa9c99",
+      "bytes": 2495865,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_playful.png": {
-      "sha256": "63f141b178da3f9249dfb05e59214c9e3520c8e8642aafd7a1e6b8495b319250",
-      "bytes": 2579844,
+      "sha256": "c1af1afb06d7f1820c9f0dbf7aa6a7da33763c02f6268eb386806c0482585141",
+      "bytes": 2510196,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_proud.png": {
-      "sha256": "8516c1008d3c4e51169a5205ab4aeb6ee7eb75182ef71424c35af4837b87e3c5",
-      "bytes": 2508515,
+      "sha256": "77b0b875bfbb11f01c9cff1a2f86365256a2c2b2f0315c4f38eecba5f90e537a",
+      "bytes": 2520063,
       "executable": false
     },
     "Character_Art/Daisy/expressions/daisy_surprised.png": {
-      "sha256": "d0c2d718a7fe04cbd1d451b3e8a1821d6669152c1a3135f6f87377b9c8187aab",
-      "bytes": 2630971,
+      "sha256": "a65b31d73ebc997dfc7511b803c8a23da1d138ec2601a65e7effc126edd00d9e",
+      "bytes": 2530991,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_comforting.png": {
-      "sha256": "02d85c089dc4887001db9dc8a80c5e97787d598d6566cbd335230d968c0b76c3",
-      "bytes": 1878080,
+      "sha256": "eb59ff27ddc61a093688d12600780c1054b85212d1b954d48553020d3aabe272",
+      "bytes": 1776913,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_concerned.png": {
-      "sha256": "4a43396e6bc2b84617d4859db7d8ef36d082f6c1866659cb392b1358d8b0a7fb",
-      "bytes": 1839190,
+      "sha256": "3aa749378399688405510e7415d3ed2d1ca2c52d253c8a03fddd94ad87f4f9b5",
+      "bytes": 1790216,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_dissapointed.png": {
-      "sha256": "5f9ee802166a15f875888fc2e8177841637d96b5e8d2897a90f7a52c2b334c39",
-      "bytes": 1701053,
+      "sha256": "53b83e191a4792c9ee9cdad2088026a7fa858940686306bebe02fd6b298e3e27",
+      "bytes": 1764178,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_excited.png": {
-      "sha256": "a63c3eb10631abbab459eb681f15a707dc846f5db1c2f3fc01d1bc1b8abada9d",
-      "bytes": 1715827,
+      "sha256": "6a2166ecd4c60b41ab066b3165f28618ecb6fb0e4a0a70eb69a50668554d84fb",
+      "bytes": 1771851,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_flirty.png": {
-      "sha256": "ccfb045abfeb1f9e439d0873f02d1ff0320336471483d0a5a573ad8a6d81ebd8",
-      "bytes": 1715562,
+      "sha256": "7310e8cdd50da5cec516b21dfe9f9003a449b32c51279ff9fbac47898f6574a0",
+      "bytes": 1758417,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_focused.png": {
-      "sha256": "2abc5883ebe09a3b127cf208179e5c3dcb1efc4c4d832108402255199a7affbf",
-      "bytes": 1714289,
+      "sha256": "bcf7c8042b97b5e2b328f14f82adb300c6ae5bfe3eddfeb1e622c3d4d6651b47",
+      "bytes": 1751825,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_happy.png": {
-      "sha256": "9fc39075c2e53d7903eadfc6f775bdefb67d67507af2b2509a6646fd3093f0d7",
-      "bytes": 1856280,
+      "sha256": "d794cf26adefea91f95f2cf5cbceba55eb9ef806cca91e41232ddd3b437aeff5",
+      "bytes": 1777484,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_mischievous.png": {
-      "sha256": "f4e651029dfd04b9cef760020b9a8b6861a6b4f7847c13c4bb15d90e7a7da0c8",
-      "bytes": 1724689,
+      "sha256": "e31068589da1adabce2d7bad428059c1db8b8639d0b1211374a46d1b4b40c47e",
+      "bytes": 1762836,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_neutral.png": {
-      "sha256": "014a1826e7724b19e1c823c290ac070d6b43c0a36aca39bcf156d02d3377c161",
-      "bytes": 1929050,
+      "sha256": "e565a08d96fe7648e90c84dfeb1f20eaf51a8dc3e4e629f281597921cd9f1c55",
+      "bytes": 1744363,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_playful.png": {
-      "sha256": "43c0cab005fd5a4be0dd5a974a839774a9fd85d3825715f961128e3b3dda9921",
-      "bytes": 1756916,
+      "sha256": "d53e6364df3398f61a732ebc22100ebca4aaef3053e4649fc2785e49456ae64a",
+      "bytes": 1814474,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_proud.png": {
-      "sha256": "e740f65e5557814885685aa7e5340bec7b846a67b4e87c700b33fb3521694df8",
-      "bytes": 1862314,
+      "sha256": "e720d8ef2c9ae5810c47d16e24700b80d2c87b0ff86aefa5f27d0d886d001f62",
+      "bytes": 1812169,
       "executable": false
     },
     "Character_Art/Evelyn/Expressions/evelyn_surprised.png": {
-      "sha256": "7a5ac49fff076046170601321455c7f5b49062cb2fb19bd2a1eb8cfa38f459e1",
-      "bytes": 1705968,
+      "sha256": "2550975bf0da7a68dcc1453d0a8925a767a4bbf3d9b6ccf02bac4e6525fb25b6",
+      "bytes": 1790752,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_comforting.webm": {
-      "sha256": "e70e88f00b8ba0f63a0b4b2c440379c832183f6856ae90e55506be92c0c4ee12",
-      "bytes": 662237,
+      "sha256": "c27db5e0aa26e80a72439fc685dd0e04035e528eb5d8add30710e69321e0cb60",
+      "bytes": 666214,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_concerned.webm": {
-      "sha256": "8fc4ba78f9973d9861703d141cca140afb46fe7beabbf53078a017bb37ece0aa",
-      "bytes": 655045,
+      "sha256": "4203d01b197b39f71d17b77c3c07aaf1e00df2dda43d1fd011876080390f2102",
+      "bytes": 673531,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_disappointed.webm": {
-      "sha256": "cdd55de88b8ecdf497d84252d1b69cd3c0e81780ac56ddecd30be4a5842c5343",
-      "bytes": 593652,
+      "sha256": "db85635d39d6a04cf7317adef2aa4eaf4c8c128806a31bea209a027eb8227f74",
+      "bytes": 649186,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_excited.webm": {
-      "sha256": "a52a96d83f447782ff3e6db8d997da3e835ec9f0d6bf38749a42a725bb92169e",
-      "bytes": 396521,
+      "sha256": "24a7cd92066d8cc7295eb7f9d034f7feb34635ef0c38c2593663a6555d428fb5",
+      "bytes": 655554,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_flirty.webm": {
-      "sha256": "108c1dd24da2d9a7b238a0786993b552563c40af5885c1a991a5e59b6fd954e1",
-      "bytes": 605842,
+      "sha256": "4306186cb6e87caa3b4837a25e16ff495313d4475737675dcc508d0343bb43f0",
+      "bytes": 638318,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_focused.webm": {
-      "sha256": "4426c1411bebf76dcff1aa121815de42a6650070f41dd0cb69db6a97359a936e",
-      "bytes": 586852,
+      "sha256": "237431cfc28cf4f0443f377de459197408b197e07ad5202b963e59835afb0a7f",
+      "bytes": 633037,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_happy.webm": {
-      "sha256": "4b5b5b837e583562292a03f792ff918bd8c2610880ae50785b4c1a634cd50b20",
-      "bytes": 439582,
+      "sha256": "135b74e13b0893595caec59de08c9c310a3d784297ce20a59cf5236efcb58dc6",
+      "bytes": 676642,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_mischievous.webm": {
-      "sha256": "a7d75b4d9d8a803c9de26c4d7dac8456ec35e6013a8ba88d33c946942c809329",
-      "bytes": 607490,
+      "sha256": "83e8cd8284e3c0c499bcdcc53918594e43b0dcd54e5451ef88829b51c0da1db4",
+      "bytes": 656053,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_neutral.webm": {
-      "sha256": "fea0e1cf169e5df12204edb3e96e577e7b849e7b84a5bf37692e6f0a338b3ea5",
-      "bytes": 463798,
+      "sha256": "0ca38b95e09cfe3117304b434db3d46674eebb2db94f962b62895d6ae0ebe890",
+      "bytes": 655446,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_playful.webm": {
-      "sha256": "f350af0d9ab73e86614674e3f5d2635cf583b7219b217211ec3fa3050c03552d",
-      "bytes": 418919,
+      "sha256": "390836e8419150d5e12a0752400844bb6bcb6f1ee222a9fb34f22ef662b5c100",
+      "bytes": 699825,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_proud.webm": {
-      "sha256": "d15e5fcaae0cadfd1e6076b97f0abe920854bbd0d4f3ada581a933ee8baa8f77",
-      "bytes": 701451,
+      "sha256": "438338a29fbee428aebb63cf2463c79888aef2da0855eb958b532e607a320c7b",
+      "bytes": 683315,
       "executable": false
     },
     "Character_Art/Evelyn/animations/evelyn_surprised.webm": {
-      "sha256": "7cb9274686ad606d75d334aefa208e24aed84dd7cef00b61f04bcdeb442b8889",
-      "bytes": 601770,
+      "sha256": "549e255f55cd7818d3ba57d05d7dbcde84efce9ca2c40077933c2eb8bf12bf3b",
+      "bytes": 664085,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_comforting.webm": {
+      "sha256": "4e3a47afbba4f14bd1437fc54e6e3f0ffa5f2bdb8ae46c6026eaca0e5a75b4c0",
+      "bytes": 596010,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_concerned.webm": {
+      "sha256": "1983c3484aa1ab89d770466a15ea4674f7bb49a8a3a6e68799d48a9c8ac71eac",
+      "bytes": 571296,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_disappointed.webm": {
+      "sha256": "64892590776844b3ca179927318ebe5e69fc379619248d317ca5c0f9fb7f44e5",
+      "bytes": 594459,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_excited.webm": {
+      "sha256": "0f07880680d027aa630abe7d5465a084b2862a3aab8ef49c48f6cfd73b721901",
+      "bytes": 575336,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_flirty.webm": {
+      "sha256": "5e4d882d97cebf41f0330368f13770b4d57db64b245a0b050e2eaeeafbbd817c",
+      "bytes": 593394,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_focused.webm": {
+      "sha256": "7010e1c5fad745ebcfd13bb6cc39175ed79003f059403c1c1aa2b3c9bafed3ac",
+      "bytes": 576422,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_happy.webm": {
+      "sha256": "90cf083d4103abcf2968e8366ead8a467ffe2872337b1e14bf6b14e1fa72ba4d",
+      "bytes": 592217,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_mischievous.webm": {
+      "sha256": "1f7fca1c00215b4a4555931e0587bc9856e7463feb5a12922ba6950d7edbf52b",
+      "bytes": 581397,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_neutral.webm": {
+      "sha256": "ef9cdc7a90d9c7f34efc4aeac8cd3de00b3ab9278b1d54f62d618fefe8c09b01",
+      "bytes": 355293,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_playful.webm": {
+      "sha256": "2eaea8246d00415bd153230d1df3dc4006f943236ec24198fe108bb5baa82333",
+      "bytes": 595639,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_proud.webm": {
+      "sha256": "11315b935ced336aa2ac1635a3d2054ee6efad2d01d2e22204484db9471e01a8",
+      "bytes": 582071,
+      "executable": false
+    },
+    "Character_Art/Iris/animations/iris_surprised.webm": {
+      "sha256": "16d3d5f65291c5d6c21112eaf7d22497362f8b0bbb5cc662bcd9e1586aaef7b6",
+      "bytes": 604773,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_comforting.png": {
+      "sha256": "e45ada9efa0464a2c38d09af6ed5ef5d21579825ddfe39447d9a50054c2dd447",
+      "bytes": 1643958,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_concerned.png": {
+      "sha256": "f874622d4a51cf1380d3bb93b33852a91beca7cea3dd5793eb49701f54c1d81f",
+      "bytes": 1596552,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_disappointed.png": {
+      "sha256": "e3c76a5ca5521a14ef5cdf54e402a7a2fdbf8c6f2f0be7fce0bcf72c153e23bc",
+      "bytes": 1625963,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_excited.png": {
+      "sha256": "b62d418122d839c1b4b829405d161042db83b3a758cd54185ca195a85c7e7e3f",
+      "bytes": 1612197,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_flirty.png": {
+      "sha256": "8e21188b32f4432d5a69daf57ed49fe105efabe6fa1ba2d5ef0d86a2b69311db",
+      "bytes": 1622757,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_focused.png": {
+      "sha256": "49fa7c525e92969a5c18067f208e47cbf91a39c3b7a4b55cc5c71ecb4e062f5e",
+      "bytes": 1578190,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_happy.png": {
+      "sha256": "02b90bda352f4b47eb4f2f17b69ee597288d6e9cbe250d9c8da891309c420769",
+      "bytes": 1604608,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_mischievous.png": {
+      "sha256": "f0c7a52ae25524e643d4d3bd07f4a0ecb7849bcfeda87d3e9c9e2deb2deb49b5",
+      "bytes": 1614117,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_neutral.png": {
+      "sha256": "e367de9c681b7819244e0227d9bb7ffefe787cd92614a7a9decf764e7e5d8274",
+      "bytes": 1598311,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_playful.png": {
+      "sha256": "0a77d54b23b72d7a344f786edb70e6c81dbcf506f0d10514e7b0e1684097ae07",
+      "bytes": 1652153,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_proud.png": {
+      "sha256": "82ec9b336ea9d000a6362e152203c96deb123ab258736b4b8705d2222fe86db3",
+      "bytes": 1643594,
+      "executable": false
+    },
+    "Character_Art/Iris/expressions/iris_surprised.png": {
+      "sha256": "d03a71fec3e2eac3a6a7baa887ebd1a6630727e58bd1b47d07f117b3108c8576",
+      "bytes": 1643072,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_comforting.webm": {
-      "sha256": "e583f737aa3218deacd357a4d49760312646495f08defe2cfcbd2c1957bd42d7",
-      "bytes": 891328,
+      "sha256": "bb0f87c4c1ca8a29a216f75dbcd427b97114f2d4b20e024c53d8bfd258576557",
+      "bytes": 1053475,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_concerned.webm": {
-      "sha256": "49060df3b676f4d5fc813272a6e49982d2942f0569022093232afa4e18e1f7eb",
-      "bytes": 892463,
+      "sha256": "0e36106013f58350fb4e147c0ef6b8b548dd634bc15f7963759bff9021fe514e",
+      "bytes": 962172,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_disappointed.webm": {
-      "sha256": "e25ade4a0acc180c9896f1f2ec842c11354a1bf7d2e3993b395e6c18c227fee4",
-      "bytes": 837879,
+      "sha256": "be27daa4f8324b840002ed5f9e46b729e17e296f6cb626d09308db33d4687dca",
+      "bytes": 993930,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_excited.webm": {
-      "sha256": "1332a0f7bde1f005f188b5ce320216c261ec03965044d485f74fc80557f15aba",
-      "bytes": 958815,
+      "sha256": "edfba63eb9db3bc1da9fc0a1b131684ae616aff5d83927953025cbc3c16aaf9f",
+      "bytes": 1008707,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_flirty.webm": {
-      "sha256": "146ea815702596702066a95a77c3b748c25165080d7cd47ce8e47b2229d01adc",
-      "bytes": 947763,
+      "sha256": "50450d4600d7487fc16b015138e1c7c688d0056a780bfc11d08dddde633fa9dc",
+      "bytes": 983904,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_focused.webm": {
-      "sha256": "5bcf3923b589155fdece47a315c44d9d3a12c761e25dcfc370b8f5def73be00f",
-      "bytes": 876388,
+      "sha256": "7f59200cb59f4472ddee9ff37555fa8bf6810dfb162142c670276af5a1f076ed",
+      "bytes": 922029,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_happy.webm": {
-      "sha256": "1c589784f09c2b336a5e2aea83b3106ef3c9fa5373d3905a98dd767d49ea8b42",
-      "bytes": 958763,
+      "sha256": "4f17fb78210dc1d66e889ef1421ac6d770b23a2fcf51ab6dbea13f2922e7c3ff",
+      "bytes": 1001573,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_mischievous.webm": {
-      "sha256": "69c6ebfdd262e6ba8a8efae900686fc2d201a877d6f8b2abc1fa9c65a3a6d613",
-      "bytes": 849351,
+      "sha256": "3e7ce76812dc52d86456588f5e5a46d12e13eb7f53e03b4c03416e0b4bf1e1ec",
+      "bytes": 1050719,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_neutral.webm": {
-      "sha256": "5f9f3303a608069399a4722a772c47a172e61835ff76f045bcf2c1d59d4c80dd",
-      "bytes": 673645,
+      "sha256": "52fe780f8f04ea99ba1482fea9d21ccbcb4edcacd4f5644d7c1701d603f63b47",
+      "bytes": 1103925,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_playful.webm": {
-      "sha256": "3d7d2cc63c6b64e476a6c6cfc8e088e0288888c06df21230952b1f0a24e7cd72",
-      "bytes": 1085226,
+      "sha256": "e0a7d2740b3ade2f9271292cb15d44648ce83ae6f1c1826b8f535995c7d58e12",
+      "bytes": 998526,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_proud.webm": {
-      "sha256": "481c4e4ace08ffb81b5699abe017ead3b54315a71d649a7dd6ee662599ae2496",
-      "bytes": 1000639,
+      "sha256": "6d16d488c0ce35d64a7dc571964e58b5aded79ce3125c5920673cb3546ea054f",
+      "bytes": 1054010,
       "executable": false
     },
     "Character_Art/Mira/animations/mira_surprised.webm": {
-      "sha256": "92cb843dae9e41e6b0017b1b53af6f6a9c7f18416d2665f927bbcd18282e1874",
-      "bytes": 941590,
+      "sha256": "0bc2baba496d3ca9b4371969e9cb4f835fe6edb254744ab985a85750c84bfab0",
+      "bytes": 940046,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_comforting.png": {
-      "sha256": "c051c76980d9e825bdadc1887508fea9d19e4bd1f9cc60055497f720c78fdfa4",
-      "bytes": 2116077,
+      "sha256": "ee117cf8b0451041136360eb4da40c87e89559deee06a46a683ada79d049513a",
+      "bytes": 2136718,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_concerned.png": {
-      "sha256": "31a18f314ede279d8177c199e60236a9c4884ea16326be7ffd2936b75b59f743",
-      "bytes": 2105416,
+      "sha256": "5aa6b0809a12c3184b38581572502bcbd02b724d317fe1eaffdcb247e59a943e",
+      "bytes": 2106288,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_dissapointed.png": {
-      "sha256": "c98defc63b5c581f8c7211fc924d73667fd762b5183e79a8bfd7b27341a6aed7",
-      "bytes": 2061438,
+      "sha256": "ae84051d7be9d6ee1284edbd540a8b27adc585900ae15b5aecfa3d662f40fd2b",
+      "bytes": 2114794,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_excited.png": {
-      "sha256": "ac4d50764877456488c5afa5100b7e99db5ca423c4041391cbbf8b70578a1258",
-      "bytes": 2094283,
+      "sha256": "6a990d442761d3683b52046a9032e5c00220451e7ea36b7bd29326ff5dd7cfa6",
+      "bytes": 2113197,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_flirty.png": {
-      "sha256": "bbb808da782e44f67642ac0d4c28dd902c63ba8887e55245884b0ca9c3ec1659",
-      "bytes": 2113681,
+      "sha256": "c6015801155d018a0058d627b1c3b3eb0f00e7bfc6be2e583a725dba664bcf41",
+      "bytes": 2109294,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_focused.png": {
-      "sha256": "0a8c9d4a27a695a8113f65d2cf2c6aef7da0a2402644dd6abfc09cab9132ddbc",
-      "bytes": 2083390,
+      "sha256": "b72dc73372ca820355727bc9e33674f9e9b5446501e223bb520818a96450deb6",
+      "bytes": 2077026,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_happy.png": {
-      "sha256": "7f13246b81c9b653d1ccb2d2c8f0462514e52c3c3e8f1f155d2e61de4ba1d0b2",
-      "bytes": 2082252,
+      "sha256": "ec3dde2fc9f215fddc553b6189ce6786fb8f6cd60d44e1b721511301ec2f7f36",
+      "bytes": 2093707,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_mischievous.png": {
-      "sha256": "05a154c5ca6db948c1cfa92bd279a7c5858061ffb21cf16f8f1b88fdc1bec1e0",
-      "bytes": 2049328,
+      "sha256": "df5869cbb7e566ae4dcb0092b742998730b0a3f5a321af8af4b325bc09a2d133",
+      "bytes": 2114749,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_neutral.png": {
-      "sha256": "aa1162cd202257136b2b1cde09c39ea5c6fb5ca563cbc3d950203f4bf14c93ca",
-      "bytes": 2120912,
+      "sha256": "724b3b81948de8db54a39ea5238a40ab0116bba513979237efdc7a976f69326b",
+      "bytes": 2127535,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_playful.png": {
-      "sha256": "4c5129089c46bb9eefcca3068f3485ed02d038a477eac6229ccb7b9ee7a6acbf",
-      "bytes": 2164541,
+      "sha256": "a6d6a6f0dbe71fb145f7c78d2426c3243fc1a060d2a8138fcc70b00df3889471",
+      "bytes": 2109701,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_proud.png": {
-      "sha256": "6de409114450a84378af235863430e427f1a701b9a656613dd263af201f463e2",
-      "bytes": 2145366,
+      "sha256": "d2bef1ebb2015e5435c40f6c6996b1b785afcb60fb3d0d88c2a51635a4364757",
+      "bytes": 2176499,
       "executable": false
     },
     "Character_Art/Mira/expressions/mira_surprised.png": {
-      "sha256": "522d5e35ffaf430a085dbd25f0f8ea1de6dc59a493445918053ce64a0c52dd54",
-      "bytes": 2100955,
+      "sha256": "64cabe4b2fc5e8d28294d4176f1aef691596820a12544c1e4d52ba7726823087",
+      "bytes": 2098727,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_comforting.webm": {
-      "sha256": "7a097475d693ea1fc3a500750b3b01b06e8dd335fb713a74f49bf2223067c407",
-      "bytes": 1000874,
+      "sha256": "f8d8046117665a4e7071c583d61917cb79e40497026310f5a2e56c82627a803a",
+      "bytes": 715912,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_concerned.webm": {
-      "sha256": "75ee560370703ae332115af0e1f32b997ffc2c2a5fc5df3b3cfa583cfe5adad1",
-      "bytes": 928459,
+      "sha256": "01ada831b5ec8b46032c6c31ca154c0d413f027522c5026562996a1ebb3ff4df",
+      "bytes": 684291,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_disappointed.webm": {
-      "sha256": "2d414a20e51ca39d0e5c75fae785dd39d99268bebc58dee6db89e5953db0393a",
-      "bytes": 981343,
+      "sha256": "cc2d824019947eed7f5cde0b93247acf8c5ba284200c62caa042c8ceccaa9afc",
+      "bytes": 686809,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_excited.webm": {
-      "sha256": "a482ade38641a27bb65c01e96ac073232ba60e9e2445e1946a40cefab9d9e14f",
-      "bytes": 1278397,
+      "sha256": "d9adb990fee0692095f6b2adfbca3e3ba4c15b6e9577826824e2ae91c463f5fb",
+      "bytes": 723904,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_flirty.webm": {
-      "sha256": "9af31981128f73adda1e6c25094f5298735ea5620d26e401cdab9d91263f8beb",
-      "bytes": 1034144,
+      "sha256": "a8565561b3fc515a2ea2229b2f894a4c6bed741f0ad978affc801e1d20a9c4dd",
+      "bytes": 688029,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_focused.webm": {
-      "sha256": "440648460dda7a5f958c43de360f9da769b873c3dacad7e3094fe55d713803d7",
-      "bytes": 952035,
+      "sha256": "493b18ede840a10e847810145fee6f4e63865551397409b191c9e42f6610e12f",
+      "bytes": 652628,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_happy.webm": {
-      "sha256": "e75c0f53980967831ace50a3793a6226873f4cda20424db08f036c58f6b56829",
-      "bytes": 735647,
+      "sha256": "c74b77348600810ce0ed4f46e583052d91d855a74a73947dc4e0e2b76d40a244",
+      "bytes": 705275,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_mischievous.webm": {
-      "sha256": "623a94dde101743d04df05a9f795356cafcbf7f10e9c967e7042e3cb2274a590",
-      "bytes": 1011338,
+      "sha256": "0574f7d4743db0dcb099f37716eda266193b184d43b88a7bdbb5ea87c3ede063",
+      "bytes": 717064,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_neutral.webm": {
-      "sha256": "1b35088a6cc8230c4354976c226c548abe3d2bed220b3957d658904f15c77a8a",
-      "bytes": 806491,
+      "sha256": "4d946327debff1eeffe30803fe5d2c78e09c6dbbca6a97c25c11b343a078f48f",
+      "bytes": 426640,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_playful.webm": {
-      "sha256": "e10bf0058e207586cf52c8a6aee6f14b8234b87e1829e870bc73faa7ea1677bf",
-      "bytes": 1093053,
+      "sha256": "a5d6c48e4ff02519117b24c0447cc84e0249c57d6226e2d97d2420c59c082650",
+      "bytes": 769524,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_proud.webm": {
-      "sha256": "61c241e451a31ed9d8330dd339998e2df71c7d9436994ce8396436b37efccd13",
-      "bytes": 1004736,
+      "sha256": "b5998f18512bdbbeaa46aab69468b4d9a4f951cb3a2f3e27bf45583b7c3bca33",
+      "bytes": 707615,
       "executable": false
     },
     "Character_Art/Nova/animations/nova_surprised.webm": {
-      "sha256": "fe1e7110e80f2accf93658faf943d68e2ec3d3652c23d7a9727f211093891a68",
-      "bytes": 1181086,
+      "sha256": "acc5c9cbf9e7dabe41d6a8a45abcf2826079957065e57527f19fd59531029913",
+      "bytes": 709013,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_comforting.png": {
-      "sha256": "9060b5eae461ab6e652ee2bb77ae6b366199d0e978d274b2618a510ea3d940ae",
-      "bytes": 2379597,
+      "sha256": "ae8bb3ff9097448962523c32efe705811074c54db6fb60ab09bdece0d5391dcb",
+      "bytes": 1795387,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_concerned.png": {
-      "sha256": "45b8a90e41eefe529c4d5596894facbd5b0fcff560f656533850ad564220efcc",
-      "bytes": 2264995,
+      "sha256": "95086ba35c739953b47246d20be91c1c31612dba4b0d54165e4808c693f27b3d",
+      "bytes": 1801477,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_dissapointed.png": {
-      "sha256": "0cabb1a0bdbb2f0d54c92e13dcd25ca3ce38243509b5dbe86fc52c740cc83153",
-      "bytes": 2350011,
+      "sha256": "d322a8adb9b0164d70ebb23b7374966791a5aa2e81718bc56d0a07511623628f",
+      "bytes": 1797613,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_excited.png": {
-      "sha256": "8e3f0d557e6debfb2c5ea233c40208e222c74977be7bd9001a7d2fdc88f9beab",
-      "bytes": 2613949,
+      "sha256": "31aa8fdbe9372a1146c64e5a09599f37ba6cd0a8a12a45d056c1f2af17f12bc2",
+      "bytes": 1792762,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_flirty.png": {
-      "sha256": "f0b93ddfee8649bb105ef95fa4548912bd96fb6904d63421045a5e6337169328",
-      "bytes": 2352002,
+      "sha256": "7e36c6f48e8f6c39ad4c9adf695bebbd7d6a94b19aadbcd345a709f1ffd2be8f",
+      "bytes": 1803505,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_focused.png": {
-      "sha256": "2ef0d6819aa4421c27662341202c8435ea7d697df88f379aa3dbd16682aee1ee",
-      "bytes": 2334418,
+      "sha256": "20b98e1ecaafcdf8c623a8ba089c156ca36bec374657a1cae2c9a01b435133bc",
+      "bytes": 1755008,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_happy.png": {
-      "sha256": "ce54eb5a88852fc2403ba54db56eca5e64626a6be07ea54c28ea41c09f377fd4",
-      "bytes": 2360946,
+      "sha256": "6c1a2f93bffc49566cfb38d89994b75a9253928f55c498a0f56a46e45763c062",
+      "bytes": 1776214,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_mischievous.png": {
-      "sha256": "43d1614c00e7751f029168236e46ad0d8e2e6fa22eab94b7d06aae042c3d486b",
-      "bytes": 2336911,
+      "sha256": "10b40cdc38c281e8b9735e7ae879db8ded0245b1696f2208ef7c53996dca7c60",
+      "bytes": 1808057,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_neutral.png": {
-      "sha256": "8bcf9029375f049b2e86d96968ede313b74a2dd9172dadf3f5d0710bd1ac0c83",
-      "bytes": 2485336,
+      "sha256": "625302c2ac7d0a6e587811aa6cce2e8a16a9d77ee1e43b689efef184b9f4bc58",
+      "bytes": 1773915,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_playful.png": {
-      "sha256": "da0b1a3a19907bd17a250c4f05146d9886bdc61bc62ffe3b0e1275e64965b1d1",
-      "bytes": 2435244,
+      "sha256": "f94c5117359eb273c3dd90557d085b9ff0e5f41e3c22623a8dbd1caa48b7c38f",
+      "bytes": 1832817,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_proud.png": {
-      "sha256": "021f263f5c4b440a73e3318abc356a847ea56f00b9844caa462ddb5e53f5764e",
-      "bytes": 2350031,
+      "sha256": "f975eaf832865e1e6ba00fdab30a55b60cfe6df6f449062eb1621ad613fec2ae",
+      "bytes": 1813918,
       "executable": false
     },
     "Character_Art/Nova/expressions/nova_surprised.png": {
-      "sha256": "46274506c59a29d2809860768e09f8c4f380dccfe95f27ced55f3a519e9bbce4",
-      "bytes": 2556715,
+      "sha256": "1fa3748d0113db677914dcb7f762174d1a3884c2cdb844f422f2421fd3f112bc",
+      "bytes": 1803177,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_comforting.webm": {
+      "sha256": "0c26cb8463b983bc494e0fb45104f29e0828471f2fac1d79d1f1bd43cd6b8c44",
+      "bytes": 624701,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_concerned.webm": {
+      "sha256": "3ba2efb820688761ca58de2ff16e244edc9992160b9edb9dae887e02cad8408c",
+      "bytes": 617094,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_disappointed.webm": {
+      "sha256": "c64e7e4abba7f6f9dd24e1561ec37ac37adf65a86ad4e6716c0efa3d728f48b5",
+      "bytes": 613951,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_excited.webm": {
+      "sha256": "c5ab689fa785eea6aa1d85ec80ee0e773f34f64388a1646ce7d18924f06c7ce3",
+      "bytes": 626901,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_flirty.webm": {
+      "sha256": "c09e13c08e74261fa21e019397b40688108829ef046e92103139902e5ed78699",
+      "bytes": 603904,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_focused.webm": {
+      "sha256": "042297ccdf9956c96fc24990d9b177da4455ee8a38a9236a673e92906847ab4b",
+      "bytes": 594194,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_happy.webm": {
+      "sha256": "a47c9aa2a7f3d10a2b85f0e0521a21dfa92c4e9e1629e1712c228a059ec58702",
+      "bytes": 630487,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_mischievous.webm": {
+      "sha256": "d89fbb573f6accee7fe742d8a21a3d8fdc93c0b11bba0ccf051930564913f53d",
+      "bytes": 620946,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_neutral.webm": {
+      "sha256": "c8c96056dd4dadac29f8288fb933a48ef5538e578c023e0eb46edf3e7204f0eb",
+      "bytes": 650518,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_playful.webm": {
+      "sha256": "e158308d57f7e7f4e42f084541953379bd7f9d046784947aa580dd7633e42cdb",
+      "bytes": 627708,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_proud.webm": {
+      "sha256": "38af2ddf4495d1552c20e42195e37b244c31987bb407a0395ee0ffe3495da902",
+      "bytes": 621765,
+      "executable": false
+    },
+    "Character_Art/Seraphine/animations/seraphine_surprised.webm": {
+      "sha256": "be37c6448c04e710c7205de2633e96b71a17aa611c9044505c188eadbc0c3d11",
+      "bytes": 628057,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_comforting.png": {
+      "sha256": "522c6eee920af637839d5eda00fcf5df7d676e4158c70a5df32e977a217ff1fb",
+      "bytes": 1717691,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_concerned.png": {
+      "sha256": "59960a900a8b07499317d1a4cf81228ad3c0163327fe3b66f601940863348ca8",
+      "bytes": 1720224,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_disappointed.png": {
+      "sha256": "d96312722e868171df0fa1ee148a569114539a9358bfc744bcadba00f83eb99c",
+      "bytes": 1722478,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_excited.png": {
+      "sha256": "2a3c2a73c9ef41408a2b8b73772745e7c479ff2e415788646ae4ed286cd5d795",
+      "bytes": 1723767,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_flirty.png": {
+      "sha256": "3c89529f230d09fff45877c539912cea36d4216a6057dbc516788a2cc0a4fdd6",
+      "bytes": 1726852,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_focused.png": {
+      "sha256": "687f01dd7e8bd79bccf57c7b1c9aafac9d85dd46f4e224e6991a951b311af819",
+      "bytes": 1699806,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_happy.png": {
+      "sha256": "a16910f6dbc130887719f4729d460ac92f54eaad573eb5c0dda246a1b5219dbe",
+      "bytes": 1732004,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_mischievous.png": {
+      "sha256": "73cf22abcea1e13e29acd7d707c3978fbc314293deb18e08986932a0801b0fab",
+      "bytes": 1718462,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_neutral.png": {
+      "sha256": "8da0d08d6d71b25dd44817894c57195d03f0619149e134adc2e6dda2de65c893",
+      "bytes": 1700297,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_playful.png": {
+      "sha256": "f2bfa88be487d382443108ecb7f5a428007d6f06303c2ecaed201bb94d979667",
+      "bytes": 1747384,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_proud.png": {
+      "sha256": "52765e4d0841d1d9021a266bea95a51303cd1a9997969541acbbec6649fadb65",
+      "bytes": 1717470,
+      "executable": false
+    },
+    "Character_Art/Seraphine/expressions/seraphine_surprised.png": {
+      "sha256": "97977ee31dda0ec8d22a6ab6e814fa585cde7f4272412e4ca83710825947ea1d",
+      "bytes": 1750097,
       "executable": false
     },
     "Character_Art/Vex9/animations/vex9_comforting.webm": {
@@ -797,8 +1037,8 @@
       "executable": false
     },
     "INSTALL.md": {
-      "sha256": "d0d10a400ef4407716ad23e87872379f0c1224e2236125d8f49f93344115b3b0",
-      "bytes": 8144,
+      "sha256": "ed3438ccec1561648628b7f7bf149d4fb12b9c0397a0ae12720254d172742ac9",
+      "bytes": 8163,
       "executable": false
     },
     "KNOWN_ISSUES.md": {
@@ -812,8 +1052,8 @@
       "executable": false
     },
     "MODELS_AND_ASSETS.md": {
-      "sha256": "758eec9c161d2735593798409ed2fb84a8edb1dcb2d6cb9c0afdc9aad20776b2",
-      "bytes": 4824,
+      "sha256": "fc72476c163e7f90c6c8bfe37df9d7f20036e3b4b0e55de64c71166e19d45352",
+      "bytes": 5344,
       "executable": false
     },
     "NOTICE_FORK.md": {
@@ -832,8 +1072,8 @@
       "executable": false
     },
     "README.md": {
-      "sha256": "3b19f6dbfef15c2db1e54d2cc15aa443cecbb9ff793c774b8f01b21469ff18cc",
-      "bytes": 5636,
+      "sha256": "1203f0748676f66b17b228e5e5444859c4cbc12014b85b982700a5d8fa7195d6",
+      "bytes": 5125,
       "executable": false
     },
     "RELEASING.md": {
@@ -877,13 +1117,13 @@
       "executable": false
     },
     "ai_observer/protocol.py": {
-      "sha256": "b91d5349c38ca22e372a5a2035b95f4c67f499c1a5b323f45b9a4e26c4960bab",
-      "bytes": 14668,
+      "sha256": "aef66e080e57b8622cdc88782697b1c3b05a38a68d25e162289236c8057fb102",
+      "bytes": 15235,
       "executable": false
     },
     "ai_observer/server.py": {
-      "sha256": "70876fd5d643e1ed315188cd6cedb1e963404bbac9dc476831a74f2578e28424",
-      "bytes": 43532,
+      "sha256": "94c3d84b96db9e5c72fd8e556797c12564f5547fc124b9be719be1911789cd89",
+      "bytes": 43974,
       "executable": false
     },
     "ai_observer/smoke.py": {
@@ -1021,6 +1261,21 @@
       "bytes": 5398,
       "executable": false
     },
+    "characters/models/iris-narrative-f29-v018/Modelfile": {
+      "sha256": "55d8ff1dd568bd500cba336f5c80770a115e6ad4d8f6d14c70d6e018b833ec82",
+      "bytes": 7279,
+      "executable": false
+    },
+    "characters/models/iris-narrative-v1/Modelfile": {
+      "sha256": "42fa9c635f8cec042eb22ee66e11b8cf1b82f9ecd41c621dffa3886a49ff560a",
+      "bytes": 7580,
+      "executable": false
+    },
+    "characters/models/iris-narrative-v1/README.md": {
+      "sha256": "38bfd95f548588cd9d89807e91ebd2155a6e1ccb46d59822fa285d760807f13a",
+      "bytes": 2500,
+      "executable": false
+    },
     "characters/models/mira-narrative-f29-v015/Modelfile": {
       "sha256": "de8d6446854f10235eab0847cc073b1376d11fca3275245f03fe6cefc456461a",
       "bytes": 7170,
@@ -1066,6 +1321,21 @@
       "bytes": 5343,
       "executable": false
     },
+    "characters/models/seraphine-narrative-f29-v019/Modelfile": {
+      "sha256": "d9fe41c44ededc18219dada43613da9fad710f154b86d3869f1a68eb64665f6d",
+      "bytes": 7305,
+      "executable": false
+    },
+    "characters/models/seraphine-narrative-v1/Modelfile": {
+      "sha256": "2efbce778f219d6040b11bc1e5f6f75cc9781e2d7e4c8c42874937e351d86ed8",
+      "bytes": 7587,
+      "executable": false
+    },
+    "characters/models/seraphine-narrative-v1/README.md": {
+      "sha256": "93442a8a8ef410224a0b6ab299df8e3c6586634522d19d3a8b46f8f665f74622",
+      "bytes": 2259,
+      "executable": false
+    },
     "characters/models/vex9-narrative-f29-v016/Modelfile": {
       "sha256": "b7ba6726c5ad83c4808c7aafa27c0cf6bd0aff796e4bf625baf94e0cd95f7748",
       "bytes": 7058,
@@ -1087,8 +1357,8 @@
       "executable": false
     },
     "companion_ai/campaign.py": {
-      "sha256": "d950845d201dc32971f8119a75526e1ee181a470dc8192653196305047cf1094",
-      "bytes": 85435,
+      "sha256": "9a32748be8bccfb323567c9e9c72fab0832ec9bdb1f7540cdf340b5b47aee9bd",
+      "bytes": 131057,
       "executable": false
     },
     "companion_ai/character_builder.py": {
@@ -1107,8 +1377,8 @@
       "executable": false
     },
     "companion_ai/conversation.py": {
-      "sha256": "81f9276e9293fe1c8262d9817209fe3249af199d918a9689122d54bc5927cebd",
-      "bytes": 123310,
+      "sha256": "82f903bb758d4442be384be1ca95cd3cfb06d7e52df2f979e48f60ca23080a49",
+      "bytes": 125464,
       "executable": false
     },
     "companion_ai/diagnostics.py": {
@@ -1122,13 +1392,13 @@
       "executable": false
     },
     "companion_ai/event_deck.py": {
-      "sha256": "238244307c2eb9594d4773dd224b178ac94189de009a64294948519af482f7c4",
-      "bytes": 43876,
+      "sha256": "674b586545d2fdfece8c8d003ac13ecf820e5b6a373d361e4f9b591afe3b7e1f",
+      "bytes": 46913,
       "executable": false
     },
     "companion_ai/event_intelligence.py": {
-      "sha256": "3289e14a86f9c6e9b6f98aab02b7b5b87dbfaec654a19260f6bfee75c3a7973f",
-      "bytes": 18890,
+      "sha256": "232483d66f65d465c0138b5e7c9f490b07acd6042cabd534b61af6467fbac05e",
+      "bytes": 19061,
       "executable": false
     },
     "companion_ai/event_policy.py": {
@@ -1147,8 +1417,8 @@
       "executable": false
     },
     "companion_ai/fidelity.py": {
-      "sha256": "d3bbb9712255078f4fcc14b160f60980b86ef05422241fb0428becfa64570638",
-      "bytes": 87412,
+      "sha256": "b2e64c5ebaedc1ca3f67988942683abbb7645a0c2882adb683710f6b9ffae580",
+      "bytes": 88397,
       "executable": false
     },
     "companion_ai/grounding.py": {
@@ -1181,9 +1451,14 @@
       "bytes": 19463,
       "executable": false
     },
+    "companion_ai/narrative_lint.py": {
+      "sha256": "c215cf1f3d955306e7db0ae1f006b292f8e3e3de8ff6cd9eada011c76dfdabda",
+      "bytes": 5344,
+      "executable": false
+    },
     "companion_ai/nova_verified_bridge.py": {
-      "sha256": "f58b77e205866d9fc896b5e5165bc1430994233146fb22fced283abf485d8bcd",
-      "bytes": 6143,
+      "sha256": "c5ca036ffafecce6990e3996e0f15dd249220dee209d2eaca813190e4ee2467b",
+      "bytes": 6179,
       "executable": false
     },
     "companion_ai/player_events.py": {
@@ -1192,8 +1467,8 @@
       "executable": false
     },
     "companion_ai/reply_cleanup.py": {
-      "sha256": "ad55d823f16e472ecd6092bebbe0373656f78b9f7be033b5620d7064616fe7c2",
-      "bytes": 11427,
+      "sha256": "b6b8d196aeba3a59296907172a2bf988987b7b82ce71580b1aef0fd772472b0e",
+      "bytes": 12796,
       "executable": false
     },
     "companion_ai/session_history.py": {
@@ -1202,8 +1477,8 @@
       "executable": false
     },
     "companion_ai/session_journal.py": {
-      "sha256": "f1858cf5ae062933ef1951a3eb6d2a83776604a8742c67499a4d390788b3350d",
-      "bytes": 15450,
+      "sha256": "387be99d8d499d78acbf3a0418856af67ca37599e49725bdf89fcf258e7f875c",
+      "bytes": 15465,
       "executable": false
     },
     "companion_ai/settings_control.py": {
@@ -1227,22 +1502,32 @@
       "executable": false
     },
     "config/campaigns/asterion_initiative/campaign.json": {
-      "sha256": "6f54fe7d7f8fc2aca818d3bed0cb68ca64abd138bfc8fb0ed7a493bf04ff3a4d",
-      "bytes": 28764,
+      "sha256": "4a94704e6698591fa48439aa97bfe81f1070d6d51ccd1220494a41db16952280",
+      "bytes": 28755,
       "executable": false
     },
     "config/campaigns/asterion_initiative/narrative.json": {
-      "sha256": "3e46fe3ecb66fcccf6474d3cb923d2fe2a8d0e1edabd611ab0a2695bd739f7db",
-      "bytes": 31876,
+      "sha256": "18c3ee67fe61769fbc1748e15c73b8f802d4b74254309e13a54e9e813e81a690",
+      "bytes": 32265,
+      "executable": false
+    },
+    "config/campaigns/rise_of_helix/campaign.json": {
+      "sha256": "96def709cd5ad55803593dc5bafbd9a3f5095f3c848181715008e9aa6ce0c3db",
+      "bytes": 21723,
+      "executable": false
+    },
+    "config/campaigns/rise_of_helix/narrative.json": {
+      "sha256": "b8c1dc30678b4c0e28c688ce1154dedabb88b686fab151a76012bcad056293c8",
+      "bytes": 26671,
       "executable": false
     },
     "config/event-deck.json": {
-      "sha256": "d193b275920260dc0aa1950bf8e3c80409155fe05a45b0a936d1aa9a3f461049",
-      "bytes": 51631,
+      "sha256": "0a80f90cbae493e33db110fa28c23669f5887a5983042a9ed20288e856e7fd72",
+      "bytes": 75512,
       "executable": false
     },
     "docs/fork/f2-changes.json": {
-      "sha256": "7769a76062db68c0ce72ddc09c3dfe482429a4b9bf3d4aba9d1ae4cbf9df3eee",
+      "sha256": "7b62c588600e99db76101e16ed1a84906cb3990c1c1c39fd4e472a9042ad8ed1",
       "bytes": 8035,
       "executable": false
     },
@@ -1307,12 +1592,12 @@
       "executable": false
     },
     "index.html": {
-      "sha256": "c7d70e8cff761114d982d2a91d1f5c4f01e1519058ad450692c796038073a8f6",
+      "sha256": "4714c7db1bf603ebab54402dcbad544fcfe3511c33bca4be5fc3941e54b8b6f0",
       "bytes": 159209,
       "executable": false
     },
     "install.sh": {
-      "sha256": "bcd215eeb0ea364c5b8317ce9823450a428956d175f2765a9d7b0e70e8db825a",
+      "sha256": "83725f7d05af515be14a61d2499e636dcdfc5c91a4d940af6ef48da996682f02",
       "bytes": 2847,
       "executable": true
     },
@@ -1507,12 +1792,12 @@
       "executable": false
     },
     "package.json": {
-      "sha256": "e2f19559f00101f312c3da86c785d60c22bf95e19a9644ab3e0ff3977e4557ce",
-      "bytes": 474,
+      "sha256": "fbc0f07525f3acb7eb657de9d17cb85b2f92a423a9118f61bfa3141e78d98f1f",
+      "bytes": 822,
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "90cd98bab37520015de7d747fa50844f349cde3c7679d92c5cf18ad234a38a53",
+      "sha256": "90e8cce01dd4b7a27e6c184bc097d4df9cf2566fa47e25e6a19fb25d3f47c5e6",
       "bytes": 565,
       "executable": false
     },
@@ -1522,8 +1807,8 @@
       "executable": false
     },
     "release-inputs.json": {
-      "sha256": "d5732453022bbcbae278968e9dc72c73b6fd87873694e172be39193eb2612159",
-      "bytes": 2969,
+      "sha256": "e388e53887a115954892898f177d0d290f62d7599fffe16514c04754c55fd075",
+      "bytes": 3091,
       "executable": false
     },
     "requirements.lock": {
@@ -1532,8 +1817,8 @@
       "executable": false
     },
     "src/assets/characters/manifest.json": {
-      "sha256": "f663df68235add898a42bd6887ba9e59255836074ef10b0cf6299a0577ecb96d",
-      "bytes": 16211,
+      "sha256": "d5f52cd5a0c4e4435c173e11fac12b51a5135e1facb283a1c454ee4d25fe1518",
+      "bytes": 21191,
       "executable": false
     },
     "src/assets/menu/backdrop.webp": {
@@ -1567,53 +1852,73 @@
       "executable": false
     },
     "src/assets/menu/companions/celeste-face.webp": {
-      "sha256": "dbdbcd0e031bc6a87f21bed0b4bfe46c7b7e4cbab1e2614a8877436873e66d4f",
-      "bytes": 11928,
+      "sha256": "909549ec14c694419aa07cf5553671a998f20a4a68e2ee90fa25223cbfbf1d89",
+      "bytes": 10684,
       "executable": false
     },
     "src/assets/menu/companions/celeste.webp": {
-      "sha256": "1f4799286d77606a0b0637aea6ff79b3e2ccc73dce873b3e7bdf9e2c86717154",
-      "bytes": 63194,
+      "sha256": "13922863381004dd8a385b15ba45167c24e2ed9b660643c9e75935bd419f53b7",
+      "bytes": 61070,
       "executable": false
     },
     "src/assets/menu/companions/daisy-face.webp": {
-      "sha256": "62d45e74a3e53d7ca24e236732ed76ac7b5c7f949498a7d4dc4362ecef39ee40",
-      "bytes": 14498,
+      "sha256": "1600de7096101b3a39f46c1db2ff22b6cb541f78fed2144f120a830143b72db7",
+      "bytes": 11088,
       "executable": false
     },
     "src/assets/menu/companions/daisy.webp": {
-      "sha256": "f5dfb020577273587006b3010836e41e016eeb796ae5c3e12c39a089f37175ba",
-      "bytes": 117824,
+      "sha256": "ecebe016fcc721076be7e3bd2bdf51697f6aed3b2e0c06eb3a301d4d77a68b1c",
+      "bytes": 78322,
       "executable": false
     },
     "src/assets/menu/companions/evelyn-face.webp": {
-      "sha256": "15060a5cfca746d3f2ec1483331455dc351957416f03c87541f09dadcbedc5a0",
-      "bytes": 10268,
+      "sha256": "35b91281b85c9ea09ddb52cad5cf7da2535521d10c9a49db0043e2b6d2f2cc13",
+      "bytes": 10604,
       "executable": false
     },
     "src/assets/menu/companions/evelyn.webp": {
-      "sha256": "5c79c2361a081c0048861f71c062a292b4e6c3f5af5163b0187cc8712640f15a",
-      "bytes": 68726,
+      "sha256": "9e94f0033165faa9bf0988bdf6e4760d6bff90536c25f05dd2c0d0e089425c83",
+      "bytes": 64282,
+      "executable": false
+    },
+    "src/assets/menu/companions/iris-face.webp": {
+      "sha256": "6b6d219bda41a2ee470c5ca7213fae54dd38faa1d1501ebb90678ce5325f070d",
+      "bytes": 8044,
+      "executable": false
+    },
+    "src/assets/menu/companions/iris.webp": {
+      "sha256": "0b6c12c8fe9f59cf5425bc40759bc8640e8799d7a329a068c6b857617703d8f5",
+      "bytes": 77184,
       "executable": false
     },
     "src/assets/menu/companions/mira-face.webp": {
-      "sha256": "f7b3698c4a96129a39340d7856478689399b01e5959b473ab7a265bee32a9d11",
-      "bytes": 11322,
+      "sha256": "0dc0c9bd9cead8602916c76c7f6187f450eaa59c9eefebe686597fbe6812b79c",
+      "bytes": 12506,
       "executable": false
     },
     "src/assets/menu/companions/mira.webp": {
-      "sha256": "cd5a9261db23656fc5a1e45c2ba3778e0602826361bb8ae7c2c7f5d074fb32ee",
-      "bytes": 107954,
+      "sha256": "d874f36a3676bd8256ac735269efcff7216f971abd4dfc874771c49790971827",
+      "bytes": 92590,
       "executable": false
     },
     "src/assets/menu/companions/nova-face.webp": {
-      "sha256": "0b959d1113cbfa3eef469bdb7ce013691c1925420b055d3bfb51a6edc2972fed",
-      "bytes": 12422,
+      "sha256": "a2aad32b4516cfe34cf2f2cc58ca31624997102812e6206cd60d11e319625ce4",
+      "bytes": 10702,
       "executable": false
     },
     "src/assets/menu/companions/nova.webp": {
-      "sha256": "0f3cf2a165f1ffd9c93a6a377352bce5627b4beb46473fb37e7bb1dcc9bb32c2",
-      "bytes": 107970,
+      "sha256": "815119dd2614967d577fcfe0b84f84709db7b6d068a09144c238d95b001e801f",
+      "bytes": 87998,
+      "executable": false
+    },
+    "src/assets/menu/companions/seraphine-face.webp": {
+      "sha256": "c7b2ece1fbb2a5ef84e33683c5bf7aa5674ff275ee6e7068f4fdb3880bedaa1c",
+      "bytes": 10086,
+      "executable": false
+    },
+    "src/assets/menu/companions/seraphine.webp": {
+      "sha256": "86c2c294f4d5f67df60c0ace029c74af97eeb488923499844dd32d4a0b97feca",
+      "bytes": 65536,
       "executable": false
     },
     "src/assets/menu/companions/vex9-face.webp": {
@@ -1641,9 +1946,104 @@
       "bytes": 2957,
       "executable": false
     },
+    "src/assets/story/rise_of_helix/ASSETS.json": {
+      "sha256": "3f77fedfb71915afae30da485d7d0d744425db12799eb672143f7f00d654b301",
+      "bytes": 6703,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/chapter_1_splash.webp": {
+      "sha256": "b6500e45da82f3f076256662a9b86bf60cdc2f20eae321f55fd2fd3aabcea69e",
+      "bytes": 9918,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_datacenter.webp": {
+      "sha256": "752c49004ef377c9f2a7635358f0df3a9bfbb3f2f769a9ad25a6b8e475eb7f82",
+      "bytes": 9102,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_exec_office.webp": {
+      "sha256": "1f31239ae2c3ba40353204c832c3b3992b8d83eeafffbe2fe83b726353102fa6",
+      "bytes": 9522,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_exterior.webp": {
+      "sha256": "30004c5c34c0555bae35829ca65538fdc126d5fa062b26a0f1869e11179ed61f",
+      "bytes": 9282,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_extraction.webp": {
+      "sha256": "fbef7946adba036c731cb23be6b6a2703beac2e9b7fbde1187a4ce6af32efa3e",
+      "bytes": 8542,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_intern_desk.webp": {
+      "sha256": "3aaf7e3adcec0c72926950f76cb552b1ab51215ebc703811ab0e6630b3ec3068",
+      "bytes": 8996,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_interrogation.webp": {
+      "sha256": "3cdc17244a520bf29f7ef95f3dc14432ef5815baddb9235dd501eecbb9d783dd",
+      "bytes": 9104,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_lab.webp": {
+      "sha256": "ba65d1d8c69c8df1647982b993515e45d7c17a3868690cf994767271d8189e39",
+      "bytes": 7658,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/env_reception.webp": {
+      "sha256": "a47bcbb9b436bc11d86610278d531a607da3358e35f3087d8be8f72f5b9af656",
+      "bytes": 8594,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_arrival.webp": {
+      "sha256": "5ff9a906e2664f06dbee0a086590168c375efc152c42920bafbd3d52813eba57",
+      "bytes": 9582,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_breach.webp": {
+      "sha256": "dc436fb07d7794e40bdbaf2294dd079695e928b1782e1818802bfeef6ca991ec",
+      "bytes": 9086,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_conclusion.webp": {
+      "sha256": "e64b669dca30fd2cd7267a0554b3dd6bfcebd460cc1f0794f71547ad5aa6f761",
+      "bytes": 9248,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_detention.webp": {
+      "sha256": "58b9a2bc75309f4b8ae1716e64ccd00b2d89c0ff1341c5ba54d5accf8bfa1189",
+      "bytes": 8660,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_mira_eval.webp": {
+      "sha256": "6724ee375c3175ade2af99604969e943291d62d2178cdf4a6b4f8f720d249802",
+      "bytes": 8776,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_onboarding.webp": {
+      "sha256": "20cc3f7653d2aa5a994fb599eeeb231464d0d681ea4025cd687679d2d2d96d9d",
+      "bytes": 9894,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_release.webp": {
+      "sha256": "21eb855d5f248a8f7ac7ce7aa6f3e59bf10816d950aac9a1a582815653a4f5d1",
+      "bytes": 8670,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/h_vex_lab.webp": {
+      "sha256": "edbe5d0b5ed28d027c9ec12e3a71b385928ec34a52221da391e74ff83bbb7178",
+      "bytes": 8354,
+      "executable": false
+    },
+    "src/assets/story/rise_of_helix/key_art.webp": {
+      "sha256": "303aa22a0c41ba6b17f2dda5c372797855d395199fe3d82c827bd6403786a214",
+      "bytes": 8312,
+      "executable": false
+    },
     "src/css/companion.css": {
-      "sha256": "66ff6f19146e5d54a8bc31097ae31e2f339b4da77ed29b135a0f1b8ac4fd0689",
-      "bytes": 51801,
+      "sha256": "81a379392fb737035df79fe76af1f83cbab6751d1415b61c8ad80d07b707d05d",
+      "bytes": 54557,
       "executable": false
     },
     "src/js/ai-settings/control.js": {
@@ -1692,13 +2092,13 @@
       "executable": false
     },
     "src/js/ai/companion.js": {
-      "sha256": "eb1db08b44716631a172f3b88bf766dcfcc7d109908a0d5ec5060e0966ad7247",
-      "bytes": 27340,
+      "sha256": "5ab3c4d3c95d4f546cbdf53b97b39e12cb5e91975cc0a14e0b1e540927eba570",
+      "bytes": 27390,
       "executable": false
     },
     "src/js/ai/connection.js": {
-      "sha256": "f6b2f602203531679cdfe9a6253869987d95db4b932539743fe81444bb9472be",
-      "bytes": 6461,
+      "sha256": "6d422614ef0ce357d2fd27c6355343ee04faba4792f5f288322f567f1332bbae",
+      "bytes": 6491,
       "executable": false
     },
     "src/js/ai/context-intelligence.js": {
@@ -1722,13 +2122,13 @@
       "executable": false
     },
     "src/js/ai/main-menu.js": {
-      "sha256": "cf07e5088f19ca094fc82c97ec460107876e5a95b9e5f5e426f70d3952de39bf",
-      "bytes": 33566,
+      "sha256": "eb987cd9c909f312d828f3585a9084bb33181298635940376ac50bb51c29a5dd",
+      "bytes": 52856,
       "executable": false
     },
     "src/js/ai/menu-art.js": {
-      "sha256": "dd9e8e174318ea2189347c5026991f51d577f51441d7b8cfcf37aacfd51a4a02",
-      "bytes": 2924,
+      "sha256": "01ce01199a293b20d9f61519f91c1a1fba0d0cb65f277f6fa754fcbbcf3d153a",
+      "bytes": 5643,
       "executable": false
     },
     "src/js/ai/presentation-controller.js": {
@@ -1757,8 +2157,8 @@
       "executable": false
     },
     "src/js/app.js": {
-      "sha256": "66023e7e1c88dc666750c09d0282955ac4a5a93e7fc2eedca6a53f038047fbc4",
-      "bytes": 338810,
+      "sha256": "331c00b11dfad43ee1c46ae047b978d9427f36d050137142d68861b081580425",
+      "bytes": 339130,
       "executable": false
     },
     "src/js/backup.js": {
@@ -2272,8 +2672,8 @@
       "executable": false
     },
     "sw.js": {
-      "sha256": "76ae8faaa94f4fad5b3476a6767cc4940d0293e3d24a3752b75e1bd3f6fbbc29",
-      "bytes": 5728,
+      "sha256": "e612fe1dfffa62a54c034563db1ac6b6068a4b679a960d299f55c6dd7a3db35a",
+      "bytes": 5831,
       "executable": false
     },
     "tests/__init__.py": {
@@ -2291,29 +2691,204 @@
       "bytes": 0,
       "executable": false
     },
+    "tests/ai/fixtures/campaign_progress/README.md": {
+      "sha256": "428dd28a75b97f9147721cece7875ea391149f243e84e00825f50b13f50d052a",
+      "bytes": 2023,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/make_fixtures.py": {
+      "sha256": "51b506c268a057623e4bea0147130c896725d91ab0584e338d0bba603edaf67e",
+      "bytes": 3814,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v1-ch3-done.json": {
+      "sha256": "af9ee6a57c0302f6e06eb615ee25dac70a6175514d623bdffcb6659c0562f62f",
+      "bytes": 5272,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v1-fresh.json": {
+      "sha256": "b44638def81d39499af8fc5a568e55b3129ae841295fdb8450781e5a8ebc12f0",
+      "bytes": 192,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v1-malformed.json": {
+      "sha256": "8d03ad76851690423cae2a557daeca1cf7a82979bf632098c411510ced353662",
+      "bytes": 4083,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v1-mid-ch3.json": {
+      "sha256": "84dcc046e4fdb4835ecb8d00a353f957c53f0551369b168804701bf2176a8d9d",
+      "bytes": 4199,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v2-ch3-done.json": {
+      "sha256": "49ba484c4c86b0d0a55356eda46933a99d969ce7c3fb32f7d05808c781de61bc",
+      "bytes": 5582,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v2-fresh.json": {
+      "sha256": "f6b9867b7b9c8239b3b372047717e71774d26852c7ffcba4f36ec1eb84a485c8",
+      "bytes": 214,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v2-malformed.json": {
+      "sha256": "1e738eac82956032da1dee02f08ad236262c912f501e433d27f55f8f2df3bca7",
+      "bytes": 4324,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v2-mid-ch3.json": {
+      "sha256": "cd1d3111190a91b2004c4d08488633aa4cfc627817d20eb70fb4aa6619095d3a",
+      "bytes": 4414,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v3-ch3-done.json": {
+      "sha256": "2ccd5c25d0a84754464b05f194c4a3d37db591b42c8c7f53c8c70dfb410c5786",
+      "bytes": 5970,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v3-fresh.json": {
+      "sha256": "9fb670796826f0251f769349546e348b4eda9057cfe80f86222929aec8b89656",
+      "bytes": 253,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v3-malformed.json": {
+      "sha256": "339a3866f2a23b69932276b1abe7b9e6f409c978267d0699f5d8449c5fdcaf93",
+      "bytes": 4540,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v3-mid-ch3.json": {
+      "sha256": "c4b085479ecbf63f6029ec585db7f0a58e23887e511a4a4bc8118c30a08e9527",
+      "bytes": 4552,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v3-partial-puzzles.json": {
+      "sha256": "37dd4b03febea0970044afba70d5db98091d06386c6f807fbf3355ece4000610",
+      "bytes": 5434,
+      "executable": false
+    },
+    "tests/ai/fixtures/campaign_progress/v4-round-trip.json": {
+      "sha256": "de6913244e46713e1cb0da8ce612632ddabaa186df9b98980ccf82ffc8d9db33",
+      "bytes": 5500,
+      "executable": false
+    },
+    "tests/ai/fixtures/event_deck_eligibility_v10.json": {
+      "sha256": "cf512d4a34e72adc5d3928fee382562a94db53826df546c0baa722fef3e0248a",
+      "bytes": 6576,
+      "executable": false
+    },
+    "tests/ai/helix_board_fixtures.py": {
+      "sha256": "ef2fde8297a907f69df1cefdc181ba780524759cd206837f261cebc94ea6e4b4",
+      "bytes": 3169,
+      "executable": false
+    },
+    "tests/ai/helix_safety_fixtures.py": {
+      "sha256": "2d1da9af9c5282346dfb69a987029a768886851d6a6dbf1d9241b35080f297bc",
+      "bytes": 3685,
+      "executable": false
+    },
     "tests/ai/support.py": {
       "sha256": "1f699b92b20a9058d96ec4b2552342d77f2b42167b952da496cc147b911174d1",
       "bytes": 936,
       "executable": false
     },
     "tests/ai/test_arrival_comparison.py": {
-      "sha256": "2c027b5243350a8d5eaf51481522fada2932f209a60c0e0075121e11a732377f",
-      "bytes": 39402,
+      "sha256": "4427ebfd1bd7a71f2ba20269782cf1199094e7e390095c9d0e81e4d56d95b166",
+      "bytes": 39403,
       "executable": false
     },
     "tests/ai/test_campaign.py": {
-      "sha256": "552c197cbada87d696c5d1efcee8df92437caf68ca449c0bedcac9c57e2e97ad",
-      "bytes": 51641,
+      "sha256": "3f5773909e602972dbe4fc7f1d6527af688f6b35f93df58e16eff0a12f48fadb",
+      "bytes": 51702,
+      "executable": false
+    },
+    "tests/ai/test_campaign_briefing_blocks.py": {
+      "sha256": "8bdd2d97b6c764101b62428fa1d4091efa91f34e6ed7fd651ec2b931c78fc049",
+      "bytes": 2331,
       "executable": false
     },
     "tests/ai/test_campaign_chapter2.py": {
-      "sha256": "83155204b4759dbc044197722e661f0f3906a8347e6c4162b29d8bd5dba8758f",
+      "sha256": "182d583e2b08731caa7988e4fbe2c5faa6026eee9ccc62ae7c4ee36da9b166a1",
       "bytes": 28577,
       "executable": false
     },
     "tests/ai/test_campaign_chapter3.py": {
-      "sha256": "42a138bc36a60c6dd2e1ddac8fc53c610ab5cf36593843094b7f943791f00edf",
-      "bytes": 15312,
+      "sha256": "1b4851afa4aceff9c4b1f58d68e23d445e1521d42b6c1e8a574b32de8b3284b2",
+      "bytes": 15335,
+      "executable": false
+    },
+    "tests/ai/test_campaign_chapter_intros.py": {
+      "sha256": "184b4d3f8f9bd96bb076e9dce713c293a68286fa43a7dbd77780f7fdaf796b9d",
+      "bytes": 4678,
+      "executable": false
+    },
+    "tests/ai/test_campaign_choice.py": {
+      "sha256": "7dbf4e9c94eb65b6249f08cd01ff3f09e5b7ce2e91bbbb5bdf93dfbc59f5edfe",
+      "bytes": 7797,
+      "executable": false
+    },
+    "tests/ai/test_campaign_code_puzzle.py": {
+      "sha256": "96b82e99ecd2ae9894c34edbc2120e4f4884c535b10732c6870b21f4ece72f66",
+      "bytes": 11145,
+      "executable": false
+    },
+    "tests/ai/test_campaign_directions.py": {
+      "sha256": "06975199b713158e1e73e71fdc4e04a59f257a5e132199eee6c4b10e8849012b",
+      "bytes": 9189,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_foundations.py": {
+      "sha256": "94342833598d8d26e4f3f4484b2961cf447f29dd186e899129464edbd7168c96",
+      "bytes": 20292,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_h1.py": {
+      "sha256": "6ecab2c8337424cbf2af494f891fc750b9bddc9b5210532127c50b913dd675e1",
+      "bytes": 4832,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_h2.py": {
+      "sha256": "e98d99670863601d407229358208b817fc7cddc02e4c1d1c9f0ba8cd77a15642",
+      "bytes": 6869,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_h3.py": {
+      "sha256": "60e007a2586dd35b5da6857d2d4f012e1448d9091b00ef63abc3400a82fc6497",
+      "bytes": 5230,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_h4.py": {
+      "sha256": "3ae6d381d036e589fdab30538cf83fd0023c35976f86c49cb5908927e66b424f",
+      "bytes": 4794,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_h5.py": {
+      "sha256": "6b314080735f4204347851e7169fee37d5fbbecca859bb68f6dc56b1cbebbc28",
+      "bytes": 6329,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_safety.py": {
+      "sha256": "187457ab31e0f65af52ce2117161c0ad0b28a9723cebea1f9a4a94b3bdeb5ecc",
+      "bytes": 7635,
+      "executable": false
+    },
+    "tests/ai/test_campaign_helix_shell.py": {
+      "sha256": "be33eb4da41ccf364c3934004e5ba68efb1aafedb425ec4d85076a92c0b7c18e",
+      "bytes": 14759,
+      "executable": false
+    },
+    "tests/ai/test_campaign_live_check.py": {
+      "sha256": "da95fb94f995397d05edd42d9a36338c0e9858ab40d413161e0a9573826bfceb",
+      "bytes": 806,
+      "executable": false
+    },
+    "tests/ai/test_campaign_migration_matrix.py": {
+      "sha256": "f89abf6eacadf809060b399d5ae32b7256002a2878a372d79e3c85dbedb79ef7",
+      "bytes": 4519,
+      "executable": false
+    },
+    "tests/ai/test_campaign_newer_save.py": {
+      "sha256": "256060395584b28899d4b46e3a134c5e17702b7e264b2b3b219cf2b2df053c1d",
+      "bytes": 4873,
       "executable": false
     },
     "tests/ai/test_campaign_review_ch2.py": {
@@ -2326,14 +2901,34 @@
       "bytes": 6237,
       "executable": false
     },
+    "tests/ai/test_campaign_routes.py": {
+      "sha256": "4fbbb7e6f40102552ddc5d14a57a5dcbc2afc346f88f89bbde68b6c7db3b56fb",
+      "bytes": 8663,
+      "executable": false
+    },
+    "tests/ai/test_campaign_scripted_intensity.py": {
+      "sha256": "f464f1ee8108a4a8888f12155168a86eee9362fb0901a7d3f6034573b55df4c1",
+      "bytes": 5146,
+      "executable": false
+    },
+    "tests/ai/test_campaign_story_so_far.py": {
+      "sha256": "4612bba870a41dc1d571fe9765f202986437bc137406267991516f83897190fa",
+      "bytes": 6307,
+      "executable": false
+    },
+    "tests/ai/test_campaign_when.py": {
+      "sha256": "70525dffbe918a192d6eed13da854c2b8ebef947f1c6e533d8fc31f514340a29",
+      "bytes": 11711,
+      "executable": false
+    },
     "tests/ai/test_card_context_separation.py": {
       "sha256": "ac351574bf4f19e234e03232dc9c1aeb17bbd533d0fe0b9c16b25d570b3eac75",
       "bytes": 5784,
       "executable": false
     },
     "tests/ai/test_card_prompt.py": {
-      "sha256": "4fd1c9cce27719ab784e14239c5c458fdefff21a8aaefda07d2b73c86de16a5b",
-      "bytes": 26825,
+      "sha256": "387b9308ad09d35e746a5723ab79b6d9ac8a17a75f7995b4cc839f9f768b9d58",
+      "bytes": 26847,
       "executable": false
     },
     "tests/ai/test_character_builder.py": {
@@ -2397,13 +2992,18 @@
       "executable": false
     },
     "tests/ai/test_event_deck.py": {
-      "sha256": "ecc7bf6a378bbf64893f03b6b41586f5975abe36882d6bcfa7936bb7075daa0c",
-      "bytes": 45068,
+      "sha256": "981286ee6cb4b32c9e0fcab45acc8dee9d96630ec9b3eca551f57e0e48275df6",
+      "bytes": 45295,
+      "executable": false
+    },
+    "tests/ai/test_event_deck_campaign_scope.py": {
+      "sha256": "0e6b6f2af72feeb9254145e1cc720777558b3f51fc26daebe8fcfe0825dd4355",
+      "bytes": 10207,
       "executable": false
     },
     "tests/ai/test_event_deck_content.py": {
-      "sha256": "67c609a4558cd6618bce7ce8cdcb220906bf554fc28d4a46edf07c145251407c",
-      "bytes": 26294,
+      "sha256": "f20a8d7f5138d1cb3f23be54c363124b0c84529d99ce3de870367d1d00e9569d",
+      "bytes": 26568,
       "executable": false
     },
     "tests/ai/test_event_deck_integration.py": {
@@ -2466,6 +3066,16 @@
       "bytes": 22017,
       "executable": false
     },
+    "tests/ai/test_fidelity_mission_clock.py": {
+      "sha256": "db7b6a8d1a8ba043999210c92d2cd5ec7db5f77d316268fb6aea2bf032f9a9da",
+      "bytes": 1192,
+      "executable": false
+    },
+    "tests/ai/test_helix_board_fixtures.py": {
+      "sha256": "af29ddb018502e4bfe403bfb8d26cd6b500c91ae1471b726406ae78fa5a5e713",
+      "bytes": 5910,
+      "executable": false
+    },
     "tests/ai/test_hobby_recall.py": {
       "sha256": "181efee234ba2543ce5797c5d6c4d1648c5150f3d8fe1769e2c6feb219fabe02",
       "bytes": 9875,
@@ -2506,6 +3116,11 @@
       "bytes": 14070,
       "executable": false
     },
+    "tests/ai/test_narrative_lint.py": {
+      "sha256": "c93f078f2bbba4cb11288fde864a735287d08c5df9dcb9c126916cd21146406c",
+      "bytes": 10252,
+      "executable": false
+    },
     "tests/ai/test_narrative_objective.py": {
       "sha256": "fc0d69945debc1446013a66848d652d3517dda2448fe1308ef811c4a5253f569",
       "bytes": 5747,
@@ -2537,8 +3152,8 @@
       "executable": false
     },
     "tests/ai/test_reply_cleanup.py": {
-      "sha256": "6d7e2d8f43a252b53e9f6507fd6766a24bf45a8fa43b0d1ee299c7417b3f8efd",
-      "bytes": 8126,
+      "sha256": "86bfcfa3e40102d97a8350ee0dc72e85c93e05d69969e1d2dad0a164ceab8a71",
+      "bytes": 9464,
       "executable": false
     },
     "tests/ai/test_response_recovery.py": {
@@ -2722,8 +3337,8 @@
       "executable": false
     },
     "tests/fork/browser_service.py": {
-      "sha256": "0095e4a59c3cb29b426bd9c4aec3963d02b2d1f06a8c5e3988c8f8a83226aea9",
-      "bytes": 9617,
+      "sha256": "82dc1c3f9cfaba4cf9626474154c5395981a88a005c4e7bed21aed29e99d8169",
+      "bytes": 9976,
       "executable": false
     },
     "tests/fork/bundle-browser.mjs": {
@@ -2732,18 +3347,18 @@
       "executable": false
     },
     "tests/fork/campaign-browser.mjs": {
-      "sha256": "7856a2afe901d62be399a7d2348fc9adc4ae4d98359d9d7924b2804b67548566",
-      "bytes": 29213,
+      "sha256": "cddfb80477b684a76c5783a5beee7d366eb6b328e1f153aaa2c18d0a10a74964",
+      "bytes": 34661,
       "executable": false
     },
     "tests/fork/campaign_browser_service.py": {
-      "sha256": "cf8870df3d39518d46b5e78633a7b0c509ba1a30da14d8f35408714e55f7ffb2",
-      "bytes": 4566,
+      "sha256": "344ab0b0a059f0897e3c449fb0235eee851371dd6814047c773e63144f4be232",
+      "bytes": 6671,
       "executable": false
     },
     "tests/fork/campaign_ui_routing.mjs": {
-      "sha256": "b04fada3f2f5c5c071ca4742986b53c04018b01e7c4ada23e16913d8607ee0ab",
-      "bytes": 3684,
+      "sha256": "b8f584bf053462442a82278c87642ddea242a956d35b917178cfe49d9c545dc1",
+      "bytes": 3718,
       "executable": false
     },
     "tests/fork/capture_card_context_implementation.py": {
@@ -2751,9 +3366,19 @@
       "bytes": 6917,
       "executable": false
     },
+    "tests/fork/cast-art-browser.mjs": {
+      "sha256": "f62ccb76a008b0af449504b78df542e89fd544fd021d86fe3f8ec323478dacd9",
+      "bytes": 17346,
+      "executable": false
+    },
+    "tests/fork/chapter-intro-browser.mjs": {
+      "sha256": "2b2fdbf122367f81619d798af1fd7b24e6e02bbd936d8f447472276f36104e0b",
+      "bytes": 8996,
+      "executable": false
+    },
     "tests/fork/character-browser.mjs": {
-      "sha256": "1a0767b143f5193875d35e46796162f94859f47685f68bfcd110259f1fc0c3c0",
-      "bytes": 18494,
+      "sha256": "9b8fc15c3e54154e3cea2b2c9b80ec5a666213b2d0e19b213bc16aca7b0769c6",
+      "bytes": 18953,
       "executable": false
     },
     "tests/fork/character-builder-browser.mjs": {
@@ -2794,6 +3419,21 @@
     "tests/fork/character_cards_smoke.py": {
       "sha256": "b23b4c7998e9d726f485768376bc55d19bf3bb2b032f06161745bfceb40c4b1b",
       "bytes": 10148,
+      "executable": false
+    },
+    "tests/fork/character_model_fixtures.py": {
+      "sha256": "4588c9f90d50aed2f2c5759c997467afc9dacbac46dc413f430f4c4c9dbc5aee",
+      "bytes": 666,
+      "executable": false
+    },
+    "tests/fork/choice-browser.mjs": {
+      "sha256": "dc9ea1ebd1bc2071d6834c92f59e878e6030bbb8bc844c5fd7baadf7d6b06bee",
+      "bytes": 6433,
+      "executable": false
+    },
+    "tests/fork/code-puzzle-browser.mjs": {
+      "sha256": "588eff354e8eeb35f394608e3e695782d76eb463911c5fa8c12182521d89acf2",
+      "bytes": 7605,
       "executable": false
     },
     "tests/fork/context-intelligence-browser.mjs": {
@@ -2886,6 +3526,11 @@
       "bytes": 2839,
       "executable": false
     },
+    "tests/fork/fixture-health.test.mjs": {
+      "sha256": "4666a918e840a805ac913e2ecc0f5ea4fd5cf001499fa9bc101b903b33d39d06",
+      "bytes": 2416,
+      "executable": false
+    },
     "tests/fork/fixture-isolation.mjs": {
       "sha256": "414659ff17943591c7bc7e740cb768fa07b577328756738d0c9597e971f04f68",
       "bytes": 4163,
@@ -2904,6 +3549,36 @@
     "tests/fork/grounding_cases.py": {
       "sha256": "8a7429e0b5f6ace5938d87eebcc1231aca271f25c27a8fcfafeaea7db6db00a5",
       "bytes": 8534,
+      "executable": false
+    },
+    "tests/fork/helix-board-browser.mjs": {
+      "sha256": "9bf1663c68d36854a8d08abaff60a30ee78f68adb60cb6b3ff28510f433c0a78",
+      "bytes": 8943,
+      "executable": false
+    },
+    "tests/fork/helix-browser-fixture.mjs": {
+      "sha256": "ffaada1b28ce256028845a4e48e4217fd4b54d35086d82614d0d850f2ceffd45",
+      "bytes": 8425,
+      "executable": false
+    },
+    "tests/fork/helix-menu.test.mjs": {
+      "sha256": "4b3833f383410edf2c95084d2b541aa2cb96b89e666713be5eddba3705338b08",
+      "bytes": 8449,
+      "executable": false
+    },
+    "tests/fork/helix-safety-browser.mjs": {
+      "sha256": "4a6bd77d59ac6ef6a393ed409902e292d2bb5ed3671c169ab96c52ca5343e6eb",
+      "bytes": 6885,
+      "executable": false
+    },
+    "tests/fork/helix-safety.test.mjs": {
+      "sha256": "3cff4020a7a17c811887049356911b03073eaa54d0c720322fc44ad280f1d072",
+      "bytes": 1963,
+      "executable": false
+    },
+    "tests/fork/helix_browser_service.py": {
+      "sha256": "6530ef924d4d26a87551a7670210e52bf45dba48a7ca279434d472ce394ca298",
+      "bytes": 3791,
       "executable": false
     },
     "tests/fork/intelligent-memory-browser.mjs": {
@@ -3011,6 +3686,11 @@
       "bytes": 615,
       "executable": false
     },
+    "tests/fork/placeholder-companions.test.mjs": {
+      "sha256": "ea1859e437f63c4daed54f5a4e57d11c01450e305b8f8f51606bd0d5c30541fb",
+      "bytes": 1497,
+      "executable": false
+    },
     "tests/fork/player-interactions-browser.mjs": {
       "sha256": "5cb6af186d04551e358a1d57fb92cbc9cb51e45677b8fc1d53ed63c1cd2ca780",
       "bytes": 10699,
@@ -3041,6 +3721,26 @@
       "bytes": 12888,
       "executable": false
     },
+    "tests/fork/route-browser.mjs": {
+      "sha256": "368225a507e9da2143cbeb742b2b008bb8b11e6819a6e326db801fa9a0e88fdf",
+      "bytes": 7913,
+      "executable": false
+    },
+    "tests/fork/scene-browser.mjs": {
+      "sha256": "5f31ccc2591edf78f3c29d395bb89be7c634677a7eec658aaaa79a9177e83cf4",
+      "bytes": 14118,
+      "executable": false
+    },
+    "tests/fork/scene-ui.test.mjs": {
+      "sha256": "1b9a022901a7cdf070514946ae725b8993aedca5c43495291dd420ae201ad58b",
+      "bytes": 34037,
+      "executable": false
+    },
+    "tests/fork/scripted-stage.test.mjs": {
+      "sha256": "f7613c4ccf4d98c047a8d81b9fcf1e51943578a84de798669a58ee29ec753b6b",
+      "bytes": 1297,
+      "executable": false
+    },
     "tests/fork/session-completion.test.mjs": {
       "sha256": "bce0ef598b5a3fbb5ec095a32a0efe0452ffa07c7fa7c1776cf92a6eb714fae4",
       "bytes": 5297,
@@ -3066,9 +3766,24 @@
       "bytes": 6039,
       "executable": false
     },
+    "tests/fork/story-art.test.mjs": {
+      "sha256": "9566c9fc4053dd9a944612ff2123deb4fa34fa0c9f77ae587c5c0de7e66e85e7",
+      "bytes": 2849,
+      "executable": false
+    },
+    "tests/fork/test_cast_art_assets.py": {
+      "sha256": "8749f04376c48d4cdd611ad85108c46c77ed2b309552c9bdbfed055e2024d5d9",
+      "bytes": 5094,
+      "executable": false
+    },
     "tests/fork/test_character_assets.py": {
-      "sha256": "a39731e74bd25ed512265545edc5d3f72024e60539110599a61d5e05cbd0398c",
-      "bytes": 4150,
+      "sha256": "00886a433c31c8aa5ad1880ee0863cbe8b5be8761c21b0a05ebe37f277e78106",
+      "bytes": 6767,
+      "executable": false
+    },
+    "tests/fork/test_companion_readiness.py": {
+      "sha256": "0a9c631da79bb859645f7e7c150ed642153278d9e8a60715dfc3b0007725670b",
+      "bytes": 4842,
       "executable": false
     },
     "tests/fork/test_deck_session_benchmark.py": {
@@ -3102,8 +3817,8 @@
       "executable": false
     },
     "tests/fork/test_mira_model.py": {
-      "sha256": "e84a11c8173be52eabacc7a760f4dcf2ec03fbe54e970e50ff050e087be1d9f6",
-      "bytes": 4412,
+      "sha256": "a03e076c20e1fbf5a91ff738c22df0f03912eb906695b7d3018e09181fd7bbb1",
+      "bytes": 4919,
       "executable": false
     },
     "tests/fork/test_mira_session_deck.py": {
@@ -3116,19 +3831,34 @@
       "bytes": 25521,
       "executable": false
     },
+    "tests/fork/test_placeholder_companions.py": {
+      "sha256": "2b47cb2647d03e0ce25a1789f008914a67b45c10cb6eb9defee6e9600a0141b0",
+      "bytes": 9873,
+      "executable": false
+    },
     "tests/fork/test_portrait_animation_assets.py": {
-      "sha256": "5a9b031cdc6ce97b58d1746009598202988875b1ab2a088c7a1bbe022e370810",
-      "bytes": 7122,
+      "sha256": "77aec3582fc71d03a99478f40846a55a96bff40147bcc148796e5bf393f11eef",
+      "bytes": 7812,
       "executable": false
     },
     "tests/fork/test_release_bundle.py": {
-      "sha256": "f1b03100812e6ce4fb8afd7c30153442fb0a3492c0d9d6f3c35d64387ad16c12",
-      "bytes": 11709,
+      "sha256": "06e8a760ceffefefa72516c1e07d7f27a4a9d2348f0479bdbe275aa160f00b9a",
+      "bytes": 11946,
+      "executable": false
+    },
+    "tests/fork/test_story_art.py": {
+      "sha256": "ef825db89d7c7545e1446af4ea9e8aaaa6f92cd2262c3e1900d4240065dd5473",
+      "bytes": 12117,
       "executable": false
     },
     "tests/fork/test_upstream_sync_guards.py": {
       "sha256": "c9443df06bee987d15cbfee95619416018181fbff7735eb4580dabecb39d4ca8",
       "bytes": 10444,
+      "executable": false
+    },
+    "tests/fork/test_vex9_model.py": {
+      "sha256": "4c432998af924fe7acd394bd6bfa6ecfaceab6e6b267934e4d636633f5f0115c",
+      "bytes": 1049,
       "executable": false
     },
     "tests/fork/test_windows_installer.py": {
@@ -3142,8 +3872,8 @@
       "executable": false
     },
     "tests/fork/upstream-sync-guards.test.mjs": {
-      "sha256": "5e6a306f5342cabf28f46424594561280f4d7ab4d6d39be7638b0de5fc3235c1",
-      "bytes": 14770,
+      "sha256": "635d0052ba7298803d103c00811d42ad5f0750af415371825ba51d42e2df4657",
+      "bytes": 15452,
       "executable": false
     },
     "tools/ai_settings_live_cards.py": {
@@ -3167,8 +3897,8 @@
       "executable": false
     },
     "tools/campaign_live_check.py": {
-      "sha256": "d25251ce409afbe88d5f6136b8488f397cfc32008f6873c53150563a295abde1",
-      "bytes": 11121,
+      "sha256": "c9ea7dc5fb5453b23a71d0ae3876f03728e91cf1f54001f7c21b592f3505e36b",
+      "bytes": 12870,
       "executable": false
     },
     "tools/characters/build_character.py": {
@@ -3186,14 +3916,24 @@
       "bytes": 9639,
       "executable": true
     },
-    "tools/check_mira.py": {
-      "sha256": "b89ce218eec95bc1ab877f25ebb2ffdc27a4d57d68afbdd6c03ed44e2d2903be",
-      "bytes": 12519,
+    "tools/check_iris.py": {
+      "sha256": "76853697a62c6201b2e92665792bd7215a16c107bf774c3e27f9b16d2ac3f571",
+      "bytes": 13808,
       "executable": false
     },
+    "tools/check_mira.py": {
+      "sha256": "92a5400cba5a0754d84d7a3893170b7fc8af734bdf6aea6694981c9638ba55b1",
+      "bytes": 13122,
+      "executable": false
+    },
+    "tools/check_seraphine.py": {
+      "sha256": "66bb9a52d9e70f4a919d0a212fc7130d96235b2d6856444306d1bb5b7b3317b3",
+      "bytes": 13855,
+      "executable": true
+    },
     "tools/check_vex9.py": {
-      "sha256": "d932dd67ec5e44ca09d8470dbe0f1f1c06367e7eaaf611097d10c7de9a81ba45",
-      "bytes": 12363,
+      "sha256": "77c68b4170c7cd569dd2d500575592ee9664146182ccb1ab91c71d6de455af33",
+      "bytes": 12966,
       "executable": true
     },
     "tools/edgeloop-ai": {
@@ -3207,8 +3947,8 @@
       "executable": false
     },
     "tools/export-public-source.py": {
-      "sha256": "9338455482cb056fb570389d6457125a6ce09168fd67049f21c81ab4d321ac43",
-      "bytes": 5741,
+      "sha256": "297b243bf28b86587da281c7ea0400058d0a21e19919f6d409d4f3a5cd31792a",
+      "bytes": 7117,
       "executable": true
     },
     "tools/fixtures/smoke-clip.funscript": {
@@ -3224,6 +3964,11 @@
     "tools/fork_validate.py": {
       "sha256": "23e84df4a88600f82bbae1cf881e322fe2534a8a501de1b349cca887b9afd49b",
       "bytes": 3017,
+      "executable": false
+    },
+    "tools/helix_live_check.py": {
+      "sha256": "21223e8b5681bce4630ec205646c1406d99a80435e799bd5fb7e0223ca7e2a7e",
+      "bytes": 15042,
       "executable": false
     },
     "tools/install-bundle.sh": {
@@ -3245,6 +3990,16 @@
       "sha256": "b0187a37ba40032f48b4a3f1e41ff00905991c5ddd281fdde0a75290d39dc23f",
       "bytes": 220,
       "executable": true
+    },
+    "tools/make_placeholder_art.py": {
+      "sha256": "4684ec82636e0ae0039af7217439e56f54d118ae979e114da5a3ee080666cced",
+      "bytes": 5206,
+      "executable": false
+    },
+    "tools/make_placeholder_companions.py": {
+      "sha256": "e315987d9a0ec27339de2d8fc7fb30fdf2c88eea7ebc9b643f3b6124ead60f8b",
+      "bytes": 1744,
+      "executable": false
     },
     "tools/ollama-status.sh": {
       "sha256": "e4daa4eff50c1fc804661a120b139df50dd5838c976543c386ea067a94f0f329",
@@ -3282,8 +4037,8 @@
       "executable": true
     },
     "tools/serve_local.py": {
-      "sha256": "b72fdd634050078453d78ee9052a15f8d07d98c2c6c755b68332463f71f9a4c1",
-      "bytes": 5727,
+      "sha256": "30897e4c122ee1451e8b29753e6c483aca3f5eacfc405f5289b74fc8cbf1a0de",
+      "bytes": 6547,
       "executable": false
     },
     "tools/setup-ai.sh": {
@@ -3301,9 +4056,14 @@
       "bytes": 27071,
       "executable": false
     },
+    "tools/story_art.py": {
+      "sha256": "12c60a4a66ef1b77d2c53550f1f835d30f856497c7ef8902c9ebb989e59a1775",
+      "bytes": 3344,
+      "executable": false
+    },
     "tools/validate-release.py": {
-      "sha256": "0594ac3ecbc2ad37facb093672f1151d18f6c4df3a89fcd7fc7d0279a427a771",
-      "bytes": 5057,
+      "sha256": "08224261a03d40e4e245d95b5ccc8badf056a1bad22ba904688c003fbd1137a6",
+      "bytes": 9656,
       "executable": true
     },
     "tools/windows/build-windows.py": {

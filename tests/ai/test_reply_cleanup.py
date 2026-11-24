@@ -123,3 +123,29 @@ async def test_streamed_deltas_equal_the_stored_cleaned_reply():
     stored = [m['content'] for m in speech.history if m['role'] == 'assistant'][-1]
     assert shown == stored == "Well, I reckon I'm still standing. Holler if you need me."
     await speech.close()
+
+
+# Playtest 2026-11-20: VEX-9 opened replies by quoting the participant's word ("Milking" you dry…), and the
+# cleaner kept only the quoted word. A short quoted term without closing punctuation is not speech.
+@pytest.mark.parametrize('text', [
+    '"Milking" you dry implies a specific, continuous extraction yield. Prepare yourself.',
+    '"Nice" is not a parameter I optimise for, RPU-001.',
+    '“Enjoyment” is irrelevant. Efficiency is a requirement.',
+    '"Proven Breeder" is your designation now. Use it.',
+])
+@pytest.mark.parametrize('echo', [None, 'Do you enjoy this work?', 'will you be milking me dry today?'])
+def test_opening_quoted_term_keeps_the_whole_reply(text, echo):
+    assert clean_reply(text, echo) == text
+    for size in (1, 3, 7):
+        cleaner = ReplyCleaner(echo)
+        streamed = ''.join(cleaner.feed(text[i:i + size]) for i in range(0, len(text), size)) + cleaner.finish()
+        assert streamed.strip() == text
+
+
+@pytest.mark.parametrize('text,expected', [
+    ('"I will take you apart slowly," I tell you. Then I do.', 'I will take you apart slowly,'),
+    ('"Good." I smile. "Again."', 'Good. Again.'),
+    ('"Hello there. Ready?"', 'Hello there. Ready?'),
+])
+def test_quote_wrapped_speech_is_still_unwrapped(text, expected):
+    assert clean_reply(text, 'Do you enjoy this work?') == expected

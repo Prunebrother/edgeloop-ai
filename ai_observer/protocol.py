@@ -197,17 +197,23 @@ class CampaignCommand(StrictModel):
     """Campaign navigation. The observer validates every transition; evidence never comes from the browser's say-so."""
     version: Literal[1]
     type: Literal['campaign']
-    action: Literal['get','start','abandon','answer']
+    action: Literal['get','start','abandon','answer','mission_text','chapter_text','intro_seen']
     campaign_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
     mission_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
-    # A puzzle answer: which puzzle (objective) and which option. The observer checks it; the browser never decides.
+    # HELIX-022: chapter intro and close scenes.
+    chapter_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
+    # An answer: which objective, and an option id or raw code text. The campaign alone checks it.
     objective_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
-    answer: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
+    answer: str | None = Field(default=None,min_length=1,max_length=4096)
 
     @model_validator(mode='after')
     def targets(self):
-        if self.action=='start' and not (self.campaign_id and self.mission_id):raise ValueError('start needs a campaign and a mission')
-        if (self.action=='answer')!=bool(self.objective_id and self.answer):raise ValueError('answer needs a puzzle and an option, and only answer takes them')
+        if self.action in {'start','mission_text'} and not (self.campaign_id and self.mission_id):raise ValueError(f'{self.action} needs a campaign and a mission')
+        if self.action=='answer':
+            if not (self.objective_id and self.answer):raise ValueError('answer needs an objective and answer text')
+        elif self.objective_id is not None or self.answer is not None:raise ValueError('only answer takes objective_id and answer')
+        if (self.action in {'chapter_text','intro_seen'})!=bool(self.campaign_id and self.chapter_id) or (self.chapter_id and self.mission_id):
+            raise ValueError('chapter_text and intro_seen need a campaign and a chapter, and only they take a chapter')
         return self
 
 class ConfigureContext(StrictModel):
