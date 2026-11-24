@@ -197,7 +197,7 @@ class CampaignCommand(StrictModel):
     """Campaign navigation. The observer validates every transition; evidence never comes from the browser's say-so."""
     version: Literal[1]
     type: Literal['campaign']
-    action: Literal['get','start','abandon','answer','mission_text','chapter_text','intro_seen']
+    action: Literal['get','start','abandon','answer','mission_text','chapter_text','intro_seen','unlock_early']
     campaign_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
     mission_id: str | None = Field(default=None,min_length=1,max_length=64,pattern=r'^[a-z0-9][a-z0-9_.-]*$')
     # HELIX-022: chapter intro and close scenes.
@@ -212,6 +212,7 @@ class CampaignCommand(StrictModel):
         if self.action=='answer':
             if not (self.objective_id and self.answer):raise ValueError('answer needs an objective and answer text')
         elif self.objective_id is not None or self.answer is not None:raise ValueError('only answer takes objective_id and answer')
+        if self.action=='unlock_early' and (not self.campaign_id or self.mission_id):raise ValueError('unlock_early needs a campaign and no mission')
         if (self.action in {'chapter_text','intro_seen'})!=bool(self.campaign_id and self.chapter_id) or (self.chapter_id and self.mission_id):
             raise ValueError('chapter_text and intro_seen need a campaign and a chapter, and only they take a chapter')
         return self

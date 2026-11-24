@@ -57,8 +57,8 @@
       "executable": false
     },
     "CHANGELOG.md": {
-      "sha256": "7495fc3be44928d596bfc4020c2c51f6bbd2bd864a83dd69399df8e54895c904",
-      "bytes": 19674,
+      "sha256": "89e6ad578018e44da9d7cc4a9111d4920d7e286445ffaa8ae3db5a3ba6c4dff8",
+      "bytes": 20254,
       "executable": false
     },
     "CONTRIBUTING.md": {
@@ -1037,7 +1037,7 @@
       "executable": false
     },
     "INSTALL.md": {
-      "sha256": "ed3438ccec1561648628b7f7bf149d4fb12b9c0397a0ae12720254d172742ac9",
+      "sha256": "11be09cec1663b906896f343ae51df04219eae8f6c5be25d94b72436c558f7d8",
       "bytes": 8163,
       "executable": false
     },
@@ -1072,8 +1072,8 @@
       "executable": false
     },
     "README.md": {
-      "sha256": "1203f0748676f66b17b228e5e5444859c4cbc12014b85b982700a5d8fa7195d6",
-      "bytes": 5125,
+      "sha256": "0ebe827849ff18267dae49780d10236dab05d0ff23d5055eb4500221110be01b",
+      "bytes": 5289,
       "executable": false
     },
     "RELEASING.md": {
@@ -1117,13 +1117,13 @@
       "executable": false
     },
     "ai_observer/protocol.py": {
-      "sha256": "aef66e080e57b8622cdc88782697b1c3b05a38a68d25e162289236c8057fb102",
-      "bytes": 15235,
+      "sha256": "725d5ff1d9b705d50375597fc79a8fedf2c9928e74c44cfc9c3c9e626af780f7",
+      "bytes": 15400,
       "executable": false
     },
     "ai_observer/server.py": {
-      "sha256": "94c3d84b96db9e5c72fd8e556797c12564f5547fc124b9be719be1911789cd89",
-      "bytes": 43974,
+      "sha256": "b80395fdf03c4721e683275d689e6cc20b64d5509cc065d0421d69160217d117",
+      "bytes": 44085,
       "executable": false
     },
     "ai_observer/smoke.py": {
@@ -1357,8 +1357,8 @@
       "executable": false
     },
     "companion_ai/campaign.py": {
-      "sha256": "9a32748be8bccfb323567c9e9c72fab0832ec9bdb1f7540cdf340b5b47aee9bd",
-      "bytes": 131057,
+      "sha256": "c1581448c79347353a675a9fd1ced6d0e2a46a3147390c04bf8069973e0efb07",
+      "bytes": 132186,
       "executable": false
     },
     "companion_ai/character_builder.py": {
@@ -1527,7 +1527,7 @@
       "executable": false
     },
     "docs/fork/f2-changes.json": {
-      "sha256": "7b62c588600e99db76101e16ed1a84906cb3990c1c1c39fd4e472a9042ad8ed1",
+      "sha256": "4e07f53783a20d4d14dc1a7aaafab48d3d19e5714f6f0558562d903b9f7914af",
       "bytes": 8035,
       "executable": false
     },
@@ -1592,12 +1592,12 @@
       "executable": false
     },
     "index.html": {
-      "sha256": "4714c7db1bf603ebab54402dcbad544fcfe3511c33bca4be5fc3941e54b8b6f0",
+      "sha256": "37c60d67e49cb62a996d41d7e9323e8819eda0c845a25730495a683bab58635a",
       "bytes": 159209,
       "executable": false
     },
     "install.sh": {
-      "sha256": "83725f7d05af515be14a61d2499e636dcdfc5c91a4d940af6ef48da996682f02",
+      "sha256": "2b8d9c3c6a69339033559d740f1f99c8c029942caada7f7ff65e18f1f2cdfedb",
       "bytes": 2847,
       "executable": true
     },
@@ -1797,7 +1797,7 @@
       "executable": false
     },
     "pyproject.toml": {
-      "sha256": "90e8cce01dd4b7a27e6c184bc097d4df9cf2566fa47e25e6a19fb25d3f47c5e6",
+      "sha256": "fd6f0b37a8f43d0631ee2bbd14ace7f51da48a0000ea32ec06e5d82c07d61716",
       "bytes": 565,
       "executable": false
     },
@@ -1807,7 +1807,7 @@
       "executable": false
     },
     "release-inputs.json": {
-      "sha256": "e388e53887a115954892898f177d0d290f62d7599fffe16514c04754c55fd075",
+      "sha256": "8b4b21e56ad3c6958ac8b6e866cd5effa3fa752b8f54668f8e5f21bf101acefc",
       "bytes": 3091,
       "executable": false
     },
@@ -2042,8 +2042,8 @@
       "executable": false
     },
     "src/css/companion.css": {
-      "sha256": "81a379392fb737035df79fe76af1f83cbab6751d1415b61c8ad80d07b707d05d",
-      "bytes": 54557,
+      "sha256": "b619480ff106b940b6b37a80823d2084ebfe58adf705595293c9cbb04e4c4377",
+      "bytes": 54888,
       "executable": false
     },
     "src/js/ai-settings/control.js": {
@@ -2122,8 +2122,8 @@
       "executable": false
     },
     "src/js/ai/main-menu.js": {
-      "sha256": "eb987cd9c909f312d828f3585a9084bb33181298635940376ac50bb51c29a5dd",
-      "bytes": 52856,
+      "sha256": "e56ba4f08923f0b51c0b5ab4c9704c9234ad66d7cd46d17a4ddb850531463d7e",
+      "bytes": 53820,
       "executable": false
     },
     "src/js/ai/menu-art.js": {
@@ -2916,6 +2916,11 @@
       "bytes": 6307,
       "executable": false
     },
+    "tests/ai/test_campaign_unlock_early.py": {
+      "sha256": "73b62608914c5cba8105eba3ff0e48616e58a14f3914f60565c67f13b91524e1",
+      "bytes": 2908,
+      "executable": false
+    },
     "tests/ai/test_campaign_when.py": {
       "sha256": "70525dffbe918a192d6eed13da854c2b8ebef947f1c6e533d8fc31f514340a29",
       "bytes": 11711,
@@ -3347,8 +3352,8 @@
       "executable": false
     },
     "tests/fork/campaign-browser.mjs": {
-      "sha256": "cddfb80477b684a76c5783a5beee7d366eb6b328e1f153aaa2c18d0a10a74964",
-      "bytes": 34661,
+      "sha256": "84dfe44b0497901d5efa59bf3894a3538007e570649411321cea3f4d521145dc",
+      "bytes": 35805,
       "executable": false
     },
     "tests/fork/campaign_browser_service.py": {

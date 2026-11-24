@@ -392,6 +392,8 @@ body.game-menu-open {overflow:hidden}
 @media(max-width:640px){.mission-speech {grid-template-columns:1fr}.mission-speech img {max-width:180px}}
 
 .campaign-lock-note {margin:6px 0 0;font-size:12px;color:#fcd34d}
+.campaign-skip {display:block;margin:6px 0 0 auto;padding:6px 12px;border-radius:999px;border:1px solid rgba(252,211,77,.55);background:rgba(252,211,77,.08);color:#fcd34d;font-size:13px;cursor:pointer}
+.campaign-skip:hover,.campaign-skip:focus-visible {background:rgba(252,211,77,.18);outline:2px solid #fcd34d;outline-offset:2px}
 /* ---- Menu art: the host home screen (menu C) and the mission board (campaign 2). Assets: src/assets/menu. */
 @font-face {font-family:"Cormorant Garamond";font-weight:600;font-style:normal;font-display:swap;src:url("/src/assets/menu/fonts/cormorant-garamond-600.woff2") format("woff2")}
 .story-title {font-family:"Cormorant Garamond",Georgia,"Times New Roman",serif!important;font-weight:600!important;letter-spacing:0!important}

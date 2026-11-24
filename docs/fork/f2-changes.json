@@ -7,17 +7,17 @@
   "CHANGELOG.md": {
     "base_sha256": "6a6139fe22de0953008e09984134644b1b3dbc8a0b5562ad8cc26c5b906da16d",
     "reason": "F2.10 public release documentation/dependency configuration",
-    "sha256": "7495fc3be44928d596bfc4020c2c51f6bbd2bd864a83dd69399df8e54895c904"
+    "sha256": "89e6ad578018e44da9d7cc4a9111d4920d7e286445ffaa8ae3db5a3ba6c4dff8"
   },
   "README.md": {
     "base_sha256": "31e06342d10aa4d7001bee7f037a1da28587a611d40ed5ca7c22785643de8c8c",
     "reason": "F2.10 public release documentation/dependency configuration; approved Prunebrother source-publication location and status; v0.3.0 includes art, local browser libraries and complete runtime installer",
-    "sha256": "1203f0748676f66b17b228e5e5444859c4cbc12014b85b982700a5d8fa7195d6"
+    "sha256": "0ebe827849ff18267dae49780d10236dab05d0ff23d5055eb4500221110be01b"
   },
   "index.html": {
     "base_sha256": "b5e1bbe949cfdf489219b82bed99c3b3d63b6374f0f3979737073c0dc21b57f0",
     "reason": "F2.1 stylesheet link and accessible viewport zoom; original controls preserved; v0.3.0 includes art, local browser libraries and complete runtime installer; upstream 1.1.4.31 sync: local-app library placeholder uses ~/Videos instead of an absolute home path (release privacy scan); v0.7.0: footer names the fork version (EdgeLoop AI vX) beside the engine version; v0.8.0: I came button in the transport row",
-    "sha256": "4714c7db1bf603ebab54402dcbad544fcfe3511c33bca4be5fc3941e54b8b6f0"
+    "sha256": "37c60d67e49cb62a996d41d7e9323e8819eda0c845a25730495a683bab58635a"
   },
   "package.json": {
     "base_sha256": "4530b83fb523fb476390b151a0da7f7d0134d5a38fd4eabdb892c156fc204872",

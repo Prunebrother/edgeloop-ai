@@ -1085,9 +1085,23 @@ class CampaignService:
             if route: flags.update(route.sets)
         return flags
 
+    # Kept in the campaign's records (no save-format change): an older app ignores it and shows the campaign locked.
+    UNLOCKED_EARLY = 'unlocked_early_at'
+
     def campaign_available(self, campaign):
         if campaign.available_from_start: return True
+        if self.record(campaign.id).records.get(self.UNLOCKED_EARLY): return True
         return all(self.record(c).completed_at for c in campaign.requires_campaigns)
+
+    def unlock_early(self, campaign_id):
+        """The player chose to play a later campaign without finishing the ones it requires (a playtest shortcut).
+        Only that campaign opens; the required campaigns' progress is untouched and can still be finished."""
+        campaign = self.book.campaign(campaign_id)
+        if not campaign: raise ValueError('Unknown campaign.')
+        if self.campaign_available(campaign): raise ValueError('This campaign is already open.')
+        progress = self.progress.model_copy(deep=True)
+        progress.campaigns.setdefault(campaign.id, CampaignRecord()).records[self.UNLOCKED_EARLY] = now_iso(self.clock)
+        self._save(progress)
 
     def mission_state(self, campaign, mission):
         active = self.progress.active
@@ -1251,8 +1265,10 @@ class CampaignService:
                          'completed': bool(self.record(cid).completed_at)} for cid in c.requires_campaigns]
             available = self.campaign_available(c)
             locked_reason = None if available else 'Complete ' + ' and '.join(r['title'] for r in requires if not r['completed']) + ' to unlock.'
+            unlocked_early = bool(record.records.get(self.UNLOCKED_EARLY)) and not all(r['completed'] for r in requires)
             campaigns.append({'id': c.id, 'title': c.title, 'description': c.description, 'artwork': c.artwork, 'chapters': chapters,
-                'available': available, 'requires': requires, 'locked_reason': locked_reason, 'completed': bool(record.completed_at), 'completed_at': record.completed_at,
+                'available': available, 'requires': requires, 'locked_reason': locked_reason,
+                'can_unlock_early': not available, 'unlocked_early': unlocked_early, 'completed': bool(record.completed_at), 'completed_at': record.completed_at,
                 'progress': {'completed': done, 'total': total}, 'companions': sorted(
                     {m.companion for m in c.missions if self.companion_unlocked(c, m.companion)}),
                 'narrative_status': ('placeholder' if narrative.placeholder(flags) else narrative.status) if narrative else None, 'records': dict(record.records), 'flags': dict(record.flags), 'missions': missions})

@@ -2,24 +2,24 @@
 
 EdgeLoop AI adds local AI companions to [EdgeLoop by marshallmims](https://github.com/marshallmims/edgeloop), based on version 1.1.4.33, upstream commit `d3c5df33834f6106796e3768ad283d0eb5ab1ef9`. Maintained by Prunebrother. Experimental software for adults; physical safety has not been verified.
 
-## Current release: v0.12.0-rc1 (Linux and Windows)
+## Current release: v0.12.0-rc2 (Linux and Windows)
 
-[v0.12.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.12.0-rc1) adds a second story campaign, **Rise of Helix** (Chapter 1, five missions, unlocked after The Asterion Initiative), with choices, a code puzzle and two endings. Two new companions join from Helix Dynamics: **Iris Vale**, the shy intern, and **Seraphine Vale**, the CEO and her mother. Celeste, Evelyn, Daisy, Nova and Mira have all-new animated portraits. The Rise of Helix story text is still a draft and its story pictures are placeholders (both marked in the game), so this is also a test build: feedback is very welcome in the [issues](https://github.com/Prunebrother/edgeloop-ai/issues). The Windows build has not been hardware tested yet, so keep your toy's own stop button within reach. Earlier releases, such as [v0.11.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.11.0-rc1) and [v0.10.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.10.0-rc1), stay available. Install instructions for both platforms are in [INSTALL.md](INSTALL.md) and on the release page.
+[v0.12.0-rc2](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.12.0-rc2) adds a second story campaign, **Rise of Helix** (Chapter 1, five missions; it follows The Asterion Initiative, or use **Skip to Rise of Helix** on the Campaigns screen to play it straight away), with choices, a code puzzle and two endings. Two new companions join from Helix Dynamics: **Iris Vale**, the shy intern, and **Seraphine Vale**, the CEO and her mother. Celeste, Evelyn, Daisy, Nova and Mira have all-new animated portraits. The Rise of Helix story text is still a draft and its story pictures are placeholders (both marked in the game), so this is also a test build: feedback is very welcome in the [issues](https://github.com/Prunebrother/edgeloop-ai/issues). The Windows build has not been hardware tested yet, so keep your toy's own stop button within reach. Earlier releases, such as [v0.12.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.12.0-rc1), [v0.11.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.11.0-rc1) and [v0.10.0-rc1](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.10.0-rc1), stay available. Install instructions for both platforms are in [INSTALL.md](INSTALL.md) and on the release page.
 
-**Windows 10/11 (experimental):** download `EdgeLoop-AI-Setup-v0.12.0-rc1.exe` from the [release page](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.12.0-rc1) and run it.
+**Windows 10/11 (experimental):** download `EdgeLoop-AI-Setup-v0.12.0-rc2.exe` from the [release page](https://github.com/Prunebrother/edgeloop-ai/releases/tag/v0.12.0-rc2) and run it.
 
 ## Install the complete Linux release
 
 On Linux x86_64 with a systemd user session and a current Chromium browser:
 
 ```bash
-curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.12.0-rc1/install.sh
+curl -fLO https://github.com/Prunebrother/edgeloop-ai/releases/download/v0.12.0-rc2/install.sh
 bash install.sh
 ```
 
 The installer downloads and verifies the complete release, installs into your account without sudo, creates **EdgeLoop AI** and **Stop EdgeLoop AI** application shortcuts, and opens the app. Accept the adult-use gate, then chat with Nova or choose another companion. No Python, Node, Ollama or model commands are needed. Keep approximately 25 GB free during installation; the download is about 9 GB, most of it base-model weights. Downloads resume when you rerun the installer. You can remove its download cache after installation.
 
-The complete v0.12.0-rc1 bundle includes 96 character portraits with animated idle loops, eight prepared character models for Nova, Evelyn, Daisy, Celeste, Mira, VEX-9, Iris and Seraphine, the base-model weight set, Ollama 0.40.13, portable Python 3.12.16, pinned Python dependencies and local browser libraries. A source ZIP or Git clone includes the artwork and model definitions; use the **Release installer** for runtimes and weights.
+The complete v0.12.0-rc2 bundle includes 96 character portraits with animated idle loops, eight prepared character models for Nova, Evelyn, Daisy, Celeste, Mira, VEX-9, Iris and Seraphine, the base-model weight set, Ollama 0.40.13, portable Python 3.12.16, pinned Python dependencies and local browser libraries. A source ZIP or Git clone includes the artwork and model definitions; use the **Release installer** for runtimes and weights.
 
 Inference runs locally. A CPU can run the models slowly; compatible NVIDIA hardware can accelerate the bundled runtime. Available RAM/VRAM must accommodate the model and its context. No universal minimum or latency guarantee has been established. Windows is supported experimentally through its own setup program. AMD ROCm acceleration, macOS, ARM and non-systemd installation are outside this bundle's tested scope.
 

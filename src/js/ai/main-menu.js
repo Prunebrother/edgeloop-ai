@@ -154,6 +154,12 @@ export function mountMainMenu({send,status,selectCompanion,postLines,bannerHost,
             pendingLeave=true;commandError=null;render();return;}
         close();
     }
+    function unlockEarly(c){
+        const needs=(c.requires||[]).filter(r=>!r.completed).map(r=>r.title).join(' and ');
+        if(!confirm(`Unlock ${c.title} now, without finishing ${needs}? ${c.title} continues that story, so you will miss some of its context. Your progress in ${needs} is kept, and you can still finish it later.`))return;
+        if(!send({version:1,type:'campaign',action:'unlock_early',campaign_id:c.id})){commandError='The companion service could not be reached, so nothing changed.';render();return;}
+        commandError=null;
+    }
     function renderCampaigns(){
         for(const c of data?.campaigns||[])loadArt(c.id);
         const items=(data?.campaigns||[]).map(c=>node('li',{},node('button',{type:'button',class:'game-menu-card','aria-disabled':!c.available||!!data?.error?'true':null,dataset:{campaign:c.id},
@@ -163,7 +169,10 @@ export function mountMainMenu({send,status,selectCompanion,postLines,bannerHost,
             node('span',{class:'game-menu-meta',text:c.completed?'Completed':`${c.progress.completed} of ${c.progress.total} missions completed`}),
             ...(c.chapters||[]).map(ch=>node('span',{class:'game-menu-meta',text:`Chapter ${ch.number}: ${ch.title} · `+(ch.teaser?'Coming soon':ch.completed?'Complete':ch.available?`${percent(ch.progress.completed,ch.progress.total)}%`:'Locked')})),
             !c.available?node('span',{class:'game-menu-badge','data-state':'locked',text:'Locked'}):null,
-            c.locked_reason?node('span',{class:'campaign-lock-note',text:c.locked_reason}):null,narrativeBadge(c))));
+            c.locked_reason?node('span',{class:'campaign-lock-note',text:c.locked_reason}):null,
+            c.unlocked_early?node('span',{class:'campaign-lock-note',text:'Unlocked early'}):null,narrativeBadge(c)),
+            // Playtest shortcut: open a later campaign without finishing the ones it requires (separate button, not nested).
+            c.can_unlock_early&&!data?.error?node('button',{type:'button',class:'campaign-skip',dataset:{unlockEarly:c.id},onclick:()=>unlockEarly(c)},`Skip to ${c.title}`):null));
         const list=items.length?node('ul',{class:'game-menu-list','data-menu-list':true},...items):node('p',{class:'game-menu-empty',text:paired?'No campaigns are installed.':'Campaigns appear once the companion service is connected.'});
         return [header('Campaigns',null,'Main menu'),statusLine(),list];
     }

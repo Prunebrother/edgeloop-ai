@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.12.0-rc2 — Skip to Rise of Helix
+
+<!-- Published as Latest. Linux and Windows (Windows experimental). Same as v0.12.0-rc1 plus the change below; no model changes. Rise of Helix story text is still Draft and its story art placeholder (validated with --test-build). -->
+
+- Skip to Rise of Helix: the locked Rise of Helix card has a "Skip to Rise of Helix" button, so you can play the new campaign without first finishing the 14 missions of The Asterion Initiative. It asks first, keeps your Asterion progress, and the card shows "Unlocked early" until you finish Asterion.
+
 ## v0.12.0-rc1 — Rise of Helix, Iris and Seraphine, a new look for the cast (public test build)
 
 <!-- Public test build, published as Latest. Linux and Windows (Windows experimental). Same as v0.11.0-rc1 plus the changes below. New models: iris-narrative-v1 and seraphine-narrative-v1 (intermediates), iris-narrative-f29-v018 and seraphine-narrative-f29-v019; the other companions' models are unchanged. Rise of Helix story text is Draft and its story art is placeholder (badged in the game; validated with --test-build). -->

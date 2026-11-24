@@ -325,6 +325,7 @@ def create_app(token, data_dir, *, origins=DEFAULT_ORIGINS, adapter=None, transp
                                 if message.action=='start':campaign.start(message.campaign_id,message.mission_id,state.report)
                                 elif message.action=='abandon':campaign.abandon()
                                 elif message.action=='intro_seen':campaign.intro_seen(message.campaign_id,message.chapter_id)
+                                elif message.action=='unlock_early':campaign.unlock_early(message.campaign_id)
                                 publish(campaign.state(state.report,persona()))
                             speech.settings.allowed=campaign.allowed_settings();speech.settings.directed=campaign.settings_directed()
                         except (ValueError,OSError) as exc:

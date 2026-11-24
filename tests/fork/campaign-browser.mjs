@@ -121,7 +121,18 @@ try{
         await locked.click({force:true});assert(await menuView()==='campaigns','Click activated locked card');
         await card.focus();await page.keyboard.press('Tab');
         assert(await locked.evaluate(el=>el===document.activeElement),'Locked card unreachable with Tab');
-        await shot('helix-locked.png');await card.click();
+        await shot('helix-locked.png');
+        // Playtest shortcut: Skip to Rise of Helix asks first; Cancel changes nothing, OK opens Helix early.
+        const skip=page.locator(`[data-unlock-early=${HID}]`);
+        assert((await skip.textContent())==='Skip to Rise of Helix','Missing Skip to Rise of Helix button');
+        let asked='';page.once('dialog',d=>{asked=d.message();d.dismiss();});await skip.click();
+        assert(asked.includes('without finishing The Asterion Initiative')&&asked.includes('progress in The Asterion Initiative is kept'),'Skip confirmation text '+asked);
+        assert(await locked.getAttribute('aria-disabled')==='true','Cancel must leave Rise of Helix locked');
+        page.once('dialog',d=>d.accept());await skip.click();
+        await page.waitForFunction(id=>document.querySelector(`[data-campaign=${id}]`)?.getAttribute('aria-disabled')===null,HID);
+        assert((await locked.textContent()).includes('Unlocked early')&&!(await locked.textContent()).includes('to unlock.'),'Unlocked-early card text');
+        assert(await skip.count()===0,'Skip button must disappear once Helix is open');
+        await shot('helix-unlocked-early.png');await card.click();
         // The mission board shows one chapter at a time: Chapter 1, with Orientation picked.
         const states=await page.locator('.mission-board .mission-card').evaluateAll(cards=>cards.map(c=>c.dataset.state));
         assert(JSON.stringify(states)===JSON.stringify(['available',...Array(4).fill('locked')]),'Mission states '+states);
